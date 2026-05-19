@@ -29,7 +29,7 @@ class AuthWorkspaceBootstrapTest extends TestCase
             'password' => Hash::make('secret123'),
         ]);
 
-        $loginResponse = $this->postJson('/api/v1/auth/login', [
+        $loginResponse = $this->postJson('/api/auth/login', [
             'email' => $user->email,
             'password' => 'secret123',
         ]);
@@ -39,12 +39,12 @@ class AuthWorkspaceBootstrapTest extends TestCase
         $token = $loginResponse->json('data.access_token');
 
         $this->withHeader('Authorization', 'Bearer '.$token)
-            ->getJson('/api/v1/auth/me')
+            ->getJson('/api/auth/me')
             ->assertOk()
             ->assertJsonPath('data.email', $user->email);
 
         $this->withHeader('Authorization', 'Bearer '.$token)
-            ->postJson('/api/v1/auth/refresh')
+            ->postJson('/api/auth/refresh')
             ->assertOk()
             ->assertJsonStructure(['data' => ['access_token', 'token_type', 'expires_in', 'refresh_ttl']]);
     }
@@ -55,13 +55,13 @@ class AuthWorkspaceBootstrapTest extends TestCase
             'password' => Hash::make('secret123'),
         ]);
 
-        $token = $this->postJson('/api/v1/auth/login', [
+        $token = $this->postJson('/api/auth/login', [
             'email' => $user->email,
             'password' => 'secret123',
         ])->json('data.access_token');
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
-            ->postJson('/api/v1/workspaces/bootstrap', [
+            ->postJson('/api/workspaces/bootstrap', [
                 'account_name' => 'Acme Account',
                 'workspace_name' => 'Acme Main',
                 'timezone' => 'UTC',
@@ -80,7 +80,7 @@ class AuthWorkspaceBootstrapTest extends TestCase
 
     public function test_workspace_scoped_endpoint_rejects_when_unauthenticated(): void
     {
-        $this->getJson('/api/v1/workspaces/current')
+        $this->getJson('/api/workspaces/current')
             ->assertStatus(401)
             ->assertJsonPath('error.code', 'auth.unauthenticated');
     }
@@ -105,13 +105,13 @@ class AuthWorkspaceBootstrapTest extends TestCase
             'joined_at' => now(),
         ]);
 
-        $token = $this->postJson('/api/v1/auth/login', [
+        $token = $this->postJson('/api/auth/login', [
             'email' => $user->email,
             'password' => 'secret123',
         ])->json('data.access_token');
 
         $this->withHeader('Authorization', 'Bearer '.$token)
-            ->getJson('/api/v1/workspaces/current')
+            ->getJson('/api/workspaces/current')
             ->assertStatus(400)
             ->assertJsonPath('error.code', 'workspace.required');
     }
@@ -129,7 +129,7 @@ class AuthWorkspaceBootstrapTest extends TestCase
             'locale_default' => 'en',
         ]);
 
-        $token = $this->postJson('/api/v1/auth/login', [
+        $token = $this->postJson('/api/auth/login', [
             'email' => $user->email,
             'password' => 'secret123',
         ])->json('data.access_token');
@@ -137,7 +137,7 @@ class AuthWorkspaceBootstrapTest extends TestCase
         $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
             'X-Workspace-Id' => (string) $workspace->id,
-        ])->getJson('/api/v1/workspaces/current')
+        ])->getJson('/api/workspaces/current')
             ->assertStatus(403)
             ->assertJsonPath('error.code', 'workspace.forbidden');
     }

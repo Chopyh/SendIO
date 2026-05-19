@@ -4,7 +4,7 @@ This contract defines the minimum backend flow for JWT auth and workspace contex
 
 ## Quick path
 
-1. `POST /api/v1/auth/login` with `email` and `password`.
+1. `POST /api/auth/login` with `email` and `password`.
 2. Use `Authorization: Bearer <access_token>` for protected endpoints.
 3. For workspace-scoped endpoints, also send `X-Workspace-Id: <workspace_id>`.
 
@@ -12,11 +12,11 @@ This contract defines the minimum backend flow for JWT auth and workspace contex
 
 | Endpoint | Auth | Workspace header | Purpose |
 |---|---|---|---|
-| `POST /api/v1/auth/login` | No | No | Exchange credentials for JWT access token |
-| `POST /api/v1/auth/refresh` | Yes | No | Rotate access token |
-| `GET /api/v1/auth/me` | Yes | No | Retrieve current user and workspace memberships |
-| `POST /api/v1/workspaces/bootstrap` | Yes | No | Create first account/workspace and owner membership |
-| `GET /api/v1/workspaces/current` | Yes | Yes | Validate workspace context and membership |
+| `POST /api/auth/login` | No | No | Exchange credentials for JWT access token |
+| `POST /api/auth/refresh` | Yes | No | Rotate access token |
+| `GET /api/auth/me` | Yes | No | Retrieve current user and workspace memberships |
+| `POST /api/workspaces/bootstrap` | Yes | No | Create first account/workspace and owner membership |
+| `GET /api/workspaces/current` | Yes | Yes | Validate workspace context and membership |
 
 ## Request/response contracts
 

@@ -109,7 +109,7 @@ class ContactsImportService
     }
 
     /**
-     * @param array<int, mixed> $row
+     * @param  array<int, mixed>  $row
      */
     private function rowIsEmpty(array $row): bool
     {

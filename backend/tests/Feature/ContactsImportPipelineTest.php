@@ -38,7 +38,7 @@ class ContactsImportPipelineTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
             'X-Workspace-Id' => (string) $workspace->id,
-        ])->postJson('/api/v1/contacts/import', [
+        ])->postJson('/api/contacts/import', [
             'file' => $file,
         ]);
 
@@ -66,7 +66,7 @@ class ContactsImportPipelineTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
             'X-Workspace-Id' => (string) $workspace->id,
-        ])->postJson('/api/v1/contacts/import', [
+        ])->postJson('/api/contacts/import', [
             'file' => $file,
         ]);
 
@@ -100,7 +100,7 @@ class ContactsImportPipelineTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
             'X-Workspace-Id' => (string) $workspace->id,
-        ])->postJson('/api/v1/contacts/import', [
+        ])->postJson('/api/contacts/import', [
             'file' => $file,
         ]);
 
@@ -149,7 +149,7 @@ class ContactsImportPipelineTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
             'X-Workspace-Id' => (string) $otherWorkspace->id,
-        ])->postJson('/api/v1/contacts/import', [
+        ])->postJson('/api/contacts/import', [
             'file' => $file,
         ]);
 
@@ -187,7 +187,7 @@ class ContactsImportPipelineTest extends TestCase
             'joined_at' => now(),
         ]);
 
-        $token = $this->postJson('/api/v1/auth/login', [
+        $token = $this->postJson('/api/auth/login', [
             'email' => $user->email,
             'password' => 'secret123',
         ])->json('data.access_token');

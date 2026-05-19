@@ -4,15 +4,15 @@ This contract defines MVP-BACK-002 for CSV-based contact import with workspace-s
 
 ## Quick path
 
-1. Authenticate with `POST /api/v1/auth/login` and include `Authorization: Bearer <access_token>`.
-2. Send `POST /api/v1/contacts/import` with `multipart/form-data` and `file` (CSV).
+1. Authenticate with `POST /api/auth/login` and include `Authorization: Bearer <access_token>`.
+2. Send `POST /api/contacts/import` with `multipart/form-data` and `file` (CSV).
 3. Include `X-Workspace-Id: <workspace_id>` to enforce workspace isolation.
 
 ## Endpoint
 
 | Endpoint | Auth | Workspace header | Purpose |
 |---|---|---|---|
-| `POST /api/v1/contacts/import` | Yes | Yes | Import contacts from CSV into selected workspace |
+| `POST /api/contacts/import` | Yes | Yes | Import contacts from CSV into selected workspace |
 
 ## Input contract
 
