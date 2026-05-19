@@ -1,0 +1,56 @@
+<section class="min-h-screen bg-slate-100 px-6 py-10 text-slate-900 transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
+  <div class="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[1.1fr_1fr]">
+    <div class="hidden items-center lg:flex">
+      <div class="space-y-6">
+        <p class="text-xs uppercase tracking-[0.35em] text-slate-500">SendIO</p>
+        <h1 class="text-4xl font-light leading-tight">{{ i18nStore.t('auth.login.title') }}</h1>
+        <p class="max-w-md text-sm text-slate-600 dark:text-slate-300">{{ i18nStore.t('auth.login.subtitle') }}</p>
+      </div>
+    </div>
+
+    <div class="p-4 md:p-6">
+      <div class="mb-6 flex items-center justify-between gap-3">
+        <p-selectbutton
+          [options]="languageOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="i18nStore.locale()"
+          (ngModelChange)="setLanguage($event)"
+          ariaLabel="Language selector"
+        />
+        <div class="flex items-center gap-2 text-sm">
+          <span>{{ i18nStore.t('theme.toggle') }}</span>
+          <p-toggleswitch [ngModel]="themeStore.isDark()" (ngModelChange)="themeStore.toggle()" />
+        </div>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4" novalidate>
+        <label class="flex flex-col gap-2">
+          <span class="text-sm">{{ i18nStore.t('auth.email') }}</span>
+          <input pInputText type="email" formControlName="email" class="w-full" />
+          @if (emailInvalid()) {
+            <span class="text-xs text-rose-600">{{ i18nStore.t('validation.email') }}</span>
+          }
+        </label>
+
+        <label class="flex flex-col gap-2">
+          <span class="text-sm">{{ i18nStore.t('auth.password') }}</span>
+          <p-password formControlName="password" [feedback]="false" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" />
+          @if (passwordInvalid()) {
+            <span class="text-xs text-rose-600">{{ i18nStore.t('validation.required') }}</span>
+          }
+        </label>
+
+        @if (errorMessage()) {
+          <p class="text-sm text-rose-600">{{ errorMessage() }}</p>
+        }
+
+        <p-button type="submit" [label]="i18nStore.t('auth.signIn')" [loading]="loading()" styleClass="w-full" />
+
+        <a routerLink="/auth/register" class="inline-flex text-sm text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
+          {{ i18nStore.t('auth.createAccount') }}
+        </a>
+      </form>
+    </div>
+  </div>
+</section>

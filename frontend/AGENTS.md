@@ -48,6 +48,12 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use the async pipe to handle observables
 - Do not assume globals like (`new Date()`) are available.
 
+## PrimeNG Usage
+
+- Use direct PrimeNG component selectors whenever the library provides them, for example `<p-button>` instead of `pButton` on a native `<button>`.
+- Attribute directives such as `pInputText` are allowed only when PrimeNG does not provide an equivalent component selector in the installed version.
+- Do not mix direct component and directive syntax for the same PrimeNG component family without documenting the technical reason.
+
 ## Services
 
 - Design services around a single responsibility

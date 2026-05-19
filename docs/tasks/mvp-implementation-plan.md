@@ -43,4 +43,6 @@ This plan segments MVP implementation work into reviewable tasks grouped by area
 
 - All frontend MVP tasks MUST use **PrimeNG components** and **TailwindCSS utilities**.
 - PrimeNG provides base UI components; TailwindCSS is used for layout, spacing, and utility styling.
+- Use direct PrimeNG component selectors whenever available, for example `<p-button>` instead of `pButton` on a native `<button>`.
+- PrimeNG attribute directives are allowed only when the installed PrimeNG package does not provide an equivalent `p-*` component selector.
 - Any deviation must be explicitly documented in the task file with technical justification.
