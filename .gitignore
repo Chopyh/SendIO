@@ -1,0 +1,34 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Documentation (temporary only)
+docs/**/drafts/
+docs/tmp/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+
+# Backend (Laravel / PHP)
+backend/vendor/
+backend/storage/logs/
+backend/storage/framework/cache/
+backend/storage/framework/sessions/
+backend/storage/framework/testing/
+backend/storage/framework/views/
+backend/bootstrap/cache/*.php
+
+# Logs & temp files
+*.log
+*.tmp
+*.temp
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

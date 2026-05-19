@@ -1,0 +1,82 @@
+services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sendio_backend
+    restart: always
+    environment:
+      - APP_ENV=local
+    volumes:
+      - './backend:/var/www/html'
+      - './.env:/var/www/html/.env'
+    networks:
+      - sendio_net
+    depends_on:
+      - postgres
+      - redis
+      - mongodb
+
+  web:
+    image: nginx:alpine
+    container_name: sendio_web
+    ports:
+      - '${APP_PORT:-80}:80'
+    volumes:
+      - './backend:/var/www/html'
+      - './config/nginx/default.conf:/etc/nginx/conf.d/default.conf'
+    networks:
+      - sendio_net
+    depends_on:
+      - app
+
+  postgres:
+    image: 'postgres:18'
+    container_name: sendio_postgres
+    ports:
+      - '${FORWARD_DB_PORT:-5432}:5432'
+    environment:
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+    volumes:
+      - 'sendio-pgsql:/var/lib/postgresql'
+    networks:
+      - sendio_net
+
+  redis:
+    image: 'redis:8.6'
+    container_name: sendio_redis
+    ports:
+      - '${FORWARD_REDIS_PORT:-6379}:6379'
+    volumes:
+      - 'sendio-redis:/data'
+    networks:
+      - sendio_net
+
+  mongodb:
+    image: 'mongo:8.2'
+    container_name: sendio_mongodb
+    ports:
+      - '${FORWARD_MONGO_PORT:-27017}:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: '${MONGO_DB_USERNAME}'
+      MONGO_INITDB_ROOT_PASSWORD: '${MONGO_DB_PASSWORD}'
+      MONGO_INITDB_DATABASE: '${MONGO_DB_DATABASE}'
+    volumes:
+      - 'sendio-mongo:/data/db'
+      - './config/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro'
+    networks:
+      - sendio_net
+
+networks:
+  sendio_net:
+    driver: bridge
+
+volumes:
+  sendio-pgsql:
+    driver: local
+  sendio-redis:
+    driver: local
+  sendio-mongo:
+    driver: local
