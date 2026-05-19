@@ -32,6 +32,10 @@ Define the minimum governance/process baseline for predictable delivery in SendI
    - MVP tasks must be executed in the ordered global queue defined in `docs/tasks/mvp-implementation-plan.md`.
    - Backend/frontend local readiness does not override global queue order.
 
+8. **PrimeNG component selector preference**
+   - Frontend templates must use direct PrimeNG `p-*` component selectors whenever available, such as `<p-button>` instead of `pButton` on a native `<button>`.
+   - PrimeNG attribute directives are allowed only when the installed PrimeNG version does not provide an equivalent component selector.
+
 ## Lightweight Validation Guidance
 
 - Verify links and file paths in indexes.

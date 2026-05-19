@@ -34,7 +34,11 @@ Implement frontend MVP flows for sign-in and workspace selection/bootstrap to es
 
 ## Checklist
 
-- [ ] Build auth and workspace onboarding screens.
-- [ ] Integrate token/session lifecycle and route guards.
-- [ ] Add i18n keys for onboarding text (`en`, `es`).
-- [ ] Validate acceptance flows with automated tests.
+- [x] Build auth and workspace onboarding screens.
+- [x] Integrate token/session lifecycle and route guards.
+- [x] Add i18n keys for onboarding text (`en`, `es`).
+- [x] Validate acceptance flows with automated tests.
+
+## Implementation Notes
+
+- Registration owner-account API endpoint is still an explicit backend gap. The wizard step is fully implemented at UI/state level and bootstrap submission is encapsulated in `AuthApiService`.
