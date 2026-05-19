@@ -15,6 +15,21 @@ This document defines how email delivery is validated in the MVP using Mailtrap.
 - Delivery execution logs with timestamps and attempt counters.
 - Reporting dashboard values consistent with delivery outcomes.
 
+## Docker Runtime Verification Evidence (MVP-INFRA-001)
+
+### Evidence Matrix
+
+| Check | Command (Docker-only) | Status | Evidence |
+|---|---|---|---|
+| Mail config resolves to Mailtrap | `./sendio.sh art config:show mail` | documented | Command and expected output captured in `docs/devops/docker-mailtrap-env.md`. |
+| SMTP host resolves from container | `./sendio.sh sh` then `php -r 'echo gethostbyname("sandbox.smtp.mailtrap.io") . PHP_EOL;'` | documented | Command and expected output captured in `docs/devops/docker-mailtrap-env.md`. |
+| Smoke mail reaches sandbox inbox | `./sendio.sh art tinker --execute='\Illuminate\Support\Facades\Mail::raw(...)'` | documented | Reproducible command documented; capture screenshot/ID from Mailtrap during execution window. |
+
+### Execution Notes
+
+- This task records reproducible Docker-first verification commands and expected outcomes.
+- Runtime execution is intentionally deferred to the environment where Mailtrap secrets are available.
+
 ## Acceptance Criteria
 
 1. A scheduled or immediate campaign produces observable messages in Mailtrap.

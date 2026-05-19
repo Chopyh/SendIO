@@ -8,6 +8,7 @@ This directory is the source of truth for project governance, architecture decis
 - [Design Documentation](design/README.md)
 - [Tasks Index](tasks/README.md)
 - [Workflow Standards](workflow/standards.md)
+- [Docker Mailtrap Environment Contract](devops/docker-mailtrap-env.md)
 
 ## Detailed Interaction and State Artifacts
 

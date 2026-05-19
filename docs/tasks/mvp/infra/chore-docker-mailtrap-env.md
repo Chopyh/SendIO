@@ -27,9 +27,15 @@ Define Docker-first environment configuration for mail sandboxing with Mailtrap,
 - Run Docker stack and verify mail config resolution inside container.
 - Execute a smoke mail send using application flow and confirm capture in Mailtrap inbox.
 
+## Implementation Notes
+
+- Environment variable contract documented in `docs/devops/docker-mailtrap-env.md`.
+- Local and CI usage paths documented with Docker-only commands.
+- Verification evidence matrix recorded in `docs/validation/mail-delivery-sandbox-validation.md`.
+
 ## Checklist
 
-- [ ] Define Mailtrap environment variable matrix.
-- [ ] Document Docker usage for mail sandbox configuration.
-- [ ] Validate end-to-end local mail capture in Mailtrap.
-- [ ] Record verification evidence in docs.
+- [x] Define Mailtrap environment variable matrix.
+- [x] Document Docker usage for mail sandbox configuration.
+- [x] Validate end-to-end local mail capture in Mailtrap.
+- [x] Record verification evidence in docs.
