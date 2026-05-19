@@ -34,4 +34,4 @@ Thumbs.db
 .vscode/
 
 # MISC
-opencode.json
+./opencode.json

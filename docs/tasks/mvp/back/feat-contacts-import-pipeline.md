@@ -29,7 +29,7 @@ Implement backend contact import pipeline with validation, deduplication strateg
 
 ## Checklist
 
-- [ ] Define import input contract and validation rules.
-- [ ] Implement deduplication behavior for MVP.
-- [ ] Add import result summary payload.
-- [ ] Cover edge cases with automated tests.
+- [x] Define import input contract and validation rules.
+- [x] Implement deduplication behavior for MVP.
+- [x] Add import result summary payload.
+- [x] Cover edge cases with automated tests.

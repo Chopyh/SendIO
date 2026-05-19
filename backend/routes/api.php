@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ContactsImportController;
 use App\Http\Controllers\Api\WorkspaceBootstrapController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,5 +18,6 @@ Route::prefix('v1')->group(function (): void {
 
     Route::middleware(['auth:api', 'workspace.context'])->group(function (): void {
         Route::get('/workspaces/current', [WorkspaceBootstrapController::class, 'current']);
+        Route::post('/contacts/import', [ContactsImportController::class, 'import']);
     });
 });

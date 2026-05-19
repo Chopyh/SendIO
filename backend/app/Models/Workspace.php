@@ -22,4 +22,9 @@ class Workspace extends Model
     {
         return $this->hasMany(WorkspaceMember::class);
     }
+
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(Contact::class);
+    }
 }
