@@ -21,7 +21,8 @@ This plan segments MVP implementation work into reviewable tasks grouped by area
 ## Notes
 
 - All branch names follow the required state convention: `{area}/{type}-{branch-name}`.
-- Task execution should prioritize infrastructure baseline first, then backend APIs, then frontend integration.
+- Task execution MUST follow the ordered global execution queue in this document.
+- Backend/frontend-specific readiness does not override the global queue order.
 - Validation must be run through Docker-based workflows as defined by project standards.
 
 ## Execution Queue (Ready for Tomorrow)

@@ -29,7 +29,7 @@ Implement backend MVP foundations for authentication and account-workspace boots
 
 ## Checklist
 
-- [ ] Define auth and workspace domain contracts.
-- [ ] Implement authentication and workspace bootstrap endpoints.
-- [ ] Add tests for happy path and rejection path.
-- [ ] Document API usage and constraints.
+- [x] Define auth and workspace domain contracts.
+- [x] Implement authentication and workspace bootstrap endpoints.
+- [x] Add tests for happy path and rejection path.
+- [x] Document API usage and constraints.

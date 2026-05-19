@@ -32,6 +32,8 @@ This directory is the source of truth for project governance, architecture decis
 
 - [Technology Justification](implementation/technology-justification.md)
 - [MVP Implementation Plan](tasks/mvp-implementation-plan.md)
+- [Auth and Workspace Bootstrap API (MVP)](backend/api-auth-workspace-bootstrap.md)
+- [Contacts Import Pipeline API (MVP)](backend/api-contacts-import-pipeline.md)
 
 ## Key Validation Artifacts
 
