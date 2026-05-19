@@ -32,3 +32,6 @@ backend/bootstrap/cache/*.php
 Thumbs.db
 .idea/
 .vscode/
+
+# MISC
+opencode.json
