@@ -34,7 +34,7 @@ Implement frontend contact import experience for file upload, validation feedbac
 
 ## Checklist
 
-- [ ] Build upload and import progress interactions.
-- [ ] Implement validation error states and messaging.
-- [ ] Render import summary with key metrics.
-- [ ] Add tests for success and failure import scenarios.
+- [x] Build upload and import progress interactions.
+- [x] Implement validation error states and messaging.
+- [x] Render import summary with key metrics.
+- [x] Add tests for success and failure import scenarios.

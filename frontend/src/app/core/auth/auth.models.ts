@@ -24,11 +24,24 @@ export interface Membership {
   role?: string;
 }
 
+export interface BackendWorkspaceMembership {
+  id: string;
+  name?: string;
+  role?: string;
+}
+
 export interface MeResponse {
-  data: {
-    user: User;
-    memberships: Membership[];
-  };
+  data:
+    | {
+        user: User;
+        memberships: Membership[];
+      }
+    | {
+        id: string;
+        name?: string;
+        email: string;
+        workspaces: BackendWorkspaceMembership[];
+      };
 }
 
 export interface TokenResponse {

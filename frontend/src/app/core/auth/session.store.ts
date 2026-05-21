@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AuthApiService } from './auth-api.service';
-import { Membership, User } from './auth.models';
+import { MeResponse, Membership, User } from './auth.models';
 
 const TOKEN_KEY = 'sendio.accessToken';
 const WORKSPACE_KEY = 'sendio.workspaceId';
@@ -50,13 +50,36 @@ export class SessionStore {
 
   async hydrateCurrentUser(): Promise<void> {
     const response = await firstValueFrom(this.authApi.me());
-    this.userSignal.set(response.data.user);
-    this.membershipsSignal.set(response.data.memberships ?? []);
+    const session = this.normalizeMeResponse(response);
+
+    this.userSignal.set(session.user);
+    this.membershipsSignal.set(session.memberships);
 
     const activeWorkspace = this.activeWorkspaceIdSignal();
-    if (!activeWorkspace && response.data.memberships.length > 0) {
-      this.setActiveWorkspace(response.data.memberships[0].workspace_id);
+    if (!activeWorkspace && session.memberships.length > 0) {
+      this.setActiveWorkspace(session.memberships[0].workspace_id);
     }
+  }
+
+  private normalizeMeResponse(response: MeResponse): { user: User; memberships: Membership[] } {
+    if ('user' in response.data) {
+      return {
+        user: response.data.user,
+        memberships: response.data.memberships ?? [],
+      };
+    }
+
+    return {
+      user: {
+        id: response.data.id,
+        email: response.data.email,
+      },
+      memberships: (response.data.workspaces ?? []).map((workspace) => ({
+        workspace_id: workspace.id,
+        workspace_name: workspace.name,
+        role: workspace.role,
+      })),
+    };
   }
 
   setActiveWorkspace(workspaceId: string): void {

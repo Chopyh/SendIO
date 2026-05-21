@@ -12,6 +12,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/register-page.component').then((m) => m.RegisterPageComponent),
   },
   {
+    path: 'app/contacts/import',
+    canActivate: [authGuard, workspaceGuard],
+    loadComponent: () =>
+      import('./features/contacts/contacts-import-page.component').then((m) => m.ContactsImportPageComponent),
+  },
+  {
     path: 'app',
     canActivate: [authGuard, workspaceGuard],
     loadComponent: () =>
