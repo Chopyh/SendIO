@@ -23,7 +23,7 @@ class ContactsImportController extends Controller
             return ApiError::response('validation.failed', 'Validation failed.', 422, $validator->errors()->toArray());
         }
 
-        $workspaceId = (int) $request->attributes->get('workspace_id');
+        $workspaceId = $request->attributes->get('workspace_id');
         $summary = $this->contactsImportService->importFromCsv($request->file('file'), $workspaceId);
 
         return response()->json([

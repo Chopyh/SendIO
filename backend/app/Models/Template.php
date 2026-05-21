@@ -6,30 +6,24 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Contact extends Model
+class Template extends Model
 {
     use HasFactory, HasUuids;
 
     protected $fillable = [
         'workspace_id',
-        'email',
-        'email_normalized',
-        'first_name',
-        'last_name',
-        'phone',
-        'metadata',
+        'name',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'metadata' => 'array',
-        ];
-    }
 
     public function workspace(): BelongsTo
     {
         return $this->belongsTo(Workspace::class);
+    }
+
+    public function versions(): HasMany
+    {
+        return $this->hasMany(TemplateVersion::class);
     }
 }

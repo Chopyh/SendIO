@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('contacts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('workspace_id')->constrained()->cascadeOnDelete();
             $table->string('email', 190);
             $table->string('email_normalized', 190);
             $table->string('first_name', 120)->nullable();
