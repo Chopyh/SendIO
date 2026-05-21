@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { StepperModule } from 'primeng/stepper';
 import { AuthApiService } from '../../core/auth/auth-api.service';
 import { SessionStore } from '../../core/auth/session.store';
 import { I18nStore } from '../../core/i18n/i18n.store';
@@ -26,11 +27,12 @@ import { firstValueFrom } from 'rxjs';
     CheckboxModule,
     ButtonModule,
     ToggleSwitchModule,
+    StepperModule,
   ],
   templateUrl: './register-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterPageComponent {
+export class RegisterPageComponent implements OnInit {
   readonly router = inject(Router);
   private readonly authApi = inject(AuthApiService);
   readonly i18nStore = inject(I18nStore);
@@ -40,6 +42,12 @@ export class RegisterPageComponent {
   readonly step = signal(1);
   readonly submitted = signal(false);
   readonly loading = signal(false);
+
+  ngOnInit(): void {
+    if (this.sessionStore.isAuthenticated()) {
+      this.step.set(2);
+    }
+  }
 
   readonly languageOptions = [
     { label: 'EN', value: 'en' as const },
@@ -93,6 +101,9 @@ export class RegisterPageComponent {
   }
 
   previousStep(): void {
+    if (this.sessionStore.isAuthenticated()) {
+      return;
+    }
     this.step.update((current) => Math.max(1, current - 1));
   }
 
@@ -128,6 +139,9 @@ export class RegisterPageComponent {
   }
 
   cancel(): void {
+    if (this.sessionStore.isAuthenticated()) {
+      this.sessionStore.logout();
+    }
     this.router.navigateByUrl('/auth/login');
   }
 }

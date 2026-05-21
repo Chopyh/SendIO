@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { SessionStore } from '../session.store';
-import { authGuard } from './auth.guard';
+import { authGuard, guestGuard, registerGuard } from './auth.guard';
 import { workspaceGuard } from './workspace.guard';
 
 describe('auth guards', () => {
@@ -61,5 +61,65 @@ describe('auth guards', () => {
 
     expect(result).toBe(true);
     expect(selectedWorkspace).toBe('w-1');
+  });
+
+  describe('guestGuard', () => {
+    it('redirects authenticated user to /app', () => {
+      const sessionStore = TestBed.inject(SessionStore) as unknown as {
+        isAuthenticated: () => boolean;
+      };
+      sessionStore.isAuthenticated = () => true;
+
+      const result = TestBed.runInInjectionContext(() => guestGuard(null as never, null as never));
+      expect(result).toEqual({ commands: ['/app'] });
+    });
+
+    it('allows unauthenticated user to access route', () => {
+      const sessionStore = TestBed.inject(SessionStore) as unknown as {
+        isAuthenticated: () => boolean;
+      };
+      sessionStore.isAuthenticated = () => false;
+
+      const result = TestBed.runInInjectionContext(() => guestGuard(null as never, null as never));
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('registerGuard', () => {
+    it('redirects authenticated user with workspace to /app', () => {
+      const sessionStore = TestBed.inject(SessionStore) as unknown as {
+        isAuthenticated: () => boolean;
+        hasWorkspace: () => boolean;
+      };
+      sessionStore.isAuthenticated = () => true;
+      sessionStore.hasWorkspace = () => true;
+
+      const result = TestBed.runInInjectionContext(() => registerGuard(null as never, null as never));
+      expect(result).toEqual({ commands: ['/app'] });
+    });
+
+    it('allows authenticated user without workspace to access route', () => {
+      const sessionStore = TestBed.inject(SessionStore) as unknown as {
+        isAuthenticated: () => boolean;
+        hasWorkspace: () => boolean;
+      };
+      sessionStore.isAuthenticated = () => true;
+      sessionStore.hasWorkspace = () => false;
+
+      const result = TestBed.runInInjectionContext(() => registerGuard(null as never, null as never));
+      expect(result).toBe(true);
+    });
+
+    it('allows unauthenticated user to access route', () => {
+      const sessionStore = TestBed.inject(SessionStore) as unknown as {
+        isAuthenticated: () => boolean;
+        hasWorkspace: () => boolean;
+      };
+      sessionStore.isAuthenticated = () => false;
+      sessionStore.hasWorkspace = () => false;
+
+      const result = TestBed.runInInjectionContext(() => registerGuard(null as never, null as never));
+      expect(result).toBe(true);
+    });
   });
 });

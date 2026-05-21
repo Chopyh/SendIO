@@ -1,0 +1,156 @@
+<div class="flex h-screen overflow-hidden bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200">
+  
+  <!-- Sidebar (Rail Type, high contrast, elegant dark sidebar) -->
+  <aside 
+    class="flex flex-col flex-shrink-0 transition-all duration-300 bg-slate-900 text-slate-300 dark:bg-slate-950 dark:border-r dark:border-slate-800"
+    [ngClass]="isSidebarCollapsed() ? 'w-16' : 'w-64'">
+    
+    <!-- Sidebar Header (Logo) -->
+    <div class="flex items-center h-16 px-4 border-b border-slate-800 justify-between">
+      <div class="flex items-center gap-3" [ngClass]="{'mx-auto': isSidebarCollapsed()}">
+        <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-extrabold text-lg shadow-md">S</div>
+        @if (!isSidebarCollapsed()) {
+          <span class="text-lg font-bold tracking-wider text-white font-headline">SendIO</span>
+        }
+      </div>
+    </div>
+
+    <!-- Workspace Selector Container -->
+    <div class="p-3 border-b border-slate-800" [ngClass]="{'hidden': isSidebarCollapsed()}">
+      <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-1.5 px-1">
+        {{ i18nStore.t('layout.header.workspace') }}
+      </div>
+      <p-select 
+        [options]="workspaceOptions()" 
+        optionLabel="label" 
+        optionValue="value" 
+        [ngModel]="sessionStore.activeWorkspaceId()" 
+        (ngModelChange)="onWorkspaceChange($event)"
+        styleClass="w-full text-xs bg-slate-800 border-none text-slate-100"
+        panelStyleClass="bg-slate-800 border-slate-700 text-slate-100"
+        [placeholder]="i18nStore.t('session.workspaceRequired')">
+      </p-select>
+    </div>
+
+    <!-- Navigation Menu Links -->
+    <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
+      <!-- Dashboard -->
+      <a 
+        routerLink="/app" 
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLinkActive="bg-emerald-600 text-white font-medium"
+        class="flex items-center px-3 py-2.5 text-sm rounded-lg hover:bg-slate-800 hover:text-white transition-colors duration-150"
+        [ngClass]="isSidebarCollapsed() ? 'justify-center' : 'space-x-3'">
+        <i class="pi pi-chart-bar text-base"></i>
+        @if (!isSidebarCollapsed()) {
+          <span>{{ i18nStore.t('layout.menu.dashboard') }}</span>
+        }
+      </a>
+
+      <!-- Import Contacts -->
+      <a 
+        routerLink="/app/contacts/import" 
+        routerLinkActive="bg-emerald-600 text-white font-medium"
+        class="flex items-center px-3 py-2.5 text-sm rounded-lg hover:bg-slate-800 hover:text-white transition-colors duration-150"
+        [ngClass]="isSidebarCollapsed() ? 'justify-center' : 'space-x-3'">
+        <i class="pi pi-upload text-base"></i>
+        @if (!isSidebarCollapsed()) {
+          <span>{{ i18nStore.t('layout.menu.contactsImport') }}</span>
+        }
+      </a>
+    </nav>
+
+    <!-- Sidebar Bottom (User Summary) -->
+    <div class="p-4 border-t border-slate-800 flex items-center justify-between" [ngClass]="{'justify-center': isSidebarCollapsed()}">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-sm shadow-inner">
+          {{ (sessionStore.user()?.first_name || 'U').substring(0, 1) }}
+        </div>
+        @if (!isSidebarCollapsed()) {
+          <div class="flex flex-col text-xs leading-none">
+            <span class="font-medium text-white truncate max-w-[120px]">{{ sessionStore.user()?.first_name }}</span>
+            <span class="text-[10px] text-slate-500 mt-0.5 truncate max-w-[120px]">{{ sessionStore.user()?.email }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right Main Area -->
+  <div class="flex flex-col flex-1 overflow-hidden">
+    
+    <!-- Top Header Navigation -->
+    <header class="flex items-center justify-between h-16 px-6 bg-white dark:bg-slate-900 border-b border-subtle">
+      
+      <!-- Left side (Toggle & Search) -->
+      <div class="flex items-center gap-4">
+        <p-button 
+          icon="pi pi-align-left" 
+          [text]="true" 
+          severity="secondary" 
+          styleClass="h-9 w-9 text-slate-500 hover:text-slate-900 dark:hover:text-white" 
+          (onClick)="toggleSidebar()" />
+        
+        <!-- Search bar input -->
+        <div class="relative hidden sm:block">
+          <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input 
+            type="text" 
+            placeholder="Search campaigns, contacts, lists..." 
+            class="w-64 pl-9 pr-4 py-1.5 bg-slate-50 dark:bg-slate-800/50 border border-subtle rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all focus:w-80" />
+        </div>
+      </div>
+
+      <!-- Right side (Actions) -->
+      <div class="flex items-center space-x-4">
+        <!-- Language Selector -->
+        <div>
+          <p-selectbutton 
+            [options]="languageOptions" 
+            [ngModel]="currentLanguage" 
+            (ngModelChange)="onLanguageChange($event)"
+            styleClass="text-xs" />
+        </div>
+
+        <!-- Dark Mode Toggle -->
+        <div class="flex items-center space-x-1.5 bg-slate-50 dark:bg-slate-850 px-2.5 py-1.5 rounded-lg border border-subtle">
+          <i class="pi pi-sun text-slate-400 text-xs"></i>
+          <p-toggleswitch 
+            [ngModel]="themeStore.isDark()" 
+            (onChange)="themeStore.toggle()" />
+          <i class="pi pi-moon text-slate-400 text-xs"></i>
+        </div>
+
+        <!-- Divider -->
+        <div class="h-6 w-[1px] bg-slate-200 dark:bg-slate-800"></div>
+
+        <!-- Logout Button -->
+        <p-button 
+          icon="pi pi-sign-out" 
+          [text]="true" 
+          severity="danger" 
+          styleClass="h-9 w-9"
+          (onClick)="logout()" />
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-6 bg-slate-50 dark:bg-slate-950 flex flex-col justify-between">
+      <div class="flex-1">
+        <router-outlet></router-outlet>
+      </div>
+
+      <!-- Minimalist Footer -->
+      <footer class="mt-12 py-4 border-t border-subtle text-center text-xs text-slate-400 dark:text-slate-600 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div>{{ i18nStore.t('layout.footer.text') }}</div>
+        <div class="flex gap-4">
+          <a href="#" class="hover:underline">Documentation</a>
+          <a href="#" class="hover:underline">API Support</a>
+        </div>
+      </footer>
+    </main>
+
+  </div>
+
+</div>
+

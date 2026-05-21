@@ -1,18 +1,88 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Aura Emerald Palette Override */
+  --p-primary-50: #ecfdf5;
+  --p-primary-100: #d1fae5;
+  --p-primary-200: #a7f3d0;
+  --p-primary-300: #6ee7b7;
+  --p-primary-400: #34d399;
+  --p-primary-500: #10b981;
+  --p-primary-600: #059669;
+  --p-primary-700: #047857;
+  --p-primary-800: #065f46;
+  --p-primary-900: #064e3b;
+  --p-primary-950: #022c22;
+  
+  --p-primary-color: var(--p-primary-600);
+  --p-primary-contrast-color: #ffffff;
+  --p-primary-hover-color: var(--p-primary-700);
+  --p-primary-active-color: var(--p-primary-800);
+
+  /* Surface Container Overrides for Editorial Vibe */
+  --p-surface-0: #ffffff;
+  --p-surface-50: #f8fafc;
+  --p-surface-100: #f1f5f9;
+  --p-surface-200: #e2e8f0;
+  --p-surface-300: #cbd5e1;
+  --p-surface-400: #94a3b8;
+  --p-surface-500: #64748b;
+  --p-surface-600: #475569;
+  --p-surface-700: #334155;
+  --p-surface-800: #1e293b;
+  --p-surface-900: #0f172a;
+  --p-surface-950: #020617;
+}
+
+.dark {
+  --p-primary-color: var(--p-primary-500);
+  --p-primary-hover-color: var(--p-primary-400);
+  --p-primary-active-color: var(--p-primary-300);
+}
 
 html,
 body {
   margin: 0;
   min-height: 100%;
-  background: #f1f5f9;
-  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  background: #f8fafc;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 html.dark,
 html.dark body {
   background: #020617;
 }
+
+/* Custom Editorial Classes */
+.btn-gradient {
+  background: linear-gradient(135deg, #10b981 0%, #006c49 100%);
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, #059669 0%, #005236 100%);
+}
+
+.soft-shadow {
+  box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.08), 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+}
+
+.border-subtle {
+  border-color: rgba(226, 232, 240, 0.8);
+}
+.dark .border-subtle {
+  border-color: rgba(30, 41, 59, 0.6);
+}
+
+/* Custom Stepper styling overrides for a cleaner editorial look */
+.p-stepper {
+  background: transparent !important;
+}
+.p-stepper-header {
+  background: transparent !important;
+}
+

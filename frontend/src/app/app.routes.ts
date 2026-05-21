@@ -1,27 +1,34 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/auth/guards/auth.guard';
+import { authGuard, guestGuard, registerGuard } from './core/auth/guards/auth.guard';
 import { workspaceGuard } from './core/auth/guards/workspace.guard';
 
 export const routes: Routes = [
   {
     path: 'auth/login',
+    canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/login-page.component').then((m) => m.LoginPageComponent),
   },
   {
     path: 'auth/register',
+    canActivate: [registerGuard],
     loadComponent: () => import('./features/auth/register-page.component').then((m) => m.RegisterPageComponent),
-  },
-  {
-    path: 'app/contacts/import',
-    canActivate: [authGuard, workspaceGuard],
-    loadComponent: () =>
-      import('./features/contacts/contacts-import-page.component').then((m) => m.ContactsImportPageComponent),
   },
   {
     path: 'app',
     canActivate: [authGuard, workspaceGuard],
-    loadComponent: () =>
-      import('./features/app/workspace-home-page.component').then((m) => m.WorkspaceHomePageComponent),
+    loadComponent: () => import('./features/app/app-layout.component').then((m) => m.AppLayoutComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/app/workspace-home-page.component').then((m) => m.WorkspaceHomePageComponent),
+      },
+      {
+        path: 'contacts/import',
+        loadComponent: () =>
+          import('./features/contacts/contacts-import-page.component').then((m) => m.ContactsImportPageComponent),
+      },
+    ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'auth/login' },
   { path: '**', redirectTo: 'auth/login' },

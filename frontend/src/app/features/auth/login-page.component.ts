@@ -25,6 +25,7 @@ import { ThemeStore } from '../../core/theme/theme.store';
     ToggleSwitchModule,
   ],
   templateUrl: './login-page.component.html',
+  styleUrl: './login-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPageComponent {

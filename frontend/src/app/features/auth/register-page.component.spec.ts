@@ -28,6 +28,8 @@ describe('RegisterPageComponent', () => {
         {
           provide: SessionStore,
           useValue: {
+            isAuthenticated: () => false,
+            user: () => undefined,
             memberships: () => [{ workspace_id: 'w1' }],
             hydrateCurrentUser: async () => undefined,
             setActiveWorkspace: () => undefined,

@@ -1,0 +1,440 @@
+<div class="space-y-6">
+  
+  <!-- Page Header -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-subtle">
+    <div class="space-y-1">
+      <h1 class="text-3xl font-light text-slate-800 dark:text-slate-100 font-headline">
+        {{ i18nStore.t('dashboard.performance.title') }}
+      </h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400">
+        {{ i18nStore.t('dashboard.performance.subtitle') }}
+      </p>
+    </div>
+    
+    <!-- Date Range Filter -->
+    <div class="flex items-center gap-2">
+      <p-selectbutton 
+        [options]="timeRanges" 
+        [ngModel]="activeRange()" 
+        (ngModelChange)="activeRange.set($event)" 
+        styleClass="text-xs" />
+    </div>
+  </header>
+
+  <!-- Metrics Row (4 Cards) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    
+    <!-- Total Sent Card -->
+    <p-card styleClass="soft-shadow border border-subtle bg-white dark:bg-slate-900/40 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:border-emerald-500/20">
+      <div class="flex items-start justify-between">
+        <div class="space-y-2">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+            {{ i18nStore.t('dashboard.metrics.totalSent') }}
+          </span>
+          <span class="text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100 block">
+            {{ activeDataset().metrics.sent.value }}
+          </span>
+          <div class="flex items-center gap-1">
+            <span class="text-xs font-semibold text-emerald-500">
+              {{ activeDataset().metrics.sent.trend }}
+            </span>
+            <span class="text-[10px] text-slate-400">
+              {{ i18nStore.t('dashboard.metrics.vsPrevious') }}
+            </span>
+          </div>
+        </div>
+        <!-- Sparkline SVG -->
+        <div class="w-20 h-10 self-end opacity-85">
+          <svg viewBox="0 0 100 30" class="w-full h-full">
+            <path 
+              [attr.d]="activeDataset().metrics.sent.sparkline" 
+              fill="none" 
+              stroke="#10b981" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              class="sparkline-path" />
+          </svg>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Open Rate Card -->
+    <p-card styleClass="soft-shadow border border-subtle bg-white dark:bg-slate-900/40 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:border-emerald-500/20">
+      <div class="flex items-start justify-between">
+        <div class="space-y-2">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+            {{ i18nStore.t('dashboard.metrics.openRate') }}
+          </span>
+          <span class="text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100 block">
+            {{ activeDataset().metrics.open.value }}
+          </span>
+          <div class="flex items-center gap-1">
+            <span 
+              class="text-xs font-semibold"
+              [class.text-emerald-500]="activeDataset().metrics.open.trendGood"
+              [class.text-rose-500]="!activeDataset().metrics.open.trendGood">
+              {{ activeDataset().metrics.open.trend }}
+            </span>
+            <span class="text-[10px] text-slate-400">
+              {{ i18nStore.t('dashboard.metrics.vsPrevious') }}
+            </span>
+          </div>
+        </div>
+        <!-- Sparkline SVG -->
+        <div class="w-20 h-10 self-end opacity-85">
+          <svg viewBox="0 0 100 30" class="w-full h-full">
+            <path 
+              [attr.d]="activeDataset().metrics.open.sparkline" 
+              fill="none" 
+              [attr.stroke]="activeDataset().metrics.open.trendGood ? '#10b981' : '#f43f5e'" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              class="sparkline-path" />
+          </svg>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Click Rate Card -->
+    <p-card styleClass="soft-shadow border border-subtle bg-white dark:bg-slate-900/40 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:border-emerald-500/20">
+      <div class="flex items-start justify-between">
+        <div class="space-y-2">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+            {{ i18nStore.t('dashboard.metrics.clickRate') }}
+          </span>
+          <span class="text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100 block">
+            {{ activeDataset().metrics.click.value }}
+          </span>
+          <div class="flex items-center gap-1">
+            <span class="text-xs font-semibold text-emerald-500">
+              {{ activeDataset().metrics.click.trend }}
+            </span>
+            <span class="text-[10px] text-slate-400">
+              {{ i18nStore.t('dashboard.metrics.vsPrevious') }}
+            </span>
+          </div>
+        </div>
+        <!-- Sparkline SVG -->
+        <div class="w-20 h-10 self-end opacity-85">
+          <svg viewBox="0 0 100 30" class="w-full h-full">
+            <path 
+              [attr.d]="activeDataset().metrics.click.sparkline" 
+              fill="none" 
+              stroke="#10b981" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              class="sparkline-path" />
+          </svg>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Bounce Rate Card -->
+    <p-card styleClass="soft-shadow border border-subtle bg-white dark:bg-slate-900/40 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:border-emerald-500/20">
+      <div class="flex items-start justify-between">
+        <div class="space-y-2">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+            {{ i18nStore.t('dashboard.metrics.bounceRate') }}
+          </span>
+          <span class="text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100 block">
+            {{ activeDataset().metrics.bounce.value }}
+          </span>
+          <div class="flex items-center gap-1">
+            <span 
+              class="text-xs font-semibold"
+              [class.text-emerald-500]="activeDataset().metrics.bounce.trendGood"
+              [class.text-rose-500]="!activeDataset().metrics.bounce.trendGood">
+              {{ activeDataset().metrics.bounce.trend }}
+            </span>
+            <span class="text-[10px] text-slate-400">
+              {{ i18nStore.t('dashboard.metrics.vsPrevious') }}
+            </span>
+          </div>
+        </div>
+        <!-- Sparkline SVG -->
+        <div class="w-20 h-10 self-end opacity-85">
+          <svg viewBox="0 0 100 30" class="w-full h-full">
+            <path 
+              [attr.d]="activeDataset().metrics.bounce.sparkline" 
+              fill="none" 
+              [attr.stroke]="activeDataset().metrics.bounce.trendGood ? '#10b981' : '#f43f5e'" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              class="sparkline-path" />
+          </svg>
+        </div>
+      </div>
+    </p-card>
+
+  </div>
+
+  <!-- Main Evolution Chart Section -->
+  <p-card styleClass="soft-shadow border border-subtle bg-white dark:bg-slate-900/40">
+    <div class="space-y-4">
+      <div class="space-y-0.5">
+        <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100 font-headline">
+          {{ i18nStore.t('dashboard.chart.title') }}
+        </h3>
+        <p class="text-xs text-slate-400 dark:text-slate-500">
+          {{ i18nStore.t('dashboard.chart.subtitle') }}
+        </p>
+      </div>
+
+      <!-- Chart Area Container -->
+      <div class="relative pt-6">
+        
+        <!-- SVG Chart -->
+        <svg viewBox="0 0 800 240" class="w-full h-auto overflow-visible select-none">
+          <defs>
+            <!-- Gradients -->
+            <linearGradient id="gradientSent" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#94a3b8" stop-opacity="0.15" />
+              <stop offset="100%" stop-color="#94a3b8" stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="gradientOpened" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#10b981" stop-opacity="0.25" />
+              <stop offset="100%" stop-color="#10b981" stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="gradientClicked" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#006c49" stop-opacity="0.3" />
+              <stop offset="100%" stop-color="#006c49" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Grid Lines -->
+          @for (line of chartData().gridLines; track $index) {
+            <g class="opacity-30 dark:opacity-20">
+              <line 
+                [attr.x1]="chartData().leftX" 
+                [attr.y1]="line.y" 
+                [attr.x2]="chartData().rightX" 
+                [attr.y2]="line.y" 
+                stroke="var(--p-surface-400)" 
+                stroke-dasharray="4 4" 
+                stroke-width="1" />
+              <text 
+                [attr.x]="chartData().leftX - 12" 
+                [attr.y]="line.y + 4" 
+                text-anchor="end" 
+                class="text-[10px] fill-slate-500 dark:fill-slate-400 font-semibold font-mono">
+                {{ line.label }}
+              </text>
+            </g>
+          }
+          
+          <!-- Areas -->
+          <path [attr.d]="chartData().areaSent" fill="url(#gradientSent)" />
+          <path [attr.d]="chartData().areaOpened" fill="url(#gradientOpened)" />
+          <path [attr.d]="chartData().areaClicked" fill="url(#gradientClicked)" />
+          
+          <!-- Lines -->
+          <path 
+            [attr.d]="chartData().pathSent" 
+            fill="none" 
+            stroke="#cbd5e1" 
+            stroke-width="1.5" 
+            stroke-linecap="round" 
+            class="opacity-60 dark:opacity-30" />
+          <path 
+            [attr.d]="chartData().pathOpened" 
+            fill="none" 
+            stroke="#10b981" 
+            stroke-width="2.5" 
+            stroke-linecap="round" 
+            class="chart-path" />
+          <path 
+            [attr.d]="chartData().pathClicked" 
+            fill="none" 
+            stroke="#006c49" 
+            stroke-width="2" 
+            stroke-linecap="round" 
+            class="chart-path" />
+
+          <!-- Circles / Vertices (Hover state highlights them) -->
+          @for (c of chartData().coords; track $index) {
+            <!-- Hover vertical line -->
+            @if (hoveredIndex() === $index) {
+              <line 
+                [attr.x1]="c.x" 
+                [attr.y1]="chartData().gridLines[chartData().gridLines.length - 1].y" 
+                [attr.x2]="c.x" 
+                [attr.y2]="chartData().gridLines[0].y" 
+                stroke="#10b981" 
+                stroke-dasharray="3 3" 
+                stroke-width="1" 
+                class="opacity-70" />
+              
+              <!-- Dots -->
+              <circle [attr.cx]="c.x" [attr.cy]="c.ySent" r="4.5" fill="#94a3b8" stroke="#fff" stroke-width="1.5" />
+              <circle [attr.cx]="c.x" [attr.cy]="c.yOpened" r="5.5" fill="#10b981" stroke="#fff" stroke-width="2" />
+              <circle [attr.cx]="c.x" [attr.cy]="c.yClicked" r="4.5" fill="#006c49" stroke="#fff" stroke-width="1.5" />
+            } @else {
+              <!-- Small silent dots -->
+              <circle [attr.cx]="c.x" [attr.cy]="c.yOpened" r="2" fill="#10b981" class="opacity-40" />
+            }
+          }
+
+          <!-- X-Axis Labels -->
+          @for (c of chartData().coords; track $index) {
+            <text 
+              [attr.x]="c.x" 
+              [attr.y]="chartData().bottomY + 20" 
+              text-anchor="middle" 
+              class="text-[10px] fill-slate-400 dark:fill-slate-500 font-semibold">
+              {{ c.label }}
+            </text>
+          }
+        </svg>
+
+        <!-- Transparent Overlay zones for Hover detection -->
+        <div class="absolute inset-0 flex pl-[60px] pr-[20px] pb-[40px] pt-[20px] pointer-events-auto">
+          @for (pt of chartData().coords; track $index) {
+            <div 
+              class="flex-1 cursor-pointer"
+              (mouseenter)="hoveredIndex.set($index)"
+              (mouseleave)="hoveredIndex.set(null)">
+            </div>
+          }
+        </div>
+
+        <!-- Pinned Y Sliding X Tooltip -->
+        @if (hoveredIndex() !== null) {
+          @let activePoint = chartData().coords[hoveredIndex()!];
+          <div 
+            class="absolute z-10 bg-slate-900/95 text-white p-3 rounded-lg shadow-xl border border-slate-700/50 text-[10px] pointer-events-none transition-all duration-100 flex flex-col gap-1 w-36"
+            [style.left.px]="activePoint.x - 70"
+            [style.top.px]="15">
+            <div class="font-bold text-slate-300 border-b border-slate-700 pb-1 mb-1">{{ activePoint.label }}</div>
+            <div class="flex items-center gap-2 justify-between">
+              <span class="flex items-center gap-1 text-slate-400">
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                {{ i18nStore.t('dashboard.chart.sent') }}:
+              </span>
+              <span class="font-bold font-mono">{{ activePoint.sent }}</span>
+            </div>
+            <div class="flex items-center gap-2 justify-between">
+              <span class="flex items-center gap-1 text-emerald-400">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                {{ i18nStore.t('dashboard.chart.opened') }}:
+              </span>
+              <span class="font-bold font-mono text-emerald-400">{{ activePoint.opened }}</span>
+            </div>
+            <div class="flex items-center gap-2 justify-between">
+              <span class="flex items-center gap-1 text-teal-400">
+                <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
+                {{ i18nStore.t('dashboard.chart.clicked') }}:
+              </span>
+              <span class="font-bold font-mono text-teal-400">{{ activePoint.clicked }}</span>
+            </div>
+          </div>
+        }
+
+      </div>
+
+      <!-- Legend -->
+      <div class="flex justify-center items-center gap-6 pt-4 border-t border-subtle text-[11px] text-slate-500 dark:text-slate-400">
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-0.5 bg-slate-300 block"></span>
+          <span>{{ i18nStore.t('dashboard.metrics.totalSent') }}</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-0.5 bg-emerald-500 block"></span>
+          <span>{{ i18nStore.t('dashboard.metrics.openRate') }}</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-0.5 bg-[#006c49] block"></span>
+          <span>{{ i18nStore.t('dashboard.metrics.clickRate') }}</span>
+        </div>
+      </div>
+
+    </div>
+  </p-card>
+
+  <!-- Lower Panels Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    
+    <!-- Recent Activity Feed -->
+    <p-card styleClass="soft-shadow border border-subtle bg-white dark:bg-slate-900/40">
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100 font-headline">
+          {{ i18nStore.t('dashboard.activity.title') }}
+        </h3>
+
+        <div class="space-y-3.5">
+          @for (act of recentActivities; track $index) {
+            <div class="flex items-start gap-3">
+              <div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs shadow-inner" [class]="act.colorClass">
+                <i [class]="act.icon"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs text-slate-700 dark:text-slate-300 leading-normal">
+                  <span class="font-medium text-slate-900 dark:text-white">
+                    {{ i18nStore.t('dashboard.activity.' + act.type) }}
+                  </span>
+                  <span class="text-slate-400"> - </span>
+                  <span class="font-medium italic text-slate-500 dark:text-slate-400">
+                    {{ act.campaign }}
+                  </span>
+                </p>
+                <span class="text-[10px] text-slate-400 dark:text-slate-500 block mt-0.5">
+                  {{ i18nStore.t(act.timeKey) }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Upcoming Campaigns -->
+    <p-card styleClass="soft-shadow border border-subtle bg-white dark:bg-slate-900/40">
+      <div class="space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100 font-headline">
+            {{ i18nStore.t('dashboard.campaigns.title') }}
+          </h3>
+          <p-button 
+            routerLink="/app/contacts/import" 
+            icon="pi pi-plus" 
+            [text]="true" 
+            styleClass="h-7 w-7 text-emerald-600 hover:bg-emerald-50" />
+        </div>
+
+        @if (upcomingCampaigns.length > 0) {
+          <div class="space-y-3.5">
+            @for (camp of upcomingCampaigns; track $index) {
+              <div class="flex items-center justify-between p-3 rounded-xl border border-subtle bg-slate-50/50 dark:bg-slate-800/10 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-all duration-150">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <i class="pi pi-envelope text-sm"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-850 dark:text-slate-200">{{ camp.name }}</h4>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400">
+                      {{ camp.contacts.toLocaleString() }} {{ i18nStore.t('dashboard.campaigns.contacts') }}
+                    </p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-[9px] font-semibold text-slate-400 block uppercase tracking-wider">
+                    {{ i18nStore.t('dashboard.campaigns.sendTime') }}
+                  </span>
+                  <p class="text-[10px] text-slate-700 dark:text-slate-300 font-bold mt-0.5">
+                    {{ camp.date }}
+                  </p>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="text-center py-10 text-slate-400 dark:text-slate-500 text-xs">
+            <i class="pi pi-calendar-times text-3xl mb-2.5 block text-slate-300 dark:text-slate-700"></i>
+            {{ i18nStore.t('dashboard.campaigns.empty') }}
+          </div>
+        }
+      </div>
+    </p-card>
+
+  </div>
+
+</div>

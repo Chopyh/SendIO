@@ -9,6 +9,7 @@ Academic-quality analysis documentation reduces ambiguity by separating business
 ## Contents
 
 - [Use Case Diagram](use-case-diagram.md)
+- [Modelo de análisis del sistema](modelo-analisis-sistema.md)
 - [Domain Class Diagram](domain-class-diagram.md)
 - [Use Case Specifications](use-case-specifications.md)
 - [Project Requirements](project-requirements.md)

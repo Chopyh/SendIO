@@ -1,121 +1,264 @@
-<section class="min-h-screen bg-slate-100 px-6 py-10 text-slate-900 transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
-  <div class="mx-auto w-full max-w-3xl space-y-6 p-4 md:p-6">
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-light">{{ i18nStore.t('auth.register.title') }}</h1>
-      <div class="flex items-center gap-3">
-        <p-selectbutton
-          [options]="languageOptions"
-          optionLabel="label"
-          optionValue="value"
-          [ngModel]="i18nStore.locale()"
-          (ngModelChange)="i18nStore.setLocale($event)"
-          ariaLabel="Language selector"
-        />
+<section class="min-h-screen bg-slate-50 dark:bg-slate-950 px-6 py-12 text-slate-800 dark:text-slate-100 transition-colors duration-200 flex flex-col justify-between">
+  <!-- Header Bar -->
+  <header class="mx-auto w-full max-w-4xl flex items-center justify-between pb-8 border-b border-subtle">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-extrabold text-xl shadow-md">S</div>
+      <span class="text-xl font-bold tracking-wider text-slate-900 dark:text-white">SendIO</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <p-selectbutton
+        [options]="languageOptions"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="i18nStore.locale()"
+        (ngModelChange)="i18nStore.setLocale($event)"
+        ariaLabel="Language selector"
+        styleClass="text-xs"
+      />
+      <div class="flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-subtle shadow-sm">
+        <i class="pi pi-sun text-slate-400 text-sm"></i>
         <p-toggleswitch [ngModel]="themeStore.isDark()" (ngModelChange)="themeStore.toggle()" />
+        <i class="pi pi-moon text-slate-400 text-sm"></i>
       </div>
     </div>
+  </header>
 
-    <div class="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-slate-500">
-      <span [class.text-slate-900]="step() === 1">{{ i18nStore.t('auth.register.stepOwner') }}</span>
-      <span>/</span>
-      <span [class.text-slate-900]="step() === 2">{{ i18nStore.t('auth.register.stepWorkspace') }}</span>
-      <span>/</span>
-      <span [class.text-slate-900]="step() === 3">{{ i18nStore.t('auth.register.stepConfirm') }}</span>
-    </div>
-
-    @if (step() === 1) {
-      <form [formGroup]="ownerForm" class="grid gap-4 md:grid-cols-2" novalidate>
-        <label class="flex flex-col gap-2">
-          <span class="text-sm">{{ i18nStore.t('auth.firstName') }}</span>
-          <input pInputText type="text" formControlName="firstName" />
-        </label>
-        <label class="flex flex-col gap-2">
-          <span class="text-sm">{{ i18nStore.t('auth.lastName') }}</span>
-          <input pInputText type="text" formControlName="lastName" />
-        </label>
-        <label class="flex flex-col gap-2 md:col-span-2">
-          <span class="text-sm">{{ i18nStore.t('auth.email') }}</span>
-          <input pInputText type="email" formControlName="email" />
-        </label>
-        <label class="flex flex-col gap-2">
-          <span class="text-sm">{{ i18nStore.t('auth.password') }}</span>
-          <p-password formControlName="password" [feedback]="false" [toggleMask]="true" inputStyleClass="w-full" styleClass="w-full" />
-        </label>
-        <label class="flex flex-col gap-2">
-          <span class="text-sm">{{ i18nStore.t('auth.confirmPassword') }}</span>
-          <p-password formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" inputStyleClass="w-full" styleClass="w-full" />
-          @if (!passwordsMatch() && ownerForm.controls.confirmPassword.touched) {
-            <span class="text-xs text-rose-600">{{ i18nStore.t('validation.passwordMismatch') }}</span>
+  <!-- Main Wizard Card -->
+  <main class="flex-1 flex items-center justify-center py-10">
+    <div class="w-full max-w-3xl bg-white dark:bg-slate-900/60 dark:backdrop-blur-md border border-subtle rounded-2xl p-6 md:p-10 soft-shadow">
+      
+      <!-- Stepper Header -->
+      <p-stepper [value]="step()" class="mb-8">
+        <p-step-list class="flex justify-between border-b border-subtle pb-6 mb-6">
+          @if (!sessionStore.isAuthenticated()) {
+            <p-step [value]="1" class="flex-1 text-center font-medium">
+              <span class="text-sm block md:inline">{{ i18nStore.t('auth.register.stepOwner') }}</span>
+            </p-step>
           }
-        </label>
-        <label class="flex flex-col gap-2 md:col-span-2">
-          <span class="text-sm">{{ i18nStore.t('auth.preferredLanguage') }}</span>
-          <p-selectbutton [options]="languageOptions" optionLabel="label" optionValue="value" formControlName="preferredLanguage" />
-        </label>
-        <label class="flex items-center gap-3 md:col-span-2">
-          <p-checkbox formControlName="termsAccepted" [binary]="true" inputId="termsAccepted" />
-          <span class="text-sm">{{ i18nStore.t('auth.acceptTerms') }}</span>
-        </label>
-      </form>
-    }
+          <p-step [value]="2" class="flex-1 text-center font-medium">
+            <span class="text-sm block md:inline">{{ i18nStore.t('auth.register.stepWorkspace') }}</span>
+          </p-step>
+          <p-step [value]="3" class="flex-1 text-center font-medium">
+            <span class="text-sm block md:inline">{{ i18nStore.t('auth.register.stepConfirm') }}</span>
+          </p-step>
+        </p-step-list>
 
-    @if (step() === 2) {
-      <form [formGroup]="workspaceForm" class="grid gap-4 md:grid-cols-2" novalidate>
-        <label class="flex flex-col gap-2 md:col-span-2">
-          <span class="text-sm">{{ i18nStore.t('workspace.accountName') }}</span>
-          <input pInputText type="text" formControlName="accountName" />
-        </label>
-        <label class="flex flex-col gap-2 md:col-span-2">
-          <span class="text-sm">{{ i18nStore.t('workspace.name') }}</span>
-          <input pInputText type="text" formControlName="workspaceName" />
-        </label>
-        <label class="flex flex-col gap-2">
-          <span class="text-sm">{{ i18nStore.t('workspace.timezone') }}</span>
-          <input pInputText type="text" formControlName="timezone" list="timezone-list" />
-          <datalist id="timezone-list">
-            @for (timezone of timezoneOptions; track timezone.value) {
-              <option [value]="timezone.value">{{ timezone.label }}</option>
-            }
-          </datalist>
-        </label>
-        <label class="flex flex-col gap-2">
-          <span class="text-sm">{{ i18nStore.t('workspace.defaultLocale') }}</span>
-          <p-selectbutton [options]="languageOptions" optionLabel="label" optionValue="value" formControlName="localeDefault" />
-        </label>
-      </form>
-    }
+        <!-- Stepper Panels Container -->
+        <p-step-panels>
+          <!-- Step 1: Owner Account Setup -->
+          @if (!sessionStore.isAuthenticated()) {
+            <p-step-panel [value]="1">
+              <ng-template #content>
+                <div class="space-y-6 animate-fade-in">
+                  <div class="space-y-1">
+                    <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                      {{ i18nStore.t('auth.register.title') }}
+                    </h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                      {{ i18nStore.t('auth.register.stepOwnerDesc') }}
+                    </p>
+                  </div>
 
-    @if (step() === 3) {
-      <div class="space-y-4 text-sm">
-        <p class="text-amber-700 dark:text-amber-300">{{ i18nStore.t('wizard.registrationGap') }}</p>
-        <div class="grid gap-2 md:grid-cols-2">
-          <p>{{ i18nStore.t('auth.firstName') }}: {{ ownerForm.controls.firstName.value }}</p>
-          <p>{{ i18nStore.t('auth.lastName') }}: {{ ownerForm.controls.lastName.value }}</p>
-          <p>{{ i18nStore.t('auth.email') }}: {{ ownerForm.controls.email.value }}</p>
-          <p>{{ i18nStore.t('workspace.accountName') }}: {{ workspaceForm.controls.accountName.value }}</p>
-          <p>{{ i18nStore.t('workspace.name') }}: {{ workspaceForm.controls.workspaceName.value }}</p>
-          <p>{{ i18nStore.t('workspace.timezone') }}: {{ workspaceForm.controls.timezone.value }}</p>
-        </div>
-        @if (submitted()) {
-          @if (sessionStore.isAuthenticated()) {
-            <p class="text-xs text-slate-500">{{ i18nStore.t('session.workspaceRequired') }}</p>
+                  <form [formGroup]="ownerForm" class="grid gap-5 md:grid-cols-2" novalidate>
+                    <div class="flex flex-col gap-1.5">
+                      <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="firstName">
+                        {{ i18nStore.t('auth.firstName') }}
+                      </label>
+                      <input pInputText id="firstName" type="text" formControlName="firstName" class="w-full" placeholder="John" />
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                      <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="lastName">
+                        {{ i18nStore.t('auth.lastName') }}
+                      </label>
+                      <input pInputText id="lastName" type="text" formControlName="lastName" class="w-full" placeholder="Doe" />
+                    </div>
+
+                    <div class="flex flex-col gap-1.5 md:col-span-2">
+                      <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="email">
+                        {{ i18nStore.t('auth.email') }}
+                      </label>
+                      <input pInputText id="email" type="email" formControlName="email" class="w-full" placeholder="john.doe@example.com" />
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                      <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="password">
+                        {{ i18nStore.t('auth.password') }}
+                      </label>
+                      <p-password id="password" formControlName="password" [feedback]="false" [toggleMask]="true" inputStyleClass="w-full" styleClass="w-full" placeholder="••••••••" />
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                      <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="confirmPassword">
+                        {{ i18nStore.t('auth.confirmPassword') }}
+                      </label>
+                      <p-password id="confirmPassword" formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" inputStyleClass="w-full" styleClass="w-full" placeholder="••••••••" />
+                      @if (!passwordsMatch() && ownerForm.controls.confirmPassword.touched) {
+                        <span class="text-xs text-rose-500 mt-1 flex items-center gap-1">
+                          <i class="pi pi-exclamation-circle text-xs"></i>
+                          {{ i18nStore.t('validation.passwordMismatch') }}
+                        </span>
+                      }
+                    </div>
+
+                    <div class="flex flex-col gap-1.5 md:col-span-2">
+                      <label class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        {{ i18nStore.t('auth.preferredLanguage') }}
+                      </label>
+                      <p-selectbutton [options]="languageOptions" optionLabel="label" optionValue="value" formControlName="preferredLanguage" />
+                    </div>
+
+                    <div class="flex items-center gap-3 md:col-span-2 pt-2">
+                      <p-checkbox formControlName="termsAccepted" [binary]="true" inputId="termsAccepted" />
+                      <label class="text-sm text-slate-600 dark:text-slate-400 select-none" for="termsAccepted">
+                        {{ i18nStore.t('auth.acceptTerms') }}
+                      </label>
+                    </div>
+                  </form>
+                </div>
+              </ng-template>
+            </p-step-panel>
+          }
+
+          <!-- Step 2: Workspace Configuration -->
+          <p-step-panel [value]="2">
+            <ng-template #content>
+              <div class="space-y-6 animate-fade-in">
+                <div class="space-y-1">
+                  <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                    {{ i18nStore.t('auth.register.stepWorkspaceTitle') }}
+                  </h2>
+                  <p class="text-sm text-slate-500 dark:text-slate-400">
+                    {{ i18nStore.t('auth.register.stepWorkspaceDesc') }}
+                  </p>
+                </div>
+
+                <form [formGroup]="workspaceForm" class="grid gap-5 md:grid-cols-2" novalidate>
+                  <div class="flex flex-col gap-1.5 md:col-span-2">
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="accountName">
+                      {{ i18nStore.t('workspace.accountName') }}
+                    </label>
+                    <input pInputText id="accountName" type="text" formControlName="accountName" class="w-full" placeholder="Acme Corporation" />
+                  </div>
+
+                  <div class="flex flex-col gap-1.5 md:col-span-2">
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="workspaceName">
+                      {{ i18nStore.t('workspace.name') }}
+                    </label>
+                    <input pInputText id="workspaceName" type="text" formControlName="workspaceName" class="w-full" placeholder="Marketing Department" />
+                  </div>
+
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="timezone">
+                      {{ i18nStore.t('workspace.timezone') }}
+                    </label>
+                    <input pInputText id="timezone" type="text" formControlName="timezone" list="timezone-list" class="w-full" />
+                    <datalist id="timezone-list">
+                      @for (timezone of timezoneOptions; track timezone.value) {
+                        <option [value]="timezone.value">{{ timezone.label }}</option>
+                      }
+                    </datalist>
+                  </div>
+
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      {{ i18nStore.t('workspace.defaultLocale') }}
+                    </label>
+                    <p-selectbutton [options]="languageOptions" optionLabel="label" optionValue="value" formControlName="localeDefault" />
+                  </div>
+                </form>
+              </div>
+            </ng-template>
+          </p-step-panel>
+
+          <!-- Step 3: Review & Finalize -->
+          <p-step-panel [value]="3">
+            <ng-template #content>
+              <div class="space-y-6 animate-fade-in">
+                <div class="space-y-1">
+                  <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                    {{ i18nStore.t('auth.register.stepConfirmTitle') }}
+                  </h2>
+                  <p class="text-sm text-slate-500 dark:text-slate-400">
+                    {{ i18nStore.t('auth.register.stepConfirmDesc') }}
+                  </p>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-950 p-6 rounded-xl border border-subtle space-y-4">
+                  <p class="text-sm text-amber-700 dark:text-amber-300 font-medium flex items-start gap-2">
+                    <i class="pi pi-info-circle text-base mt-0.5"></i>
+                    <span>{{ i18nStore.t('wizard.registrationGap') }}</span>
+                  </p>
+                  
+                  <div class="grid gap-4 md:grid-cols-2 text-sm text-slate-600 dark:text-slate-300">
+                    <div class="space-y-2">
+                      <h4 class="font-semibold text-slate-900 dark:text-white text-xs uppercase tracking-wider">{{ i18nStore.t('auth.register.accountDetails') }}</h4>
+                      @if (!sessionStore.isAuthenticated()) {
+                        <p class="truncate"><span class="text-slate-400">{{ i18nStore.t('auth.register.nameLabel') }}:</span> {{ ownerForm.controls.firstName.value }} {{ ownerForm.controls.lastName.value }}</p>
+                        <p class="truncate"><span class="text-slate-400">{{ i18nStore.t('auth.email') }}:</span> {{ ownerForm.controls.email.value }}</p>
+                      } @else {
+                        <p class="truncate"><span class="text-slate-400">{{ i18nStore.t('auth.register.nameLabel') }}:</span> {{ sessionStore.user()?.first_name }} {{ sessionStore.user()?.last_name }}</p>
+                        <p class="truncate"><span class="text-slate-400">{{ i18nStore.t('auth.email') }}:</span> {{ sessionStore.user()?.email }}</p>
+                      }
+                    </div>
+                    <div class="space-y-2">
+                      <h4 class="font-semibold text-slate-900 dark:text-white text-xs uppercase tracking-wider">{{ i18nStore.t('auth.register.workspaceDetails') }}</h4>
+                      <p class="truncate"><span class="text-slate-400">{{ i18nStore.t('auth.register.accountLabel') }}:</span> {{ workspaceForm.controls.accountName.value }}</p>
+                      <p class="truncate"><span class="text-slate-400">{{ i18nStore.t('auth.register.workspaceLabel') }}:</span> {{ workspaceForm.controls.workspaceName.value }}</p>
+                      <p class="truncate"><span class="text-slate-400">{{ i18nStore.t('workspace.timezone') }}:</span> {{ workspaceForm.controls.timezone.value }}</p>
+                    </div>
+                  </div>
+
+                  @if (submitted()) {
+                    <div class="pt-2">
+                      @if (sessionStore.isAuthenticated()) {
+                        <span class="text-xs text-rose-500 font-medium flex items-center gap-1">
+                          <i class="pi pi-times-circle"></i>
+                          {{ i18nStore.t('session.workspaceRequired') }}
+                        </span>
+                      } @else {
+                        <span class="text-xs text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1">
+                          <i class="pi pi-exclamation-triangle"></i>
+                          {{ i18nStore.t('wizard.registrationAuthRequired') }}
+                        </span>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            </ng-template>
+          </p-step-panel>
+        </p-step-panels>
+      </p-stepper>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-between gap-3 pt-6 mt-6 border-t border-subtle">
+        <p-button severity="secondary" [outlined]="true" [label]="i18nStore.t('wizard.cancel')" (onClick)="cancel()" />
+        <div class="flex gap-3">
+          <p-button severity="secondary" [label]="i18nStore.t('wizard.back')" [disabled]="step() === 1 || (sessionStore.isAuthenticated() && step() === 2)" (onClick)="previousStep()" />
+          @if (step() < 3) {
+            <p-button [label]="i18nStore.t('wizard.next')" styleClass="btn-gradient soft-shadow" (onClick)="nextStep()" />
           } @else {
-            <p class="text-xs text-amber-700 dark:text-amber-300">{{ i18nStore.t('wizard.registrationAuthRequired') }}</p>
+            <p-button [label]="i18nStore.t('wizard.submit')" [loading]="loading()" styleClass="btn-gradient soft-shadow" (onClick)="submit()" />
           }
-        }
+        </div>
       </div>
-    }
 
-    <div class="flex items-center justify-between gap-3 pt-4">
-      <p-button severity="secondary" [label]="i18nStore.t('wizard.cancel')" (onClick)="cancel()" />
-      <div class="flex gap-3">
-        <p-button severity="secondary" [label]="i18nStore.t('wizard.back')" [disabled]="step() === 1" (onClick)="previousStep()" />
-        @if (step() < 3) {
-          <p-button [label]="i18nStore.t('wizard.next')" (onClick)="nextStep()" />
-        } @else {
-          <p-button [label]="i18nStore.t('wizard.submit')" [loading]="loading()" (onClick)="submit()" />
-        }
-      </div>
     </div>
-  </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="mx-auto w-full max-w-4xl py-6 flex flex-col md:flex-row justify-between items-center text-xs text-slate-400 border-t border-subtle gap-4">
+    <div class="font-bold text-slate-700 dark:text-slate-300">SendIO</div>
+    <div>{{ i18nStore.t('layout.footer.text') }}</div>
+    <div class="flex gap-4">
+      <a href="#" class="hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+        {{ i18nStore.t('layout.footer.privacy') }}
+      </a>
+      <a href="#" class="hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+        {{ i18nStore.t('layout.footer.terms') }}
+      </a>
+    </div>
+  </footer>
 </section>
+

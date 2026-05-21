@@ -1,56 +1,108 @@
-<section class="min-h-screen bg-slate-100 px-6 py-10 text-slate-900 transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
-  <div class="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[1.1fr_1fr]">
-    <div class="hidden items-center lg:flex">
-      <div class="space-y-6">
-        <p class="text-xs uppercase tracking-[0.35em] text-slate-500">SendIO</p>
-        <h1 class="text-4xl font-light leading-tight">{{ i18nStore.t('auth.login.title') }}</h1>
-        <p class="max-w-md text-sm text-slate-600 dark:text-slate-300">{{ i18nStore.t('auth.login.subtitle') }}</p>
+<section class="min-h-screen bg-slate-50 dark:bg-slate-950 px-6 py-12 text-slate-800 dark:text-slate-100 transition-colors duration-200 flex flex-col justify-between">
+  <!-- Header Bar -->
+  <header class="mx-auto w-full max-w-4xl flex items-center justify-between pb-8 border-b border-subtle">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-extrabold text-xl shadow-md">S</div>
+      <span class="text-xl font-bold tracking-wider text-slate-900 dark:text-white">SendIO</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <p-selectbutton
+        [options]="languageOptions"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="i18nStore.locale()"
+        (ngModelChange)="setLanguage($event)"
+        ariaLabel="Language selector"
+        styleClass="text-xs"
+      />
+      <div class="flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-subtle shadow-sm">
+        <i class="pi pi-sun text-slate-400 text-sm"></i>
+        <p-toggleswitch [ngModel]="themeStore.isDark()" (ngModelChange)="themeStore.toggle()" />
+        <i class="pi pi-moon text-slate-400 text-sm"></i>
       </div>
     </div>
+  </header>
 
-    <div class="p-4 md:p-6">
-      <div class="mb-6 flex items-center justify-between gap-3">
-        <p-selectbutton
-          [options]="languageOptions"
-          optionLabel="label"
-          optionValue="value"
-          [ngModel]="i18nStore.locale()"
-          (ngModelChange)="setLanguage($event)"
-          ariaLabel="Language selector"
-        />
-        <div class="flex items-center gap-2 text-sm">
-          <span>{{ i18nStore.t('theme.toggle') }}</span>
-          <p-toggleswitch [ngModel]="themeStore.isDark()" (ngModelChange)="themeStore.toggle()" />
-        </div>
+  <!-- Central Card -->
+  <main class="flex-1 flex items-center justify-center py-10">
+    <div class="w-full max-w-md bg-white dark:bg-slate-900/60 dark:backdrop-blur-md border border-subtle rounded-2xl p-6 md:p-10 soft-shadow animate-fade-in">
+      <div class="space-y-2 mb-8 text-center">
+        <h2 class="text-3xl font-light tracking-tight text-slate-900 dark:text-white">
+          {{ i18nStore.t('auth.login.title') }}
+        </h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+          {{ i18nStore.t('auth.login.subtitle') }}
+        </p>
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4" novalidate>
-        <label class="flex flex-col gap-2">
-          <span class="text-sm">{{ i18nStore.t('auth.email') }}</span>
-          <input pInputText type="email" formControlName="email" class="w-full" />
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="email">
+            {{ i18nStore.t('auth.email') }}
+          </label>
+          <input pInputText id="email" type="email" formControlName="email" class="w-full" />
           @if (emailInvalid()) {
-            <span class="text-xs text-rose-600">{{ i18nStore.t('validation.email') }}</span>
+            <span class="text-xs text-rose-500 mt-1 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle text-xs"></i>
+              {{ i18nStore.t('validation.email') }}
+            </span>
           }
-        </label>
+        </div>
 
-        <label class="flex flex-col gap-2">
-          <span class="text-sm">{{ i18nStore.t('auth.password') }}</span>
-          <p-password formControlName="password" [feedback]="false" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" />
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="password">
+            {{ i18nStore.t('auth.password') }}
+          </label>
+          <p-password 
+            id="password" 
+            formControlName="password" 
+            [feedback]="false" 
+            [toggleMask]="true" 
+            inputStyleClass="w-full" 
+            styleClass="w-full" 
+          />
           @if (passwordInvalid()) {
-            <span class="text-xs text-rose-600">{{ i18nStore.t('validation.required') }}</span>
+            <span class="text-xs text-rose-500 mt-1 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle text-xs"></i>
+              {{ i18nStore.t('validation.required') }}
+            </span>
           }
-        </label>
+        </div>
 
         @if (errorMessage()) {
-          <p class="text-sm text-rose-600">{{ errorMessage() }}</p>
+          <div class="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-500 text-xs flex items-center gap-2">
+            <i class="pi pi-exclamation-triangle"></i>
+            <span>{{ errorMessage() }}</span>
+          </div>
         }
 
-        <p-button type="submit" [label]="i18nStore.t('auth.signIn')" [loading]="loading()" styleClass="w-full" />
+        <p-button 
+          type="submit" 
+          [label]="i18nStore.t('auth.signIn')" 
+          [loading]="loading()" 
+          styleClass="w-full btn-gradient soft-shadow" 
+        />
 
-        <a routerLink="/auth/register" class="inline-flex text-sm text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
-          {{ i18nStore.t('auth.createAccount') }}
-        </a>
+        <div class="text-center pt-4 border-t border-subtle mt-4">
+          <a routerLink="/auth/register" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors">
+            {{ i18nStore.t('auth.createAccount') }}
+          </a>
+        </div>
       </form>
     </div>
-  </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="mx-auto w-full max-w-4xl py-6 flex flex-col md:flex-row justify-between items-center text-xs text-slate-400 border-t border-subtle gap-4">
+    <div class="font-bold text-slate-700 dark:text-slate-300">SendIO</div>
+    <div>{{ i18nStore.t('layout.footer.text') }}</div>
+    <div class="flex gap-4">
+      <a href="#" class="hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+        {{ i18nStore.t('layout.footer.privacy') }}
+      </a>
+      <a href="#" class="hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+        {{ i18nStore.t('layout.footer.terms') }}
+      </a>
+    </div>
+  </footer>
 </section>

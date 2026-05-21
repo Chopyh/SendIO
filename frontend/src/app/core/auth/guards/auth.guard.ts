@@ -12,3 +12,25 @@ export const authGuard: CanActivateFn = () => {
 
   return router.createUrlTree(['/auth/login']);
 };
+
+export const guestGuard: CanActivateFn = () => {
+  const sessionStore = inject(SessionStore);
+  const router = inject(Router);
+
+  if (sessionStore.isAuthenticated()) {
+    return router.createUrlTree(['/app']);
+  }
+
+  return true;
+};
+
+export const registerGuard: CanActivateFn = () => {
+  const sessionStore = inject(SessionStore);
+  const router = inject(Router);
+
+  if (sessionStore.isAuthenticated() && sessionStore.hasWorkspace()) {
+    return router.createUrlTree(['/app']);
+  }
+
+  return true;
+};

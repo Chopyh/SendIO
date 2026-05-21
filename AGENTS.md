@@ -36,5 +36,6 @@
 - [Architecture & Infrastructure](docs/architecture/infrastructure.md)
 - [Backend Setup](docs/backend/laravel_setup.md)
 - [Frontend Setup](docs/frontend/angular_setup.md)
+- [UI Reorganization Guide](docs/frontend/ui-reorganization.md)
 - [DevOps Guide](docs/devops/docker_setup.md)
 - [Workflow Standards](docs/workflow/standards.md)
