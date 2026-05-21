@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import {
   BootstrapWorkspaceRequest,
   MeResponse,
+  RegisterRequest,
   TokenResponse,
   WorkspaceResponse,
 } from './auth.models';
@@ -14,6 +15,10 @@ export class AuthApiService {
 
   login(email: string, password: string): Observable<TokenResponse> {
     return this.http.post<TokenResponse>('/api/auth/login', { email, password });
+  }
+
+  register(payload: RegisterRequest): Observable<TokenResponse> {
+    return this.http.post<TokenResponse>('/api/auth/register', payload);
   }
 
   refresh(): Observable<TokenResponse> {

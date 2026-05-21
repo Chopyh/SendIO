@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AuthApiService } from './auth-api.service';
-import { MeResponse, Membership, User } from './auth.models';
+import { MeResponse, Membership, RegisterRequest, User } from './auth.models';
 
 const TOKEN_KEY = 'sendio.accessToken';
 const WORKSPACE_KEY = 'sendio.workspaceId';
@@ -42,6 +42,14 @@ export class SessionStore {
 
   async login(email: string, password: string): Promise<void> {
     const response = await firstValueFrom(this.authApi.login(email, password));
+    const token = response.data.access_token;
+    this.tokenSignal.set(token);
+    localStorage.setItem(TOKEN_KEY, token);
+    await this.hydrateCurrentUser();
+  }
+
+  async register(payload: RegisterRequest): Promise<void> {
+    const response = await firstValueFrom(this.authApi.register(payload));
     const token = response.data.access_token;
     this.tokenSignal.set(token);
     localStorage.setItem(TOKEN_KEY, token);

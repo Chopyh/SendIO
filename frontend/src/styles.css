@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import "primeicons/primeicons.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -15,7 +16,7 @@
   --p-primary-800: #065f46;
   --p-primary-900: #064e3b;
   --p-primary-950: #022c22;
-  
+
   --p-primary-color: var(--p-primary-600);
   --p-primary-contrast-color: #ffffff;
   --p-primary-hover-color: var(--p-primary-700);

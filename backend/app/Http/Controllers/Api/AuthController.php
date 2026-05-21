@@ -3,9 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Account;
+use App\Models\User;
+use App\Models\Workspace;
+use App\Models\WorkspaceMember;
 use App\Support\ApiError;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -39,6 +44,87 @@ class AuthController extends Controller
         }
 
         return $this->tokenResponse($token);
+    }
+
+    public function register(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'first_name' => ['required', 'string', 'max:120'],
+            'last_name' => ['required', 'string', 'max:120'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'terms_accepted' => ['required', 'accepted'],
+            'account_name' => ['nullable', 'string', 'max:120'],
+            'workspace_name' => ['nullable', 'string', 'max:120'],
+            'timezone' => ['required', 'string', 'max:80'],
+            'locale_default' => ['nullable', 'string', 'in:en,es'],
+        ]);
+
+        if ($validator->fails()) {
+            return ApiError::response('validation.failed', 'Validation failed.', 422, $validator->errors()->toArray());
+        }
+
+        $payload = $validator->validated();
+
+        $result = DB::transaction(function () use ($payload): array {
+            $user = User::query()->create([
+                'name' => trim($payload['first_name'].' '.$payload['last_name']),
+                'email' => strtolower(trim($payload['email'])),
+                'password' => $payload['password'],
+            ]);
+
+            $workspaceName = ! empty($payload['workspace_name'])
+                ? trim($payload['workspace_name'])
+                : trim($payload['first_name']).'-workspace';
+
+            $accountName = ! empty($payload['account_name'])
+                ? trim($payload['account_name'])
+                : $workspaceName;
+
+            $account = Account::query()->create(['name' => $accountName]);
+
+            $workspace = Workspace::query()->create([
+                'account_id' => $account->id,
+                'name' => $workspaceName,
+                'timezone' => $payload['timezone'],
+                'locale_default' => $payload['locale_default'] ?? 'en',
+            ]);
+
+            WorkspaceMember::query()->create([
+                'workspace_id' => $workspace->id,
+                'user_id' => $user->id,
+                'role' => 'Owner',
+                'joined_at' => now(),
+            ]);
+
+            $token = auth('api')->login($user);
+
+            return [$user, $account, $workspace, $token];
+        });
+
+        /** @var array{0: User, 1: Account, 2: Workspace, 3: string} $result */
+        [$user, $account, $workspace, $token] = $result;
+
+        return response()->json([
+            'data' => [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth('api')->factory()->getTTL() * 60,
+                'refresh_ttl' => (int) config('jwt.refresh_ttl') * 60,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ],
+                'workspace' => [
+                    'id' => $workspace->id,
+                    'name' => $workspace->name,
+                    'timezone' => $workspace->timezone,
+                    'locale_default' => $workspace->locale_default,
+                    'role' => 'Owner',
+                ],
+            ],
+        ], 201);
     }
 
     public function me(Request $request): JsonResponse

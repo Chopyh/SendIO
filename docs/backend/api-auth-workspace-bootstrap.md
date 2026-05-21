@@ -13,6 +13,7 @@ This contract defines the minimum backend flow for JWT auth and workspace contex
 | Endpoint | Auth | Workspace header | Purpose |
 |---|---|---|---|
 | `POST /api/auth/login` | No | No | Exchange credentials for JWT access token |
+| `POST /api/auth/register` | No | No | Register user, account, workspace, membership and return JWT token |
 | `POST /api/auth/refresh` | Yes | No | Rotate access token |
 | `GET /api/auth/me` | Yes | No | Retrieve current user and workspace memberships |
 | `POST /api/workspaces/bootstrap` | Yes | No | Create first account/workspace and owner membership |

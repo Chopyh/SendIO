@@ -9,12 +9,39 @@ import { PasswordModule } from 'primeng/password';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { StepperModule } from 'primeng/stepper';
-import { AuthApiService } from '../../core/auth/auth-api.service';
-import { SessionStore } from '../../core/auth/session.store';
-import { I18nStore } from '../../core/i18n/i18n.store';
-import { Locale } from '../../core/i18n/translations';
-import { ThemeStore } from '../../core/theme/theme.store';
+import { Select } from 'primeng/select';
+import { AuthApiService } from '../../../core/auth/auth-api.service';
+import { RegisterRequest } from '../../../core/auth/auth.models';
+import { SessionStore } from '../../../core/auth/session.store';
+import { I18nStore } from '../../../core/i18n/i18n.store';
+import { Locale } from '../../../core/i18n/translations';
+import { ThemeStore } from '../../../core/theme/theme.store';
 import { firstValueFrom } from 'rxjs';
+
+function getTimezoneOffset(timeZone: string): string {
+  try {
+    const date = new Date();
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      timeZoneName: 'longOffset',
+    });
+    const parts = formatter.formatToParts(date);
+    const tzPart = parts.find((p) => p.type === 'timeZoneName');
+    if (tzPart) {
+      const value = tzPart.value;
+      const match = value.match(/GMT([+-])(\d{1,2})(?::(\d{2}))?/);
+      if (match) {
+        const sign = match[1];
+        const hours = match[2].padStart(2, '0');
+        const minutes = match[3] || '00';
+        return `${sign}${hours}:${minutes}`;
+      }
+    }
+    return '+00:00';
+  } catch {
+    return '+00:00';
+  }
+}
 
 @Component({
   selector: 'app-register-page',
@@ -28,6 +55,7 @@ import { firstValueFrom } from 'rxjs';
     ButtonModule,
     ToggleSwitchModule,
     StepperModule,
+    Select,
   ],
   templateUrl: './register-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,11 +82,13 @@ export class RegisterPageComponent implements OnInit {
     { label: 'ES', value: 'es' as const },
   ];
 
-  readonly timezoneOptions = [
-    { label: 'UTC', value: 'UTC' },
-    { label: 'America/New_York', value: 'America/New_York' },
-    { label: 'Europe/Madrid', value: 'Europe/Madrid' },
-  ];
+  readonly timezoneOptions = Intl.supportedValuesOf('timeZone').map((tz) => {
+    const offset = getTimezoneOffset(tz);
+    return {
+      label: `${tz.replace(/_/g, ' ')} (UTC${offset})`,
+      value: tz,
+    };
+  }).sort((a, b) => a.value.localeCompare(b.value));
 
   readonly ownerForm = new FormGroup({
     firstName: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -73,13 +103,31 @@ export class RegisterPageComponent implements OnInit {
   readonly workspaceForm = new FormGroup({
     accountName: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     workspaceName: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    timezone: new FormControl('UTC', { nonNullable: true, validators: [Validators.required] }),
-    localeDefault: new FormControl<Locale>('en', { nonNullable: true, validators: [Validators.required] }),
+    timezone: new FormControl(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
   });
 
   readonly passwordsMatch = computed(
     () => this.ownerForm.controls.password.value === this.ownerForm.controls.confirmPassword.value,
   );
+
+  get password(): string {
+    return this.ownerForm.controls.password.value || '';
+  }
+
+  get isLengthValid(): boolean {
+    return this.password.length >= 8;
+  }
+
+  get hasNumber(): boolean {
+    return /[0-9]/.test(this.password);
+  }
+
+  get hasLetter(): boolean {
+    return /[a-zA-Z]/.test(this.password);
+  }
 
   nextStep(): void {
     if (this.step() === 1) {
@@ -110,28 +158,46 @@ export class RegisterPageComponent implements OnInit {
   async submit(): Promise<void> {
     this.submitted.set(true);
 
-    if (!this.sessionStore.isAuthenticated()) {
-      return;
-    }
-
     this.loading.set(true);
 
     try {
       const workspace = this.workspaceForm.getRawValue();
-      await firstValueFrom(
-        this.authApi.bootstrapWorkspace({
-          account_name: workspace.accountName,
-          workspace_name: workspace.workspaceName,
-          timezone: workspace.timezone,
-          locale_default: workspace.localeDefault,
-        }),
-      );
 
-      await this.sessionStore.hydrateCurrentUser();
-      const firstWorkspace = this.sessionStore.memberships()[0]?.workspace_id;
-      if (firstWorkspace) {
-        this.sessionStore.setActiveWorkspace(firstWorkspace);
+      if (!this.sessionStore.isAuthenticated()) {
+        const owner = this.ownerForm.getRawValue();
+        const localeDefault = owner.preferredLanguage || this.i18nStore.locale();
+
+        await this.sessionStore.register({
+          first_name: owner.firstName,
+          last_name: owner.lastName,
+          email: owner.email,
+          password: owner.password,
+          password_confirmation: owner.confirmPassword,
+          terms_accepted: owner.termsAccepted,
+          account_name: workspace.accountName || undefined,
+          workspace_name: workspace.workspaceName || undefined,
+          timezone: workspace.timezone,
+          locale_default: localeDefault,
+        });
+      } else {
+        const localeDefault = this.i18nStore.locale();
+
+        await firstValueFrom(
+          this.authApi.bootstrapWorkspace({
+            account_name: workspace.accountName,
+            workspace_name: workspace.workspaceName,
+            timezone: workspace.timezone,
+            locale_default: localeDefault,
+          }),
+        );
+
+        await this.sessionStore.hydrateCurrentUser();
+        const firstWorkspace = this.sessionStore.memberships()[0]?.workspace_id;
+        if (firstWorkspace) {
+          this.sessionStore.setActiveWorkspace(firstWorkspace);
+        }
       }
+
       await this.router.navigateByUrl('/app');
     } finally {
       this.loading.set(false);

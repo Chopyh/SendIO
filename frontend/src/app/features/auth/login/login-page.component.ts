@@ -7,10 +7,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { I18nStore } from '../../core/i18n/i18n.store';
-import { Locale } from '../../core/i18n/translations';
-import { SessionStore } from '../../core/auth/session.store';
-import { ThemeStore } from '../../core/theme/theme.store';
+import { I18nStore } from '../../../core/i18n/i18n.store';
+import { Locale } from '../../../core/i18n/translations';
+import { SessionStore } from '../../../core/auth/session.store';
+import { ThemeStore } from '../../../core/theme/theme.store';
 
 @Component({
   selector: 'app-login-page',

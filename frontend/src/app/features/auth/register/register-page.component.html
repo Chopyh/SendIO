@@ -65,6 +65,12 @@
                         {{ i18nStore.t('auth.firstName') }}
                       </label>
                       <input pInputText id="firstName" type="text" formControlName="firstName" class="w-full" placeholder="John" />
+                      @if (ownerForm.controls.firstName.invalid && (ownerForm.controls.firstName.touched || submitted())) {
+                        <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
+                          <i class="pi pi-exclamation-circle text-xs"></i>
+                          {{ i18nStore.t('validation.required') }}
+                        </span>
+                      }
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -72,6 +78,12 @@
                         {{ i18nStore.t('auth.lastName') }}
                       </label>
                       <input pInputText id="lastName" type="text" formControlName="lastName" class="w-full" placeholder="Doe" />
+                      @if (ownerForm.controls.lastName.invalid && (ownerForm.controls.lastName.touched || submitted())) {
+                        <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
+                          <i class="pi pi-exclamation-circle text-xs"></i>
+                          {{ i18nStore.t('validation.required') }}
+                        </span>
+                      }
                     </div>
 
                     <div class="flex flex-col gap-1.5 md:col-span-2">
@@ -79,6 +91,16 @@
                         {{ i18nStore.t('auth.email') }}
                       </label>
                       <input pInputText id="email" type="email" formControlName="email" class="w-full" placeholder="john.doe@example.com" />
+                      @if (ownerForm.controls.email.invalid && (ownerForm.controls.email.touched || submitted())) {
+                        <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
+                          <i class="pi pi-exclamation-circle text-xs"></i>
+                          @if (ownerForm.controls.email.errors?.['email']) {
+                            {{ i18nStore.t('validation.email') }}
+                          } @else {
+                            {{ i18nStore.t('validation.required') }}
+                          }
+                        </span>
+                      }
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -86,6 +108,12 @@
                         {{ i18nStore.t('auth.password') }}
                       </label>
                       <p-password id="password" formControlName="password" [feedback]="false" [toggleMask]="true" inputStyleClass="w-full" styleClass="w-full" placeholder="••••••••" />
+                      @if (ownerForm.controls.password.invalid && (ownerForm.controls.password.touched || submitted())) {
+                        <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
+                          <i class="pi pi-exclamation-circle text-xs"></i>
+                          {{ i18nStore.t('validation.required') }}
+                        </span>
+                      }
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -93,12 +121,56 @@
                         {{ i18nStore.t('auth.confirmPassword') }}
                       </label>
                       <p-password id="confirmPassword" formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" inputStyleClass="w-full" styleClass="w-full" placeholder="••••••••" />
-                      @if (!passwordsMatch() && ownerForm.controls.confirmPassword.touched) {
-                        <span class="text-xs text-rose-500 mt-1 flex items-center gap-1">
+                      @if (ownerForm.controls.confirmPassword.invalid && (ownerForm.controls.confirmPassword.touched || submitted())) {
+                        <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
+                          <i class="pi pi-exclamation-circle text-xs"></i>
+                          {{ i18nStore.t('validation.required') }}
+                        </span>
+                      } @else if (!passwordsMatch() && (ownerForm.controls.confirmPassword.touched || submitted())) {
+                        <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
                           <i class="pi pi-exclamation-circle text-xs"></i>
                           {{ i18nStore.t('validation.passwordMismatch') }}
                         </span>
                       }
+                    </div>
+
+                    <!-- Password Validation Requirements -->
+                    <div class="flex flex-col gap-1.5 md:col-span-2">
+                      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3.5 bg-slate-50 dark:bg-slate-900/40 border border-subtle rounded-xl text-xs transition-all duration-200">
+                        <!-- Rule 1: Min length 8 -->
+                        <div class="flex items-center gap-2 transition-colors duration-200"
+                             [class.text-emerald-600]="isLengthValid"
+                             [class.dark:text-emerald-400]="isLengthValid"
+                             [class.text-slate-400]="!isLengthValid"
+                             [class.dark:text-slate-500]="!isLengthValid">
+                          <i class="pi text-sm"
+                             [class.pi-check-circle]="isLengthValid"
+                             [class.pi-circle]="!isLengthValid"></i>
+                          <span>{{ i18nStore.t('validation.password.minLength') }}</span>
+                        </div>
+                        <!-- Rule 2: Has letter -->
+                        <div class="flex items-center gap-2 transition-colors duration-200"
+                             [class.text-emerald-600]="hasLetter"
+                             [class.dark:text-emerald-400]="hasLetter"
+                             [class.text-slate-400]="!hasLetter"
+                             [class.dark:text-slate-500]="!hasLetter">
+                          <i class="pi text-sm"
+                             [class.pi-check-circle]="hasLetter"
+                             [class.pi-circle]="!hasLetter"></i>
+                          <span>{{ i18nStore.t('validation.password.letter') }}</span>
+                        </div>
+                        <!-- Rule 3: Has number -->
+                        <div class="flex items-center gap-2 transition-colors duration-200"
+                             [class.text-emerald-600]="hasNumber"
+                             [class.dark:text-emerald-400]="hasNumber"
+                             [class.text-slate-400]="!hasNumber"
+                             [class.dark:text-slate-500]="!hasNumber">
+                          <i class="pi text-sm"
+                             [class.pi-check-circle]="hasNumber"
+                             [class.pi-circle]="!hasNumber"></i>
+                          <span>{{ i18nStore.t('validation.password.number') }}</span>
+                        </div>
+                      </div>
                     </div>
 
                     <div class="flex flex-col gap-1.5 md:col-span-2">
@@ -108,11 +180,19 @@
                       <p-selectbutton [options]="languageOptions" optionLabel="label" optionValue="value" formControlName="preferredLanguage" />
                     </div>
 
-                    <div class="flex items-center gap-3 md:col-span-2 pt-2">
-                      <p-checkbox formControlName="termsAccepted" [binary]="true" inputId="termsAccepted" />
-                      <label class="text-sm text-slate-600 dark:text-slate-400 select-none" for="termsAccepted">
-                        {{ i18nStore.t('auth.acceptTerms') }}
-                      </label>
+                    <div class="flex flex-col gap-1.5 md:col-span-2 pt-2">
+                      <div class="flex items-center gap-3">
+                        <p-checkbox formControlName="termsAccepted" [binary]="true" inputId="termsAccepted" />
+                        <label class="text-sm text-slate-600 dark:text-slate-400 select-none" for="termsAccepted">
+                          {{ i18nStore.t('auth.acceptTerms') }}
+                        </label>
+                      </div>
+                      @if (ownerForm.controls.termsAccepted.invalid && (ownerForm.controls.termsAccepted.touched || submitted())) {
+                        <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
+                          <i class="pi pi-exclamation-circle text-xs"></i>
+                          {{ i18nStore.t('validation.termsRequired') }}
+                        </span>
+                      }
                     </div>
                   </form>
                 </div>
@@ -139,6 +219,12 @@
                       {{ i18nStore.t('workspace.accountName') }}
                     </label>
                     <input pInputText id="accountName" type="text" formControlName="accountName" class="w-full" placeholder="Acme Corporation" />
+                    @if (workspaceForm.controls.accountName.invalid && (workspaceForm.controls.accountName.touched || submitted())) {
+                      <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
+                        <i class="pi pi-exclamation-circle text-xs"></i>
+                        {{ i18nStore.t('validation.required') }}
+                      </span>
+                    }
                   </div>
 
                   <div class="flex flex-col gap-1.5 md:col-span-2">
@@ -146,25 +232,35 @@
                       {{ i18nStore.t('workspace.name') }}
                     </label>
                     <input pInputText id="workspaceName" type="text" formControlName="workspaceName" class="w-full" placeholder="Marketing Department" />
+                    @if (workspaceForm.controls.workspaceName.invalid && (workspaceForm.controls.workspaceName.touched || submitted())) {
+                      <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
+                        <i class="pi pi-exclamation-circle text-xs"></i>
+                        {{ i18nStore.t('validation.required') }}
+                      </span>
+                    }
                   </div>
 
-                  <div class="flex flex-col gap-1.5">
+                  <div class="flex flex-col gap-1.5 md:col-span-2">
                     <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="timezone">
                       {{ i18nStore.t('workspace.timezone') }}
                     </label>
-                    <input pInputText id="timezone" type="text" formControlName="timezone" list="timezone-list" class="w-full" />
-                    <datalist id="timezone-list">
-                      @for (timezone of timezoneOptions; track timezone.value) {
-                        <option [value]="timezone.value">{{ timezone.label }}</option>
-                      }
-                    </datalist>
-                  </div>
-
-                  <div class="flex flex-col gap-1.5">
-                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      {{ i18nStore.t('workspace.defaultLocale') }}
-                    </label>
-                    <p-selectbutton [options]="languageOptions" optionLabel="label" optionValue="value" formControlName="localeDefault" />
+                    <p-select
+                      id="timezone"
+                      formControlName="timezone"
+                      [options]="timezoneOptions"
+                      optionLabel="label"
+                      optionValue="value"
+                      [filter]="true"
+                      filterPlaceholder="Search timezone / Buscar..."
+                      styleClass="w-full"
+                      appendTo="body"
+                    ></p-select>
+                    @if (workspaceForm.controls.timezone.invalid && (workspaceForm.controls.timezone.touched || submitted())) {
+                      <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
+                        <i class="pi pi-exclamation-circle text-xs"></i>
+                        {{ i18nStore.t('validation.required') }}
+                      </span>
+                    }
                   </div>
                 </form>
               </div>
@@ -185,11 +281,6 @@
                 </div>
 
                 <div class="bg-slate-50 dark:bg-slate-950 p-6 rounded-xl border border-subtle space-y-4">
-                  <p class="text-sm text-amber-700 dark:text-amber-300 font-medium flex items-start gap-2">
-                    <i class="pi pi-info-circle text-base mt-0.5"></i>
-                    <span>{{ i18nStore.t('wizard.registrationGap') }}</span>
-                  </p>
-                  
                   <div class="grid gap-4 md:grid-cols-2 text-sm text-slate-600 dark:text-slate-300">
                     <div class="space-y-2">
                       <h4 class="font-semibold text-slate-900 dark:text-white text-xs uppercase tracking-wider">{{ i18nStore.t('auth.register.accountDetails') }}</h4>
@@ -208,22 +299,6 @@
                       <p class="truncate"><span class="text-slate-400">{{ i18nStore.t('workspace.timezone') }}:</span> {{ workspaceForm.controls.timezone.value }}</p>
                     </div>
                   </div>
-
-                  @if (submitted()) {
-                    <div class="pt-2">
-                      @if (sessionStore.isAuthenticated()) {
-                        <span class="text-xs text-rose-500 font-medium flex items-center gap-1">
-                          <i class="pi pi-times-circle"></i>
-                          {{ i18nStore.t('session.workspaceRequired') }}
-                        </span>
-                      } @else {
-                        <span class="text-xs text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1">
-                          <i class="pi pi-exclamation-triangle"></i>
-                          {{ i18nStore.t('wizard.registrationAuthRequired') }}
-                        </span>
-                      }
-                    </div>
-                  }
                 </div>
               </div>
             </ng-template>
@@ -261,4 +336,3 @@
     </div>
   </footer>
 </section>
-
