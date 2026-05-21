@@ -11,6 +11,7 @@ Academic-quality analysis documentation reduces ambiguity by separating business
 - [Use Case Diagram](use-case-diagram.md)
 - [Domain Class Diagram](domain-class-diagram.md)
 - [Use Case Specifications](use-case-specifications.md)
+- [Project Requirements](project-requirements.md)
 - [Interaction Diagrams](interactions/README.md)
 
 ## Coverage

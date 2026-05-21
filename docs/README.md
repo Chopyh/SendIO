@@ -21,6 +21,7 @@ This directory is the source of truth for project governance, architecture decis
 - [Use Case Diagram](analysis/use-case-diagram.md)
 - [Domain Class Diagram](analysis/domain-class-diagram.md)
 - [Use Case Specifications](analysis/use-case-specifications.md)
+- [Project Requirements](analysis/project-requirements.md)
 
 ## Key Design Artifacts
 
