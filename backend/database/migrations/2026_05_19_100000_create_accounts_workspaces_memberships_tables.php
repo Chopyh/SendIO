@@ -9,14 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('accounts', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->timestamps();
         });
 
         Schema::create('workspaces', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('account_id')->constrained()->cascadeOnDelete();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('account_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('timezone', 80);
             $table->string('locale_default', 10)->default('en');
@@ -24,9 +24,9 @@ return new class extends Migration
         });
 
         Schema::create('workspace_members', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('workspace_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
             $table->string('role', 20);
             $table->timestamp('joined_at')->nullable();
             $table->timestamps();

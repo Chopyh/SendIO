@@ -7,26 +7,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Contact extends Model
+class ComponentLibraryItem extends Model
 {
     use HasFactory, HasUuids;
 
     protected $fillable = [
         'workspace_id',
-        'email',
-        'email_normalized',
-        'first_name',
-        'last_name',
-        'phone',
-        'metadata',
+        'scope',
+        'name',
+        'component_type',
+        'schema_json',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'metadata' => 'array',
-        ];
-    }
+    protected $casts = [
+        'schema_json' => 'array',
+    ];
 
     public function workspace(): BelongsTo
     {

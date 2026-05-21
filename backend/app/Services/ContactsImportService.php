@@ -15,7 +15,7 @@ class ContactsImportService
      *   details:array{skipped:array<int, array<string, mixed>>, failed:array<int, array<string, mixed>>}
      * }
      */
-    public function importFromCsv(UploadedFile $file, int $workspaceId): array
+    public function importFromCsv(UploadedFile $file, string $workspaceId): array
     {
         $rows = array_map('str_getcsv', file($file->getRealPath()));
 

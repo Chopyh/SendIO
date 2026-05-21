@@ -3,6 +3,9 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ContactsImportController;
 use App\Http\Controllers\Api\WorkspaceBootstrapController;
+use App\Http\Controllers\Api\VariableCatalogController;
+use App\Http\Controllers\Api\ComponentLibraryController;
+use App\Http\Controllers\Api\TemplateController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function (): void {
@@ -19,4 +22,16 @@ Route::middleware('auth:api')->group(function (): void {
 Route::middleware(['auth:api', 'workspace.context'])->group(function (): void {
     Route::get('/workspaces/current', [WorkspaceBootstrapController::class, 'current']);
     Route::post('/contacts/import', [ContactsImportController::class, 'import']);
+
+    // Variables
+    Route::get('/variables/catalog', [VariableCatalogController::class, 'index']);
+
+    // Components
+    Route::apiResource('/components', ComponentLibraryController::class);
+
+    // Templates
+    Route::apiResource('/templates', TemplateController::class);
+    Route::post('/templates/{template}/versions', [TemplateController::class, 'createVersion']);
+    Route::put('/templates/{template}/versions/{versionNumber}', [TemplateController::class, 'updateVersion']);
+    Route::post('/templates/{template}/versions/{versionNumber}/publish', [TemplateController::class, 'publishVersion']);
 });

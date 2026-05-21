@@ -38,7 +38,7 @@ class EnsureWorkspaceContext
             return ApiError::response('workspace.forbidden', 'User is not a member of this workspace.', 403);
         }
 
-        $request->attributes->set('workspace_id', (int) $workspaceId);
+        $request->attributes->set('workspace_id', $workspaceId);
         $request->attributes->set('workspace_role', $membership->role);
 
         return $next($request);
