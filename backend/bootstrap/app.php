@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CorrelateRequests;
 use App\Http\Middleware\EnsureWorkspaceContext;
 use App\Support\ApiError;
 use Illuminate\Auth\AuthenticationException;
@@ -15,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prepend(CorrelateRequests::class);
+
         $middleware->alias([
             'workspace.context' => EnsureWorkspaceContext::class,
         ]);

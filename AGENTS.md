@@ -20,6 +20,7 @@
 - **Frontend Styling Standard:** Use TailwindCSS utilities for UI styles by default. If reuse is needed, group utilities with `@apply` in CSS. Keep animations in plain CSS.
 - **Task-Driven:** All implementation tasks MUST be defined and tracked in `docs/tasks/`.
 - **TDD Mandatory:** All features must pass tests. Follow TDD: start with generic tests and progressively specify more detailed ones.
+- **Stack-Bound Implementation:** Do not introduce new runtimes, languages, frameworks, or top-level source trees unless the active task/spec explicitly requires them. SendIO's current implementation stack is Laravel/PHP for backend, Angular/TypeScript for frontend, Docker for operations, and Markdown for documentation.
 
 ## Essential Commands
 - **Windows:** `.\sendio.ps1 [up|down|artisan|composer|migrate|logs|sh]`

@@ -27,9 +27,18 @@ Establish infrastructure-level baseline for logging, traceability, and audit ret
 - Verify logs include request correlation metadata.
 - Verify documented retention settings can be applied in Docker environments.
 
+## Evidence
+
+- Request correlation is implemented in Laravel middleware and covered by `backend/tests/Feature/RequestCorrelationTest.php`.
+- Baseline conventions are documented in `docs/devops/observability-audit-baseline.md` and indexed from `docs/README.md`.
+- Environment examples set `LOG_STACK=daily` and `LOG_DAILY_DAYS=30` so Laravel's daily retention setting is active by default.
+- Verification: `./sendio.ps1 composer exec -- pint` passed.
+- Verification: `./sendio.ps1 artisan test tests/Feature/RequestCorrelationTest.php tests/Feature/AuthWorkspaceBootstrapTest.php tests/Feature/ContactsImportPipelineTest.php` passed with 13 tests and 60 assertions.
+- Notion mirror: https://www.notion.so/3662fdf17ec7813ebad2e93763bfb43d
+
 ## Checklist
 
-- [ ] Define observability naming conventions.
-- [ ] Define MVP audit retention and access constraints.
-- [ ] Document infra prerequisites for audit-ready backend features.
-- [ ] Validate log correlation across at least one end-to-end flow.
+- [x] Define observability naming conventions.
+- [x] Define MVP audit retention and access constraints.
+- [x] Document infra prerequisites for audit-ready backend features.
+- [x] Validate log correlation across at least one end-to-end flow.

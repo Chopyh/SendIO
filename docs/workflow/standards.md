@@ -36,6 +36,12 @@ Define the minimum governance/process baseline for predictable delivery in SendI
    - Frontend templates must use direct PrimeNG `p-*` component selectors whenever available, such as `<p-button>` instead of `pButton` on a native `<button>`.
    - PrimeNG attribute directives are allowed only when the installed PrimeNG version does not provide an equivalent component selector.
 
+9. **Stack-bound implementation**
+   - Implementation work must stay inside the stack and file structure defined by the active task/spec and existing project documentation.
+   - Do not introduce new runtimes, languages, frameworks, or top-level source trees unless the task/spec explicitly calls for them.
+   - Current SendIO runtime stack is Laravel/PHP for backend, Angular/TypeScript for frontend, Docker for operations, and Markdown for documentation.
+   - If an implementation appears to require a new stack element, stop and document the decision before writing code.
+
 ## Lightweight Validation Guidance
 
 - Verify links and file paths in indexes.

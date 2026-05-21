@@ -9,6 +9,7 @@ This directory is the source of truth for project governance, architecture decis
 - [Tasks Index](tasks/README.md)
 - [Workflow Standards](workflow/standards.md)
 - [Docker Mailtrap Environment Contract](devops/docker-mailtrap-env.md)
+- [Observability and Audit Baseline](devops/observability-audit-baseline.md)
 
 ## Detailed Interaction and State Artifacts
 
@@ -35,6 +36,7 @@ This directory is the source of truth for project governance, architecture decis
 - [Auth and Workspace Onboarding Requirements](frontend/auth-workspace-onboarding-requirements.md)
 - [Auth and Workspace Bootstrap API (MVP)](backend/api-auth-workspace-bootstrap.md)
 - [Contacts Import Pipeline API (MVP)](backend/api-contacts-import-pipeline.md)
+- [Observability and Audit Baseline](devops/observability-audit-baseline.md)
 
 ## Key Validation Artifacts
 
