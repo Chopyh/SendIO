@@ -39,6 +39,10 @@ This directory is the source of truth for project governance, architecture decis
 - [Contacts Import Experience](frontend/contacts-import-experience.md)
 - [Auth and Workspace Bootstrap API (MVP)](backend/api-auth-workspace-bootstrap.md)
 - [Contacts Import Pipeline API (MVP)](backend/api-contacts-import-pipeline.md)
+- [Variable Catalog API](backend/api-variable-catalog.md)
+- [Component Library API](backend/api-component-library.md)
+- [Templates API](backend/api-templates.md)
+- [Database UUID Convention](backend/database-uuid-convention.md)
 - [Observability and Audit Baseline](devops/observability-audit-baseline.md)
 
 ## Key Validation Artifacts
