@@ -238,5 +238,35 @@ describe('RegisterPageComponent', () => {
       expect(mockSessionStore.logout).toHaveBeenCalled();
       expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/auth/login');
     });
+
+    it('should set errorMessage when registration throws an error', async () => {
+      mockSessionStore.isAuthenticated.mockReturnValue(false);
+      mockSessionStore.register.mockRejectedValue({
+        error: {
+          message: 'Email already registered.'
+        }
+      });
+
+      component.ownerForm.setValue({
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'jane@example.com',
+        password: 'Password123',
+        confirmPassword: 'Password123',
+        preferredLanguage: 'es',
+        termsAccepted: true,
+      });
+
+      component.workspaceForm.setValue({
+        accountName: 'Acme Corp',
+        workspaceName: 'Marketing',
+        timezone: 'Europe/Madrid',
+      });
+
+      await component.submit();
+
+      expect(component.errorMessage()).toBe('Email already registered.');
+      expect(component.loading()).toBe(false);
+    });
   });
 });

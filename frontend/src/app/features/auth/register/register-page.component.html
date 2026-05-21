@@ -64,7 +64,7 @@
                       <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="firstName">
                         {{ i18nStore.t('auth.firstName') }}
                       </label>
-                      <input pInputText id="firstName" type="text" formControlName="firstName" class="w-full" placeholder="John" />
+                      <input pInputText id="firstName" type="text" formControlName="firstName" class="w-full" placeholder="John" [invalid]="ownerForm.controls.firstName.invalid && (ownerForm.controls.firstName.touched || submitted())" />
                       @if (ownerForm.controls.firstName.invalid && (ownerForm.controls.firstName.touched || submitted())) {
                         <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
                           <i class="pi pi-exclamation-circle text-xs"></i>
@@ -77,7 +77,7 @@
                       <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="lastName">
                         {{ i18nStore.t('auth.lastName') }}
                       </label>
-                      <input pInputText id="lastName" type="text" formControlName="lastName" class="w-full" placeholder="Doe" />
+                      <input pInputText id="lastName" type="text" formControlName="lastName" class="w-full" placeholder="Doe" [invalid]="ownerForm.controls.lastName.invalid && (ownerForm.controls.lastName.touched || submitted())" />
                       @if (ownerForm.controls.lastName.invalid && (ownerForm.controls.lastName.touched || submitted())) {
                         <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
                           <i class="pi pi-exclamation-circle text-xs"></i>
@@ -90,7 +90,7 @@
                       <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="email">
                         {{ i18nStore.t('auth.email') }}
                       </label>
-                      <input pInputText id="email" type="email" formControlName="email" class="w-full" placeholder="john.doe@example.com" />
+                      <input pInputText id="email" type="email" formControlName="email" class="w-full" placeholder="john.doe@example.com" [invalid]="ownerForm.controls.email.invalid && (ownerForm.controls.email.touched || submitted())" />
                       @if (ownerForm.controls.email.invalid && (ownerForm.controls.email.touched || submitted())) {
                         <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
                           <i class="pi pi-exclamation-circle text-xs"></i>
@@ -107,7 +107,7 @@
                       <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="password">
                         {{ i18nStore.t('auth.password') }}
                       </label>
-                      <p-password id="password" formControlName="password" [feedback]="false" [toggleMask]="true" inputStyleClass="w-full" styleClass="w-full" placeholder="••••••••" />
+                      <p-password id="password" formControlName="password" [feedback]="false" [toggleMask]="true" inputStyleClass="w-full" styleClass="w-full" placeholder="••••••••" [invalid]="ownerForm.controls.password.invalid && (ownerForm.controls.password.touched || submitted())" />
                       @if (ownerForm.controls.password.invalid && (ownerForm.controls.password.touched || submitted())) {
                         <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
                           <i class="pi pi-exclamation-circle text-xs"></i>
@@ -120,7 +120,7 @@
                       <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="confirmPassword">
                         {{ i18nStore.t('auth.confirmPassword') }}
                       </label>
-                      <p-password id="confirmPassword" formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" inputStyleClass="w-full" styleClass="w-full" placeholder="••••••••" />
+                      <p-password id="confirmPassword" formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" inputStyleClass="w-full" styleClass="w-full" placeholder="••••••••" [invalid]="(ownerForm.controls.confirmPassword.invalid || !passwordsMatch()) && (ownerForm.controls.confirmPassword.touched || submitted())" />
                       @if (ownerForm.controls.confirmPassword.invalid && (ownerForm.controls.confirmPassword.touched || submitted())) {
                         <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
                           <i class="pi pi-exclamation-circle text-xs"></i>
@@ -182,7 +182,7 @@
 
                     <div class="flex flex-col gap-1.5 md:col-span-2 pt-2">
                       <div class="flex items-center gap-3">
-                        <p-checkbox formControlName="termsAccepted" [binary]="true" inputId="termsAccepted" />
+                        <p-checkbox formControlName="termsAccepted" [binary]="true" inputId="termsAccepted" [invalid]="ownerForm.controls.termsAccepted.invalid && (ownerForm.controls.termsAccepted.touched || submitted())" />
                         <label class="text-sm text-slate-600 dark:text-slate-400 select-none" for="termsAccepted">
                           {{ i18nStore.t('auth.acceptTerms') }}
                         </label>
@@ -218,7 +218,7 @@
                     <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="accountName">
                       {{ i18nStore.t('workspace.accountName') }}
                     </label>
-                    <input pInputText id="accountName" type="text" formControlName="accountName" class="w-full" placeholder="Acme Corporation" />
+                    <input pInputText id="accountName" type="text" formControlName="accountName" class="w-full" placeholder="Acme Corporation" [invalid]="workspaceForm.controls.accountName.invalid && (workspaceForm.controls.accountName.touched || submitted())" />
                     @if (workspaceForm.controls.accountName.invalid && (workspaceForm.controls.accountName.touched || submitted())) {
                       <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
                         <i class="pi pi-exclamation-circle text-xs"></i>
@@ -231,7 +231,7 @@
                     <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="workspaceName">
                       {{ i18nStore.t('workspace.name') }}
                     </label>
-                    <input pInputText id="workspaceName" type="text" formControlName="workspaceName" class="w-full" placeholder="Marketing Department" />
+                    <input pInputText id="workspaceName" type="text" formControlName="workspaceName" class="w-full" placeholder="Marketing Department" [invalid]="workspaceForm.controls.workspaceName.invalid && (workspaceForm.controls.workspaceName.touched || submitted())" />
                     @if (workspaceForm.controls.workspaceName.invalid && (workspaceForm.controls.workspaceName.touched || submitted())) {
                       <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
                         <i class="pi pi-exclamation-circle text-xs"></i>
@@ -254,6 +254,7 @@
                       filterPlaceholder="Search timezone / Buscar..."
                       styleClass="w-full"
                       appendTo="body"
+                      [invalid]="workspaceForm.controls.timezone.invalid && (workspaceForm.controls.timezone.touched || submitted())"
                     ></p-select>
                     @if (workspaceForm.controls.timezone.invalid && (workspaceForm.controls.timezone.touched || submitted())) {
                       <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
@@ -305,6 +306,13 @@
           </p-step-panel>
         </p-step-panels>
       </p-stepper>
+
+      @if (errorMessage()) {
+        <div class="p-3 mb-4 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-500 text-xs flex items-center gap-2 animate-fade-in">
+          <i class="pi pi-exclamation-triangle"></i>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
 
       <!-- Action Buttons -->
       <div class="flex items-center justify-between gap-3 pt-6 mt-6 border-t border-subtle">

@@ -70,6 +70,7 @@ export class RegisterPageComponent implements OnInit {
   readonly step = signal(1);
   readonly submitted = signal(false);
   readonly loading = signal(false);
+  readonly errorMessage = signal('');
 
   ngOnInit(): void {
     if (this.sessionStore.isAuthenticated()) {
@@ -130,6 +131,7 @@ export class RegisterPageComponent implements OnInit {
   }
 
   nextStep(): void {
+    this.errorMessage.set('');
     if (this.step() === 1) {
       this.ownerForm.markAllAsTouched();
       if (this.ownerForm.invalid || !this.passwordsMatch()) {
@@ -149,6 +151,7 @@ export class RegisterPageComponent implements OnInit {
   }
 
   previousStep(): void {
+    this.errorMessage.set('');
     if (this.sessionStore.isAuthenticated()) {
       return;
     }
@@ -157,8 +160,8 @@ export class RegisterPageComponent implements OnInit {
 
   async submit(): Promise<void> {
     this.submitted.set(true);
-
     this.loading.set(true);
+    this.errorMessage.set('');
 
     try {
       const workspace = this.workspaceForm.getRawValue();
@@ -199,6 +202,18 @@ export class RegisterPageComponent implements OnInit {
       }
 
       await this.router.navigateByUrl('/app');
+    } catch (err: any) {
+      console.error('Registration/Bootstrap error:', err);
+      let msg = this.i18nStore.t('auth.register.error');
+      if (err?.error?.message) {
+        msg = err.error.message;
+      } else if (err?.error?.errors) {
+        const firstKey = Object.keys(err.error.errors)[0];
+        if (firstKey && Array.isArray(err.error.errors[firstKey]) && err.error.errors[firstKey].length > 0) {
+          msg = err.error.errors[firstKey][0];
+        }
+      }
+      this.errorMessage.set(msg);
     } finally {
       this.loading.set(false);
     }

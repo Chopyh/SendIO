@@ -40,9 +40,9 @@
           <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="email">
             {{ i18nStore.t('auth.email') }}
           </label>
-          <input pInputText id="email" type="email" formControlName="email" class="w-full" />
+          <input pInputText id="email" type="email" formControlName="email" class="w-full" [invalid]="emailInvalid()" />
           @if (emailInvalid()) {
-            <span class="text-xs text-rose-500 mt-1 flex items-center gap-1">
+            <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
               <i class="pi pi-exclamation-circle text-xs"></i>
               {{ i18nStore.t('validation.email') }}
             </span>
@@ -60,9 +60,10 @@
             [toggleMask]="true" 
             inputStyleClass="w-full" 
             styleClass="w-full" 
+            [invalid]="passwordInvalid()"
           />
           @if (passwordInvalid()) {
-            <span class="text-xs text-rose-500 mt-1 flex items-center gap-1">
+            <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
               <i class="pi pi-exclamation-circle text-xs"></i>
               {{ i18nStore.t('validation.required') }}
             </span>
