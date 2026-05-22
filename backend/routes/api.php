@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ContactsImportController;
 use App\Http\Controllers\Api\WorkspaceBootstrapController;
 use App\Http\Controllers\Api\VariableCatalogController;
@@ -22,6 +23,7 @@ Route::middleware('auth:api')->group(function (): void {
 
 Route::middleware(['auth:api', 'workspace.context'])->group(function (): void {
     Route::get('/workspaces/current', [WorkspaceBootstrapController::class, 'current']);
+    Route::get('/contacts', [ContactController::class, 'index']);
     Route::post('/contacts/import', [ContactsImportController::class, 'import']);
 
     // Variables

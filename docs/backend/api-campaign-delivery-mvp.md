@@ -6,14 +6,16 @@ This contract defines the first production slice of `MVP-BACK-004` for workspace
 
 1. Authenticate with `POST /api/auth/login` and include `Authorization: Bearer <access_token>`.
 2. Include `X-Workspace-Id: <workspace_id>` on all campaign endpoints.
-3. Create campaign draft with recipients using `POST /api/campaigns`.
-4. Enqueue recipient delivery jobs using `POST /api/campaigns/{campaign}/dispatch`.
-5. Read minimal delivery status using `GET /api/campaigns/{campaign}/summary`.
+3. Resolve selectable recipients using `GET /api/contacts`.
+4. Create campaign draft with recipients using `POST /api/campaigns`.
+5. Enqueue recipient delivery jobs using `POST /api/campaigns/{campaign}/dispatch`.
+6. Read minimal delivery status using `GET /api/campaigns/{campaign}/summary`.
 
 ## Endpoints
 
 | Endpoint | Auth | Workspace header | Role | Purpose |
 |---|---|---|---|---|
+| `GET /api/contacts` | Yes | Yes | Owner, Editor, Viewer | List contacts in the active workspace for campaign recipient selection |
 | `POST /api/campaigns` | Yes | Yes | Owner, Editor | Create campaign draft from template/version and recipient selection |
 | `POST /api/campaigns/{campaign}/dispatch` | Yes | Yes | Owner, Editor | Enqueue pending recipients for delivery |
 | `GET /api/campaigns/{campaign}/summary` | Yes | Yes | Owner, Editor, Viewer | Read minimal campaign status and counters |

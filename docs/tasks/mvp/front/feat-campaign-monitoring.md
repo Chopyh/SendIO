@@ -4,7 +4,12 @@
 
 ## Scope
 
-Implement frontend campaign execution and monitoring views, including delivery status, reporting summaries, and audit visibility for MVP operators.
+Implement frontend MVP campaign execution and status visibility flow for immediate dispatch.
+
+- Route shells: `/campaigns`, `/campaigns/new`, `/campaigns/:id` under `/app`.
+- Recipients mode: manual multi-select and all-contacts mode.
+- Single CTA behavior: `Enviar ahora` creates campaign and dispatches immediately.
+- Out of scope: scheduling, pause/resume, cancel.
 
 ## UI Stack Requirement
 
@@ -12,15 +17,16 @@ Implement frontend campaign execution and monitoring views, including delivery s
 
 ## Deliverables
 
-- Campaign launch and status tracking views.
-- Reporting dashboard widgets for core delivery metrics.
-- Audit activity timeline for key campaign and contact actions.
+- Campaign create form with create-then-dispatch sequencing and step-specific error feedback.
+- Campaign list/detail MVP shells for status visibility.
+- Frontend i18n strings (`en`, `es`) for campaigns flow.
+- Unit tests for critical sequencing and failure guards.
 
 ## Acceptance Criteria
 
-- Users can trigger campaign sends and observe status progression.
-- Reporting metrics align with backend reporting endpoints.
-- Audit timeline surfaces the MVP event set with filter support.
+- Users can trigger campaign sends and observe summary status progression.
+- Dispatch is never called when campaign creation fails.
+- Dispatch failure after successful creation surfaces a clear error state.
 - UI implementation uses PrimeNG components and TailwindCSS utility classes.
 
 ## Dependencies
@@ -30,12 +36,17 @@ Implement frontend campaign execution and monitoring views, including delivery s
 
 ## Validation
 
-- Run frontend tests for campaign status and reporting rendering.
-- Validate end-to-end visibility of audit events in workspace context.
+- Run targeted frontend tests for campaigns create/dispatch sequencing.
+- Validate list/detail route rendering for MVP status visibility.
 
 ## Checklist
 
-- [ ] Build campaign send and status monitoring interfaces.
-- [ ] Integrate reporting summaries and refresh behavior.
-- [ ] Implement audit timeline with filter controls.
-- [ ] Add tests for end-to-end monitoring workflows.
+- [x] Build campaign send and status monitoring interfaces.
+- [x] Add route shells for list/new/detail campaigns pages.
+- [x] Add tests for create+dispatch sequencing and failure behavior.
+- [x] Document MVP limitation for missing backend campaigns list endpoint.
+
+## Known MVP Limitations
+
+- Backend does not expose `GET /api/campaigns`, so list page uses local browser cache of recently created campaign ids and hydrates summaries via `GET /api/campaigns/{id}/summary`.
+- Backend now exposes `GET /api/contacts` in the current branch, so the recipients selector can load workspace contacts for manual and all-contacts modes.

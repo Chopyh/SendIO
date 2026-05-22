@@ -59,3 +59,12 @@ Implement MVP campaign delivery flow that resolves templates and variables, targ
   - per-recipient state transitions and campaign aggregate counters.
   - stale `sending` recovery via 15-minute lease timeout on `last_attempt_at` to avoid deadlocks after worker crashes.
 - Added feature coverage for success, failure/retry behavior, workspace isolation, and role authorization.
+
+## Follow-up Progress — 2026-05-22
+
+- Added missing workspace-scoped contacts read endpoint used by campaigns and contacts UI:
+  - `GET /api/contacts`
+- Added frontend contacts listing page and navigation route:
+  - `/app/contacts`
+- Updated campaigns new form control layout so labels stay above controls consistently.
+- Removed prior frontend limitation dependency on a missing contacts endpoint by delivering `/api/contacts` in this branch.

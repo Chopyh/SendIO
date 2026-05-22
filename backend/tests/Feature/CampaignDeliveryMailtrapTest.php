@@ -163,7 +163,7 @@ class CampaignDeliveryMailtrapTest extends TestCase
         [$workspace] = $this->workspaceContextOnly();
         [$campaign, $recipient] = $this->campaignWithSingleRecipient($workspace);
 
-        Mail::shouldReceive('raw')->andThrow(new \RuntimeException('SMTP rejected recipient'));
+        Mail::shouldReceive('html')->andThrow(new \RuntimeException('SMTP rejected recipient'));
 
         $job = new SendCampaignRecipientJob($campaign->id, $recipient->id);
 
@@ -237,6 +237,74 @@ class CampaignDeliveryMailtrapTest extends TestCase
             'attempt_number' => 1,
             'status' => 'sent',
         ]);
+    }
+
+    public function test_job_sends_html_body_and_replaces_recipient_and_unsubscribe_placeholders(): void
+    {
+        [$workspace] = $this->workspaceContextOnly();
+        [$campaign, $recipient] = $this->campaignWithSingleRecipient($workspace);
+
+        $campaign->templateVersion->update([
+            'snapshot_json' => [
+                'sections' => [
+                    [
+                        'sectionName' => 'Main',
+                        'components' => [
+                            [
+                                'type' => 'text',
+                                'content' => '<h1>Hello {{contact.first_name}} {{contact.last_name}}</h1>',
+                            ],
+                            [
+                                'type' => 'button',
+                                'url' => '{{system.unsubscribe_url}}',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        Mail::shouldReceive('html')
+            ->once()
+            ->withArgs(function (string $body, callable $callback): bool {
+                return str_contains($body, '<h1>Hello Contact 1</h1>')
+                    && str_contains($body, 'href="http://localhost/unsubscribe?campaign_recipient_id=')
+                    && ! str_contains($body, '{{contact.first_name}}')
+                    && ! str_contains($body, '{{system.unsubscribe_url}}');
+            });
+
+        (new SendCampaignRecipientJob($campaign->id, $recipient->id))->handle();
+    }
+
+    public function test_job_replaces_legacy_unsubscribe_url_placeholder(): void
+    {
+        [$workspace] = $this->workspaceContextOnly();
+        [$campaign, $recipient] = $this->campaignWithSingleRecipient($workspace);
+
+        $campaign->templateVersion->update([
+            'snapshot_json' => [
+                'sections' => [
+                    [
+                        'sectionName' => 'Main',
+                        'components' => [
+                            [
+                                'type' => 'text',
+                                'content' => '<p>Unsubscribe here: {{unsubscribe_url}}</p>',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        Mail::shouldReceive('html')
+            ->once()
+            ->withArgs(function (string $body, callable $callback): bool {
+                return str_contains($body, 'http://localhost/unsubscribe?campaign_recipient_id=')
+                    && ! str_contains($body, '{{unsubscribe_url}}');
+            });
+
+        (new SendCampaignRecipientJob($campaign->id, $recipient->id))->handle();
     }
 
     public function test_workspace_isolation_and_role_authorization_are_enforced(): void

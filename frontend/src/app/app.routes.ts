@@ -24,6 +24,11 @@ export const routes: Routes = [
           import('./features/app/workspace-home-page.component').then((m) => m.WorkspaceHomePageComponent),
       },
       {
+        path: 'contacts',
+        loadComponent: () =>
+          import('./features/contacts/contacts-list-page.component').then((m) => m.ContactsListPageComponent),
+      },
+      {
         path: 'contacts/import',
         loadComponent: () =>
           import('./features/contacts/contacts-import-page.component').then((m) => m.ContactsImportPageComponent),
@@ -37,6 +42,19 @@ export const routes: Routes = [
         path: 'templates/:id/edit',
         loadComponent: () =>
           import('./features/templates/template-editor/template-editor-page.component').then((m) => m.TemplateEditorPageComponent),
+      },
+      {
+        path: 'campaigns',
+        loadComponent: () =>
+          import('./features/campaigns/campaigns-list-page.component').then((m) => m.CampaignsListPageComponent),
+      },
+      {
+        path: 'campaigns/new',
+        loadComponent: () => import('./features/campaigns/campaigns-new-page.component').then((m) => m.CampaignsNewPageComponent),
+      },
+      {
+        path: 'campaigns/:id',
+        loadComponent: () => import('./features/campaigns/campaign-detail-page.component').then((m) => m.CampaignDetailPageComponent),
       },
     ],
   },

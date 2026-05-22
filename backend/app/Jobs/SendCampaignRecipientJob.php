@@ -57,7 +57,7 @@ class SendCampaignRecipientJob implements ShouldQueue
         try {
             $body = $this->renderBody($campaign->templateVersion?->snapshot_json ?? [], $recipient);
 
-            Mail::raw($body, function ($message) use ($recipient, $campaign): void {
+            Mail::html($body, function ($message) use ($recipient, $campaign): void {
                 $message->to($recipient->email)
                     ->subject($campaign->name);
             });
@@ -142,20 +142,43 @@ class SendCampaignRecipientJob implements ShouldQueue
 
     private function renderBody(array $snapshot, CampaignRecipient $recipient): string
     {
-        $lines = [];
+        $blocks = [];
+        $unsubscribeUrl = $this->resolveUnsubscribeUrl($recipient);
 
         foreach ($snapshot['sections'] ?? [] as $section) {
             foreach ($section['components'] ?? [] as $component) {
-                if (($component['type'] ?? null) === 'text') {
-                    $lines[] = (string) ($component['content'] ?? '');
+                $type = (string) ($component['type'] ?? '');
+
+                if ($type === 'text') {
+                    $content = trim((string) ($component['content'] ?? ''));
+                    if ($content !== '') {
+                        $blocks[] = $content;
+                    }
+                    continue;
+                }
+
+                if ($type === 'button') {
+                    $url = trim((string) ($component['url'] ?? ''));
+                    if ($url !== '') {
+                        $blocks[] = '<p><a href="'.$url.'">'.htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</a></p>';
+                    }
                 }
             }
         }
 
-        $body = trim(implode("\n\n", $lines));
+        $body = trim(implode("\n", $blocks));
         $body = str_replace('{{contact.first_name}}', (string) ($recipient->contact?->first_name ?? ''), $body);
         $body = str_replace('{{contact.last_name}}', (string) ($recipient->contact?->last_name ?? ''), $body);
+        $body = str_replace('{{unsubscribe_url}}', $unsubscribeUrl, $body);
+        $body = str_replace('{{system.unsubscribe_url}}', $unsubscribeUrl, $body);
 
-        return $body !== '' ? $body : 'Campaign message';
+        return $body !== '' ? $body : '<p>Campaign message</p>';
+    }
+
+    private function resolveUnsubscribeUrl(CampaignRecipient $recipient): string
+    {
+        $baseUrl = rtrim((string) config('app.url', 'http://localhost'), '/');
+
+        return $baseUrl.'/unsubscribe?campaign_recipient_id='.$recipient->id;
     }
 }
