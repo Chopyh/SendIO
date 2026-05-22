@@ -15,6 +15,7 @@ This index lists implementation tasks and governance contracts.
 - [MVP Back Tasks](mvp/back/)
 - [MVP Infra Tasks](mvp/infra/)
 - [Template Canonical Payload Migration](mvp/back/feat-template-canonical-payload-migration.md)
+- [Campaign Delivery Through Mailtrap](mvp/back/feat-campaign-delivery-mailtrap.md)
 
 ## Task Conventions
 

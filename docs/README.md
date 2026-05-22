@@ -44,6 +44,7 @@ This directory is the source of truth for project governance, architecture decis
 - [Variable Catalog API](backend/api-variable-catalog.md)
 - [Component Library API](backend/api-component-library.md)
 - [Templates API](backend/api-templates.md)
+- [Campaign Delivery API (MVP)](backend/api-campaign-delivery-mvp.md)
 - [Database UUID Convention](backend/database-uuid-convention.md)
 - [Observability and Audit Baseline](devops/observability-audit-baseline.md)
 - [Template Editor DnD Horizontal Design](superpowers/specs/2026-05-21-template-editor-dnd-horizontal-design.md)
