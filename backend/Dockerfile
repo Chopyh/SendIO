@@ -7,6 +7,7 @@ RUN apt-get update \
         unzip \
         libpq-dev \
         libzip-dev \
+        libzstd-dev \
     && docker-php-ext-install pdo pdo_pgsql zip \
     && pecl install redis mongodb \
     && docker-php-ext-enable redis mongodb \

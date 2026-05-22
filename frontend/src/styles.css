@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 @import "primeicons/primeicons.css";
+@import "quill/dist/quill.core.css";
+@import "quill/dist/quill.snow.css";
+
 
 @custom-variant dark (&:where(.dark, .dark *));
 

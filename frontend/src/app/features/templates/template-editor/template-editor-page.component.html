@@ -1,0 +1,630 @@
+<!-- TOOLBAR -->
+<div class="flex flex-col h-full overflow-hidden bg-slate-50">
+  <div class="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 shadow-sm z-20">
+    <!-- Left Section: Back, Title, Badge -->
+    <div class="flex items-center space-x-4">
+      <button (click)="goBack()" 
+              class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-150 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+        <span class="text-sm font-medium">{{ i18nStore.t('editor.toolbar.back') }}</span>
+      </button>
+      <div class="h-4 w-px bg-gray-200"></div>
+      <div class="flex items-center space-x-3">
+        <h1 class="text-lg font-semibold text-gray-800">{{ template?.name || i18nStore.t('editor.toolbar.loading') }}</h1>
+        @if (template) {
+          <span [class]="isPublished ? 
+            'inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20' : 
+            'inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20'">
+            v{{ currentVersionNumber }} - {{ currentVersionState | titlecase }}
+          </span>
+        }
+      </div>
+    </div>
+
+    <!-- Center Section: View Mode Segmented Control -->
+    <div class="flex items-center bg-gray-100 p-1 rounded-lg">
+      <button type="button" (click)="toggleView('design')"
+        [class]="isDesignView ? 'bg-white text-gray-800 shadow-sm px-4 py-1.5 text-sm font-medium rounded-md transition-all' : 'text-gray-500 hover:text-gray-800 px-4 py-1.5 text-sm font-medium rounded-md transition-all'">
+        {{ i18nStore.t('editor.toolbar.design') }}
+      </button>
+      <button type="button" (click)="toggleView('code')"
+        [class]="isCodeView ? 'bg-white text-gray-800 shadow-sm px-4 py-1.5 text-sm font-medium rounded-md transition-all' : 'text-gray-500 hover:text-gray-800 px-4 py-1.5 text-sm font-medium rounded-md transition-all'">
+        {{ i18nStore.t('editor.toolbar.htmlCode') }}
+      </button>
+    </div>
+
+    <!-- Right Section: Actions -->
+    <div class="flex items-center space-x-3">
+      @if (template) {
+        @if (!isPublished) {
+          <button (click)="saveDraft()"
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150">
+            {{ i18nStore.t('editor.toolbar.saveDraft') }}
+          </button>
+          <button (click)="publish()"
+                  class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-150">
+            {{ i18nStore.t('editor.toolbar.publish') }}
+          </button>
+        } @else {
+          <button (click)="createNewDraft()"
+                  class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-150">
+            {{ i18nStore.t('editor.toolbar.createNewDraft') }}
+          </button>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- Warning Banner for Published templates -->
+  @if (template && isPublished && isDesignView) {
+    <div class="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-center justify-between z-10">
+      <div class="flex items-center space-x-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-amber-600">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+        <span class="text-sm text-amber-800 font-medium">
+          {{ i18nStore.t('editor.banner.publishedReadOnly') }}
+        </span>
+      </div>
+      <button (click)="createNewDraft()" 
+              class="text-xs font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-md transition-colors duration-150">
+        {{ i18nStore.t('editor.banner.createDraft') }}
+      </button>
+    </div>
+  }
+
+  <!-- MAIN SPLIT WORKSPACE -->
+  <div class="flex flex-row flex-1 overflow-hidden">
+    <!-- LEFT SIDEBAR PANEL -->
+    @if (isDesignView && !isCodeView) {
+      <div class="w-80 bg-white border-r border-gray-200 flex flex-col h-full shadow-sm z-10">
+        <!-- Sidebar Header -->
+        <div class="p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+          <h2 class="text-xs font-semibold text-gray-500 tracking-wider uppercase">{{ i18nStore.t('editor.sidebar.sections') }}</h2>
+          <button (click)="openCreateSectionDialog()" 
+                  [disabled]="isPublished"
+                  [class.opacity-50]="isPublished"
+                  [class.cursor-not-allowed]="isPublished"
+                  class="inline-flex items-center p-1.5 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150"
+                  title="{{ i18nStore.t('editor.sidebar.newSection') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Sidebar Body (Sections & Components) -->
+        <div class="flex-1 overflow-y-auto py-2 space-y-0">
+          @if (template && template.sections.length === 0) {
+            <div class="text-center py-8 text-gray-400 text-sm px-4">
+              {{ i18nStore.t('editor.sidebar.noSections') }}
+            </div>
+          }
+          @for (sec of template?.sections; track sec.sectionName) {
+            <div class="border-b border-gray-100 last:border-b-0">
+              <!-- Section Header -->
+              <div class="flex items-center justify-between px-4 py-2 hover:bg-gray-50 cursor-pointer select-none group/sec transition-colors duration-100"
+                   (click)="toggleSection(sec.sectionName)">
+                <div class="flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                       class="w-3 h-3 text-gray-400 transition-transform duration-150 shrink-0"
+                       [class.rotate-90]="expandedSections.get(sec.sectionName)">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                  <span class="text-sm font-medium text-gray-700">{{ sec.sectionName }}</span>
+                </div>
+                <!-- Actions — only visible on hover -->
+                <div class="flex items-center gap-0.5 opacity-0 group-hover/sec:opacity-100 transition-opacity duration-100" (click)="$event.stopPropagation()">
+                  <button (click)="openCreateSectionDialog(sec)"
+                          [disabled]="isPublished"
+                          class="p-1 text-gray-400 hover:text-indigo-600 rounded transition-colors duration-100 disabled:opacity-30"
+                          title="Edit">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                    </svg>
+                  </button>
+                  <button (click)="deleteSection(sec)"
+                          [disabled]="isPublished"
+                          class="p-1 text-gray-400 hover:text-red-500 rounded transition-colors duration-100 disabled:opacity-30"
+                          title="Delete">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Draggable Section Items — flat list with left indent line -->
+              @if (expandedSections.get(sec.sectionName)) {
+                <div class="ml-4 pl-3 border-l border-gray-200 pb-1 space-y-0.5"
+                     cdkDropList
+                     [id]="sidebarSectionIds.get(sec.sectionName) || ''"
+                     [cdkDropListData]="sec.components"
+                     [cdkDropListConnectedTo]="allDropLists">
+
+                  @if (sec.components.length === 0) {
+                    <p class="text-[11px] text-gray-400 italic py-1">No components yet</p>
+                  }
+
+                  @for (component of sec.components; track component.blockId) {
+                    <div class="cursor-grab"
+                         [cdkDragData]="component"
+                         (cdkDragStarted)="dragStarted()"
+                         (cdkDragEnded)="dragEnded()"
+                         [cdkDragDisabled]="isPublished"
+                         cdkDrag>
+                      @switch (component.type) {
+                        @case ('text') {
+                          <template-text-component [infoMode]="true" [text]="component" [readonly]="isPublished"></template-text-component>
+                        }
+                        @case ('image') {
+                          <template-image-component [infoMode]="true" [image]="component" [readonly]="isPublished"></template-image-component>
+                        }
+                        @case ('button') {
+                          <template-button-component [infoMode]="true" [button]="component" [readonly]="isPublished"></template-button-component>
+                        }
+                        @case ('separator') {
+                          <div class="flex items-center gap-2 px-2 py-1 rounded"
+                               [ngClass]="{
+                                 'text-emerald-600': component.posX !== undefined && component.posY !== undefined,
+                                 'text-gray-500': component.posX === undefined || component.posY === undefined
+                               }">
+                            <div class="shrink-0 w-5 h-5 flex items-center justify-center rounded bg-gray-100 text-gray-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H6" />
+                              </svg>
+                            </div>
+                            <span class="text-xs font-medium text-gray-700 truncate">{{ component.blockName }}</span>
+                          </div>
+                        }
+                      }
+                      <shared-element-dragging-view *cdkDragPreview [data]="component"></shared-element-dragging-view>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Variables Accordion -->
+        <div class="border-t border-gray-200">
+          <button (click)="variablesExpanded = !variablesExpanded"
+                  class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors duration-150 select-none">
+            <div class="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-500">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+              <h2 class="text-xs font-semibold text-gray-500 tracking-wider uppercase">{{ i18nStore.t('editor.sidebar.variables') }}</h2>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                 class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200"
+                 [class.rotate-90]="variablesExpanded">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+
+          @if (variablesExpanded) {
+            <div class="p-3 space-y-3 bg-white">
+              <p class="text-[11px] text-gray-400 leading-relaxed">
+                {{ i18nStore.t('editor.sidebar.variablesDesc') }}
+              </p>
+
+              <!-- Contact -->
+              <div>
+                <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                  {{ i18nStore.t('editor.sidebar.variables.contact') }}
+                </p>
+                <div class="flex flex-wrap gap-1.5">
+                  @for (v of contactVariables; track v) {
+                    <button (click)="copyVariable(v)"
+                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-mono font-medium transition-all duration-150"
+                            [class]="copiedVariable === v
+                              ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-400'
+                              : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:ring-1 hover:ring-indigo-300'">
+                      {{ copiedVariable === v ? i18nStore.t('editor.sidebar.variables.copied') : v }}
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Workspace -->
+              <div>
+                <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                  {{ i18nStore.t('editor.sidebar.variables.workspace') }}
+                </p>
+                <div class="flex flex-wrap gap-1.5">
+                  @for (v of workspaceVariables; track v) {
+                    <button (click)="copyVariable(v)"
+                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-mono font-medium transition-all duration-150"
+                            [class]="copiedVariable === v
+                              ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-400'
+                              : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:ring-1 hover:ring-indigo-300'">
+                      {{ copiedVariable === v ? i18nStore.t('editor.sidebar.variables.copied') : v }}
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- System -->
+              <div>
+                <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                  {{ i18nStore.t('editor.sidebar.variables.system') }}
+                </p>
+                <div class="flex flex-wrap gap-1.5">
+                  @for (v of systemVariables; track v) {
+                    <button (click)="copyVariable(v)"
+                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-mono font-medium transition-all duration-150"
+                            [class]="copiedVariable === v
+                              ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-400'
+                              : 'bg-amber-50 text-amber-700 hover:bg-amber-100 hover:ring-1 hover:ring-amber-300'">
+                      {{ copiedVariable === v ? i18nStore.t('editor.sidebar.variables.copied') : v }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Sidebar Footer Actions (Create Component) -->
+        <div class="p-4 border-t border-gray-200 bg-gray-50 space-y-2">
+          <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{{ i18nStore.t('editor.sidebar.create') }}</div>
+          <div class="grid grid-cols-2 gap-2">
+            <!-- Text -->
+            <button (click)="openCreateComponentDialog('text')" 
+                    [disabled]="isPublished"
+                    class="flex flex-col items-center justify-center p-2 bg-white hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300 rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-gray-500 mb-1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.92 1.786c-.085.102-.014.254.117.223a10.5 10.5 0 002.766-.749c.56-.201 1.173-.062 1.662.24A9.972 9.972 0 0012 20.25z" />
+              </svg>
+              <span class="text-xs font-medium text-gray-600">{{ i18nStore.t('editor.components.text') }}</span>
+            </button>
+            <!-- Image -->
+            <button (click)="openCreateComponentDialog('image')" 
+                    [disabled]="isPublished"
+                    class="flex flex-col items-center justify-center p-2 bg-white hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300 rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-gray-500 mb-1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+              <span class="text-xs font-medium text-gray-600">{{ i18nStore.t('editor.components.image') }}</span>
+            </button>
+            <!-- Button -->
+            <button (click)="openCreateComponentDialog('button')" 
+                    [disabled]="isPublished"
+                    class="flex flex-col items-center justify-center p-2 bg-white hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300 rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-gray-500 mb-1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.25h13.5L21 7.5v9l-2.25 2.25H5.25L3 16.5v-9l2.25-2.25z" />
+              </svg>
+              <span class="text-xs font-medium text-gray-600">{{ i18nStore.t('editor.components.button') }}</span>
+            </button>
+            <!-- Separator -->
+            <button (click)="openCreateComponentDialog('separator')" 
+                    [disabled]="isPublished"
+                    class="flex flex-col items-center justify-center p-2 bg-white hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300 rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-gray-500 mb-1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H6" />
+              </svg>
+              <span class="text-xs font-medium text-gray-600">{{ i18nStore.t('editor.components.separator') }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- RIGHT CANVAS / CODE VIEW CONTAINER -->
+    <div class="flex-1 overflow-y-auto p-6 flex justify-center bg-slate-50">
+      @if (isDesignView && !isCodeView) {
+        <div class="flex flex-col w-full max-w-4xl min-h-[500px] h-fit">
+          @for (section of sectionGrids; track section.sectionName; let sectionIndex = $index) {
+            <!-- Section Container with hover ring -->
+            <div class="w-full relative group/section rounded-md mb-1 transition-all duration-150 hover:ring-2 hover:ring-indigo-200/60 hover:shadow-sm"
+                 [ngStyle]="section.styles">
+              <!-- Section label badge -->
+              <p class="absolute text-[10px] right-3 z-10 cursor-default -top-2.5 bg-white border border-gray-200 px-2 py-0.5 rounded-full text-gray-400 select-none shadow-sm group-hover/section:text-indigo-500 group-hover/section:border-indigo-200 transition-colors duration-150">
+                {{ section.sectionName }}
+              </p>
+
+              @if (section.grid.length === 0) {
+                <!-- Empty Section State -->
+                <div class="flex flex-col items-center justify-center py-10 border-2 border-dashed border-gray-200 rounded-md bg-gray-50/50 transition-all duration-150 hover:border-indigo-300 hover:bg-indigo-50/30">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-300 mb-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                  </svg>
+                  <p class="text-xs text-gray-400 mb-3">{{ i18nStore.t('editor.section.empty') }}</p>
+                  @if (!isPublished) {
+                    <button (click)="initializeEmptySectionGrid(section.sectionName)"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors duration-150 shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>
+                      {{ i18nStore.t('editor.section.initializeGrid') }}
+                    </button>
+                  }
+                </div>
+              }
+
+              @for (row of section.grid; track $index; let rowIndex = $index) {
+                <div class="grid gap-0 border-b border-b-gray-100 last:border-b-0"
+                     [style.gridTemplateColumns]="getColumnWidths(section.sectionName, rowIndex)"
+                     [attr.data-section]="section.sectionName" [attr.data-row]="rowIndex">
+                  @for (cell of row; track $index; let colIndex = $index) {
+                    <div class="min-h-16 border-r border-r-gray-200 last:border-r-0 relative h-full group transition-colors duration-150"
+                         [class.bg-indigo-50\/20]="isDragging && cell.content.length === 0"
+                         cdkDropList [id]="cell.id"
+                         [cdkDropListConnectedTo]="allDropLists" [cdkDropListEnterPredicate]="dragLimit"
+                         [cdkDropListDisabled]="isPublished"
+                         (cdkDropListDropped)="drop($event, section.sectionName, rowIndex, colIndex)"
+                         [cdkDropListData]="cell.content"
+                         [ngClass]="{'border-2 border-dashed border-indigo-300 rounded-md bg-indigo-50/40 p-1':
+                           isDragging && cell.content.length === 0 }">
+
+                      <!-- Hover Cell Deletion Button -->
+                      @if (!isPublished) {
+                        <button (click)="removeCell(section.sectionName, rowIndex, colIndex)"
+                                class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md hover:scale-110 transition-all duration-150 z-20 hidden group-hover:flex items-center justify-center border-2 border-white"
+                                [attr.title]="i18nStore.t('editor.components.deleteColumn')">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      }
+
+                      <!-- Empty cell drop hint -->
+                      @if (cell.content.length === 0 && !isDragging && !isPublished) {
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none">
+                          <span class="text-[10px] text-gray-300 select-none">drag here</span>
+                        </div>
+                      }
+
+                      @if (cell.content[0]) {
+                        @if (cell.content[0]?.type === 'text') {
+                          <template-text-component
+                            [cdkDragData]="cell.content[0]" cdkDrag
+                            [cdkDragDisabled]="isPublished"
+                            [readonly]="isPublished"
+                            (cdkDragStarted)="dragStarted()"
+                            (cdkDragEnded)="dragEnded()"
+                            [class.cursor-grab]="!isPublished"
+                            [class.cursor-default]="isPublished"
+                            [text]="cell.content[0]!"
+                            (onDeleteElement)="deleteElement(cell.content[0]!, section.sectionName, rowIndex, colIndex)"
+                            (onEditElement)="onEditElement($event)"
+                            (onInsertLeft)="onInsertLeft(section.sectionName, rowIndex, colIndex)"
+                            (onInsertRight)="onInsertRight(section.sectionName, rowIndex, colIndex)"
+                            (onInsertTop)="onInsertTop(section.sectionName, rowIndex, colIndex)"
+                            (onInsertBottom)="onInsertBottom(section.sectionName, rowIndex, colIndex)">
+                            <shared-element-dragging-view *cdkDragPreview [data]="cell.content[0]!"></shared-element-dragging-view>
+                          </template-text-component>
+                        }
+                        @if (cell.content[0]?.type === 'image') {
+                          <template-image-component
+                            [cdkDragData]="cell.content[0]" cdkDrag
+                            [cdkDragDisabled]="isPublished"
+                            [readonly]="isPublished"
+                            (cdkDragStarted)="dragStarted()"
+                            (cdkDragEnded)="dragEnded()"
+                            [class.cursor-grab]="!isPublished"
+                            [class.cursor-default]="isPublished"
+                            [image]="cell.content[0]!"
+                            (onDeleteElement)="deleteElement(cell.content[0]!, section.sectionName, rowIndex, colIndex)"
+                            (onEditElement)="onEditElement(cell.content[0])"
+                            (onInsertLeft)="onInsertLeft(section.sectionName, rowIndex, colIndex)"
+                            (onInsertRight)="onInsertRight(section.sectionName, rowIndex, colIndex)"
+                            (onInsertTop)="onInsertTop(section.sectionName, rowIndex, colIndex)"
+                            (onInsertBottom)="onInsertBottom(section.sectionName, rowIndex, colIndex)">
+                            <shared-element-dragging-view *cdkDragPreview [data]="cell.content[0]!"></shared-element-dragging-view>
+                          </template-image-component>
+                        }
+                        @if (cell.content[0]?.type === 'button') {
+                          <template-button-component
+                            [cdkDragData]="cell.content[0]" cdkDrag
+                            [cdkDragDisabled]="isPublished"
+                            [readonly]="isPublished"
+                            (cdkDragStarted)="dragStarted()"
+                            (cdkDragEnded)="dragEnded()"
+                            [class.cursor-grab]="!isPublished"
+                            [class.cursor-default]="isPublished"
+                            [button]="cell.content[0]!"
+                            (onDeleteElement)="deleteElement(cell.content[0]!, section.sectionName, rowIndex, colIndex)"
+                            (onEditElement)="onEditElement($event)"
+                            (onInsertLeft)="onInsertLeft(section.sectionName, rowIndex, colIndex)"
+                            (onInsertRight)="onInsertRight(section.sectionName, rowIndex, colIndex)"
+                            (onInsertTop)="onInsertTop(section.sectionName, rowIndex, colIndex)"
+                            (onInsertBottom)="onInsertBottom(section.sectionName, rowIndex, colIndex)">
+                            <shared-element-dragging-view *cdkDragPreview [data]="cell.content[0]!"></shared-element-dragging-view>
+                          </template-button-component>
+                        }
+                        @if (cell.content[0]?.type === 'separator') {
+                          <div [cdkDragData]="cell.content[0]" cdkDrag
+                               [cdkDragDisabled]="isPublished"
+                               (cdkDragStarted)="dragStarted()"
+                               (cdkDragEnded)="dragEnded()"
+                               [class.cursor-grab]="!isPublished"
+                               [class.cursor-default]="isPublished"
+                               class="py-4 relative group/sep w-full h-full flex items-center justify-center">
+                            <hr [ngStyle]="cell.content[0].styles" class="w-full border-gray-300" />
+
+                            <!-- Controls hover -->
+                            @if (!isPublished) {
+                              <div class="absolute right-2 flex space-x-1 opacity-0 group-hover/sep:opacity-100 transition-opacity bg-white border border-gray-200 rounded shadow p-1 z-10">
+                                <button (click)="deleteElement(cell.content[0]!, section.sectionName, rowIndex, colIndex)"
+                                        class="text-red-500 hover:bg-red-50 p-1 rounded text-xs"
+                                        title="{{ i18nStore.t('editor.components.delete') }}">
+                                  🗑
+                                </button>
+                              </div>
+                            }
+                            <shared-element-dragging-view *cdkDragPreview [data]="cell.content[0]!"></shared-element-dragging-view>
+                          </div>
+                        }
+                      }
+                      @if (!isPublished) {
+                        <div class="resizer" (mousedown)="startResizing($event, section.sectionName, rowIndex, colIndex)">
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- CODE VIEW CONTENT -->
+        <div class="w-full max-w-4xl bg-white shadow-md rounded-md relative p-4 h-fit">
+          <button
+            class="cursor-pointer absolute top-2 right-5 rounded-md shadow-md px-2 py-1 border border-gray-300 bg-white hover:bg-gray-50 text-xs z-10"
+            (click)="copyToClipboard()" [title]="i18nStore.t('editor.code.copyTooltip')">{{ i18nStore.t('editor.code.copy') }}</button>
+          <pre class="h-full"><code [highlightAuto]="code" class="h-full" lineNumbers style="white-space: pre-wrap;"></code></pre>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- FORM DIALOG TEMPLATES -->
+<ng-template #createSection>
+  <form [formGroup]="sectionForm" class="flex flex-col space-y-4 pt-2">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.sectionName') }}</label>
+      <input formControlName="sectionName" type="text"
+             class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.bgColor') }}</label>
+      <div class="flex items-center space-x-3">
+        <input formControlName="backgroundColor" type="color"
+               class="w-10 h-10 border border-gray-300 rounded cursor-pointer">
+        <input formControlName="backgroundColor" type="text" placeholder="#ffffff"
+               class="flex-1 border border-gray-300 rounded-md p-2 text-sm">
+      </div>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.bgImage') }}</label>
+      <input formControlName="backgroundImage" type="text" placeholder="https://example.com/image.png"
+             class="w-full border border-gray-300 rounded-md p-2 text-sm">
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #createText>
+  <form [formGroup]="textForm" class="flex flex-col space-y-4 pt-2">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.compName') }}</label>
+      <input formControlName="blockName" type="text"
+             class="w-full border border-gray-300 rounded-md p-2 text-sm">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.compContent') }}</label>
+      <p-editor formControlName="blockContent" [style]="{ height: '180px' }"></p-editor>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.selectSection') }}</label>
+      <select formControlName="section" class="w-full border border-gray-300 rounded-md p-2 text-sm">
+        @for (sec of template?.sections; track sec.sectionName) {
+          <option [value]="sec.sectionName">{{ sec.sectionName }}</option>
+        }
+      </select>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #createImage>
+  <form [formGroup]="imageForm" class="flex flex-col space-y-4 pt-2">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.compName') }}</label>
+      <input formControlName="blockName" type="text"
+             class="w-full border border-gray-300 rounded-md p-2 text-sm">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.imageUrl') }}</label>
+      <input formControlName="blockContent" type="text" placeholder="https://example.com/image.png"
+             class="w-full border border-gray-300 rounded-md p-2 text-sm">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.selectSection') }}</label>
+      <select formControlName="section" class="w-full border border-gray-300 rounded-md p-2 text-sm">
+        @for (sec of template?.sections; track sec.sectionName) {
+          <option [value]="sec.sectionName">{{ sec.sectionName }}</option>
+        }
+      </select>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #createButton>
+  <form [formGroup]="buttonForm" class="flex flex-col space-y-4 pt-2">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.compName') }}</label>
+      <input formControlName="blockName" type="text"
+             class="w-full border border-gray-300 rounded-md p-2 text-sm">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.compContent') }}</label>
+      <input formControlName="blockContent" type="text" placeholder="Click Me"
+             class="w-full border border-gray-300 rounded-md p-2 text-sm">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.compUrl') }}</label>
+      <input formControlName="blockURL" type="text" placeholder="https://..."
+             class="w-full border border-gray-300 rounded-md p-2 text-sm">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.selectSection') }}</label>
+      <select formControlName="section" class="w-full border border-gray-300 rounded-md p-2 text-sm">
+        @for (sec of template?.sections; track sec.sectionName) {
+          <option [value]="sec.sectionName">{{ sec.sectionName }}</option>
+        }
+      </select>
+    </div>
+    <div formGroupName="styles" class="border-t border-gray-200 pt-3 space-y-3">
+      <div class="flex space-x-3">
+        <div class="flex-1">
+          <label class="block text-xs font-medium text-gray-600 mb-1">{{ i18nStore.t('editor.dialog.bgColor') }}</label>
+          <div class="flex items-center space-x-2">
+            <input formControlName="backgroundColor" type="color" class="w-8 h-8 border border-gray-300 rounded cursor-pointer">
+            <input formControlName="backgroundColor" type="text" class="w-full border border-gray-300 rounded p-1 text-xs">
+          </div>
+        </div>
+        <div class="flex-1">
+          <label class="block text-xs font-medium text-gray-600 mb-1">{{ i18nStore.t('editor.dialog.btnTextColor') }}</label>
+          <div class="flex items-center space-x-2">
+            <input formControlName="textColor" type="color" class="w-8 h-8 border border-gray-300 rounded cursor-pointer">
+            <input formControlName="textColor" type="text" class="w-full border border-gray-300 rounded p-1 text-xs">
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1">{{ i18nStore.t('editor.dialog.btnBorderRadius') }}</label>
+        <input formControlName="borderRadius" type="number" min="0" max="50"
+               class="w-full border border-gray-300 rounded p-1 text-xs">
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #createSeparator>
+  <form [formGroup]="separatorForm" class="flex flex-col space-y-4 pt-2">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.compName') }}</label>
+      <input formControlName="blockName" type="text"
+             class="w-full border border-gray-300 rounded-md p-2 text-sm">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.selectSection') }}</label>
+      <select formControlName="section" class="w-full border border-gray-300 rounded-md p-2 text-sm">
+        @for (sec of template?.sections; track sec.sectionName) {
+          <option [value]="sec.sectionName">{{ sec.sectionName }}</option>
+        }
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ i18nStore.t('editor.dialog.dividerHeight') }}</label>
+      <input formControlName="height" type="number" min="1" max="50"
+             class="w-full border border-gray-300 rounded-md p-2 text-sm">
+    </div>
+  </form>
+</ng-template>

@@ -25,6 +25,15 @@ class TemplateVersion extends Model
         'compliance_unsubscribe_url' => 'boolean',
     ];
 
+    protected $appends = [
+        'content',
+    ];
+
+    public function getContentAttribute(): ?array
+    {
+        return $this->snapshot_json;
+    }
+
     public function template(): BelongsTo
     {
         return $this->belongsTo(Template::class);

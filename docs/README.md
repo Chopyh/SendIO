@@ -6,6 +6,7 @@ This directory is the source of truth for project governance, architecture decis
 
 - [Analysis Documentation](analysis/README.md)
 - [Design Documentation](design/README.md)
+- [Superpowers Specs Index](superpowers/README.md)
 - [Tasks Index](tasks/README.md)
 - [Workflow Standards](workflow/standards.md)
 - [Docker Mailtrap Environment Contract](devops/docker-mailtrap-env.md)
@@ -37,6 +38,7 @@ This directory is the source of truth for project governance, architecture decis
 - [MVP Implementation Plan](tasks/mvp-implementation-plan.md)
 - [Auth and Workspace Onboarding Requirements](frontend/auth-workspace-onboarding-requirements.md)
 - [Contacts Import Experience](frontend/contacts-import-experience.md)
+- [Template Editor Canonical Payload Migration](frontend/template-editor-canonical-payload.md)
 - [Auth and Workspace Bootstrap API (MVP)](backend/api-auth-workspace-bootstrap.md)
 - [Contacts Import Pipeline API (MVP)](backend/api-contacts-import-pipeline.md)
 - [Variable Catalog API](backend/api-variable-catalog.md)
@@ -44,6 +46,8 @@ This directory is the source of truth for project governance, architecture decis
 - [Templates API](backend/api-templates.md)
 - [Database UUID Convention](backend/database-uuid-convention.md)
 - [Observability and Audit Baseline](devops/observability-audit-baseline.md)
+- [Template Editor DnD Horizontal Design](superpowers/specs/2026-05-21-template-editor-dnd-horizontal-design.md)
+- [Template Editor Reference Replacement Design](superpowers/specs/2026-05-21-template-editor-reference-replacement-design.md)
 
 ## Key Validation Artifacts
 

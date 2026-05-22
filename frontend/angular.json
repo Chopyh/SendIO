@@ -25,7 +25,12 @@
               }
             ],
             "styles": [
+              "node_modules/highlight.js/styles/github-dark.css",
               "src/styles.css"
+            ],
+            "allowedCommonJsDependencies": [
+              "highlight.js",
+              "js-beautify"
             ]
           },
           "configurations": {

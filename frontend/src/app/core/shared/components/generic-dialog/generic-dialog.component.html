@@ -1,0 +1,30 @@
+@if (config) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="closeDialog('outside')">
+    <div class="relative bg-white p-6 rounded-lg shadow-lg min-w-96" (click)="$event.stopPropagation()">
+      @if (config.exitButton) {
+        <button class="absolute top-2 right-2 cursor-pointer" (click)="closeDialog()">
+          <span class="text-red-500 text-sm font-medium">Close</span>
+        </button>
+      }
+      <h2 class="text-xl font-semibold mb-2">{{ config.title }}</h2>
+      @if (config.description) {
+        <p class="text-gray-600 mb-4">{{ config.description }}</p>
+      }
+      <!-- Dynamic template content -->
+      @if (content) {
+        <ng-container *ngTemplateOutlet="content"></ng-container>
+      }
+      <!-- Dynamic component content -->
+      <ng-container #componentContainer></ng-container>
+      <!-- Buttons -->
+      <div [ngClass]="buttonOrder" [ngClass]="buttonAlignment" class="mt-4 space-x-2">
+        @for (button of config.buttons.buttons; track button) {
+          <button (click)="button.click()" class="cursor-pointer p-2 rounded-md text-sm text-white"
+            [ngClass]="buttonTypeStyles(button)">
+            {{ button.text }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}

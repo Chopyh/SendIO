@@ -47,9 +47,21 @@
         }
       </a>
 
+<!-- Templates -->
+      <a
+        routerLink="/app/templates"
+        routerLinkActive="bg-emerald-600 text-white font-medium"
+        class="flex items-center px-3 py-2.5 text-sm rounded-lg hover:bg-slate-800 hover:text-white transition-colors duration-150"
+        [ngClass]="isSidebarCollapsed() ? 'justify-center' : 'space-x-3'">
+        <i class="pi pi-file-edit text-base"></i>
+        @if (!isSidebarCollapsed()) {
+          <span>{{ i18nStore.t('templates.title') }}</span>
+        }
+      </a>
+
       <!-- Import Contacts -->
-      <a 
-        routerLink="/app/contacts/import" 
+      <a
+        routerLink="/app/contacts/import"
         routerLinkActive="bg-emerald-600 text-white font-medium"
         class="flex items-center px-3 py-2.5 text-sm rounded-lg hover:bg-slate-800 hover:text-white transition-colors duration-150"
         [ngClass]="isSidebarCollapsed() ? 'justify-center' : 'space-x-3'">
