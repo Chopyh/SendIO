@@ -221,7 +221,7 @@ class TemplatesComponentsVariablesApiTest extends TestCase
             'Authorization' => 'Bearer '.$token,
             'X-Workspace-Id' => (string) $workspace->id,
         ])->putJson("/api/templates/{$template->id}/versions/1", [
-            'snapshot_json' => ['invalid' => 'format'],
+            'content' => ['invalid' => 'format'],
         ]);
         $response->assertStatus(422)
             ->assertJsonFragment(['code' => 'validation.failed']);
@@ -236,6 +236,9 @@ class TemplatesComponentsVariablesApiTest extends TestCase
                             'blockId' => 101,
                             'blockName' => 'My Block',
                             'type' => 'invalid-type', // Allowed: text, image, button, separator
+                            'posX' => 0,
+                            'posY' => 0,
+                            'sizeX' => 1,
                         ],
                     ],
                 ],
@@ -246,7 +249,7 @@ class TemplatesComponentsVariablesApiTest extends TestCase
             'Authorization' => 'Bearer '.$token,
             'X-Workspace-Id' => (string) $workspace->id,
         ])->putJson("/api/templates/{$template->id}/versions/1", [
-            'snapshot_json' => $invalidSnapshot,
+            'content' => $invalidSnapshot,
         ]);
         $response->assertStatus(422);
 
@@ -261,12 +264,18 @@ class TemplatesComponentsVariablesApiTest extends TestCase
                             'blockName' => 'My Block',
                             'type' => 'text',
                             'content' => 'Hello {{contact.first_name}}',
+                            'posX' => 0,
+                            'posY' => 0,
+                            'sizeX' => 1,
                         ],
                         [
                             'blockId' => 102,
                             'blockName' => 'Action Button',
                             'type' => 'button',
                             'url' => '{{unsubscribe_url}}',
+                            'posX' => 1,
+                            'posY' => 0,
+                            'sizeX' => 1,
                         ],
                     ],
                 ],
@@ -277,9 +286,11 @@ class TemplatesComponentsVariablesApiTest extends TestCase
             'Authorization' => 'Bearer '.$token,
             'X-Workspace-Id' => (string) $workspace->id,
         ])->putJson("/api/templates/{$template->id}/versions/1", [
-            'snapshot_json' => $validSnapshot,
+            'content' => $validSnapshot,
         ]);
-        $response->assertOk();
+        $response->assertOk()
+            ->assertJsonPath('data.content.sections.0.components.0.sizeX', 1)
+            ->assertJsonPath('data.content.sections.0.components.1.sizeX', 1);
 
         // 4. Test immutability after publishing
         $version->update(['state' => 'published']);
@@ -288,7 +299,7 @@ class TemplatesComponentsVariablesApiTest extends TestCase
             'Authorization' => 'Bearer '.$token,
             'X-Workspace-Id' => (string) $workspace->id,
         ])->putJson("/api/templates/{$template->id}/versions/1", [
-            'snapshot_json' => $validSnapshot,
+            'content' => $validSnapshot,
         ]);
         $response->assertStatus(409)
             ->assertJsonPath('error.code', 'template.version_immutable');
@@ -314,6 +325,9 @@ class TemplatesComponentsVariablesApiTest extends TestCase
                             'blockName' => 'Welcome',
                             'type' => 'text',
                             'content' => 'Hi {{contact.first_name}}!',
+                            'posX' => 0,
+                            'posY' => 0,
+                            'sizeX' => 1,
                         ],
                     ],
                 ],
@@ -347,6 +361,9 @@ class TemplatesComponentsVariablesApiTest extends TestCase
                             'blockName' => 'Welcome',
                             'type' => 'text',
                             'content' => 'Hi {{invalid_placeholder_name}}! Unsubscribe: {{system.unsubscribe_url}}',
+                            'posX' => 0,
+                            'posY' => 0,
+                            'sizeX' => 1,
                         ],
                     ],
                 ],
@@ -375,12 +392,18 @@ class TemplatesComponentsVariablesApiTest extends TestCase
                             'blockName' => 'Welcome',
                             'type' => 'text',
                             'content' => 'Hi {{contact.first_name}} {{contact.last_name}}! Welcome to {{workspace.name}}.',
+                            'posX' => 0,
+                            'posY' => 0,
+                            'sizeX' => 1,
                         ],
                         [
                             'blockId' => 2,
                             'blockName' => 'Opt Out',
                             'type' => 'button',
                             'url' => '{{unsubscribe_url}}',
+                            'posX' => 1,
+                            'posY' => 0,
+                            'sizeX' => 1,
                         ],
                     ],
                 ],

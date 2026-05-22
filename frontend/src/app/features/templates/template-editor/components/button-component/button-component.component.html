@@ -1,0 +1,78 @@
+@if (showContext && !infoMode && !readonly) {
+  <div class="relative right-0 top-0 z-50" (mouseover)="showContext = true" (mouseleave)="showContext = false">
+    <div class="absolute right-5 flex flex-row ml-auto drop-shadow-lg w-fit bg-white rounded-md">
+      @if (!infoMode) {
+        <button class="cursor-pointer px-2 py-1 text-xs" [title]="i18nStore.t('editor.components.insertLeft')" (click)="onInsertLeft.emit()">←</button>
+      }
+      @if (!infoMode) {
+        <button class="cursor-pointer px-2 py-1 text-xs" [title]="i18nStore.t('editor.components.insertTop')" (click)="onInsertTop.emit()">↑</button>
+      }
+      @if (!infoMode) {
+        <button class="cursor-pointer px-2 py-1 text-xs" [title]="i18nStore.t('editor.components.insertBottom')" (click)="onInsertBottom.emit()">↓</button>
+      }
+      @if (!infoMode) {
+        <button class="cursor-pointer px-2 py-1 text-xs" [title]="i18nStore.t('editor.components.insertRight')" (click)="onInsertRight.emit()">→</button>
+      }
+      @if (!infoMode) {
+        <button class="cursor-pointer px-2 py-1 text-xs" [title]="i18nStore.t('editor.components.edit')" (click)="openDialog()">✏️</button>
+      }
+      <button class="cursor-pointer px-2 py-1 text-xs text-red-500" [title]="i18nStore.t('editor.components.delete')" (click)="onDelete()">🗑</button>
+    </div>
+  </div>
+}
+
+<div (mouseover)="showContext = true" (mouseleave)="showContext = false">
+  @if (!infoMode) {
+    <a [href]="button.url" class="cursor-pointer">
+      <button type="button" class="cursor-pointer" [ngStyle]="button.styles">
+        {{ button.content }}
+      </button>
+    </a>
+  } @else {
+    <div class="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100/70 transition-colors duration-100">
+      <!-- Placed indicator dot -->
+      @if (button.posX != undefined && button.posY != undefined) {
+        <span class="shrink-0 w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+      }
+      <!-- Button icon -->
+      <div class="shrink-0 w-5 h-5 flex items-center justify-center rounded bg-amber-100 text-amber-600">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zm-7.518-.267A8.25 8.25 0 1120.25 10.5M8.288 14.212A5.25 5.25 0 1117.25 10.5" />
+        </svg>
+      </div>
+      <div class="flex flex-col min-w-0">
+        <span class="text-xs text-gray-600 truncate leading-tight">{{ button.blockName }}</span>
+        <span class="text-[10px] text-gray-400 truncate leading-tight">{{ button.content }}</span>
+      </div>
+    </div>
+  }
+</div>
+
+<ng-template #editButton>
+  <form [formGroup]="buttonForm">
+    <div class="flex flex-row space-y-1 space-x-4 max-w-dvw max-h-dvh">
+      <div class="flex flex-col space-y-1">
+        <span>{{ i18nStore.t('editor.components.button.nameLabel') }}</span>
+        <input class="p-2 border border-gray-300 rounded-md placeholder-gray-400" formControlName="blockName">
+        <span>{{ i18nStore.t('editor.components.button.contentLabel') }}</span>
+        <input class="p-2 border border-gray-300 rounded-md placeholder-gray-400" formControlName="blockContent">
+        <span>{{ i18nStore.t('editor.components.button.urlLabel') }}</span>
+        <input class="p-2 border border-gray-300 rounded-md placeholder-gray-400" formControlName="blockURL">
+      </div>
+      <div class="flex flex-col space-y-1" formGroupName="styles">
+        <span>{{ i18nStore.t('editor.components.button.bgColorLabel') }}</span>
+        <div class="flex flex-row items-center space-x-2">
+          <p-colorpicker formControlName="backgroundColor" format="hex"></p-colorpicker>
+          <input class="border border-gray-300 rounded-md p-2 w-28" type="text" formControlName="backgroundColor" />
+        </div>
+        <span>{{ i18nStore.t('editor.components.button.textColorLabel') }}</span>
+        <div class="flex flex-row items-center space-x-2">
+          <p-colorpicker formControlName="textColor" format="hex"></p-colorpicker>
+          <input class="border border-gray-300 rounded-md p-2 w-28" type="text" formControlName="textColor" />
+        </div>
+        <span>{{ i18nStore.t('editor.components.button.borderRadiusLabel') }}</span>
+        <input class="border border-gray-300 rounded-md p-2" type="number" formControlName="borderRadius" />
+      </div>
+    </div>
+  </form>
+</ng-template>

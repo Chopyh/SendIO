@@ -1,6 +1,7 @@
 import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHighlightOptions } from 'ngx-highlightjs';
 
 import { routes } from './app.routes';
 import { providePrimeNG } from 'primeng/config';
@@ -23,6 +24,10 @@ export const appConfig: ApplicationConfig = {
           darkModeSelector: '.dark',
         },
       },
+    }),
+    provideHighlightOptions({
+      fullLibraryLoader: () => import('highlight.js'),
+      lineNumbersLoader: () => import('ngx-highlightjs/line-numbers'),
     }),
   ],
 };

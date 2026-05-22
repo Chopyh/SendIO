@@ -36,6 +36,7 @@ class TemplateController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:120'],
+            'content' => ['nullable', 'array'],
             'snapshot_json' => ['nullable', 'array'],
         ]);
 
@@ -43,7 +44,8 @@ class TemplateController extends Controller
             return ApiError::response('validation.failed', 'Validation failed.', 422, $validator->errors()->toArray());
         }
 
-        $snapshot = $request->get('snapshot_json') ?? ['sections' => []];
+        $snapshot = $this->resolveTemplateContentFromRequest($request) ?? ['sections' => []];
+        $snapshot = $this->normalizeTemplateContent($snapshot);
 
         if ($err = $this->validateSnapshotStructure($snapshot)) {
             return ApiError::response('validation.failed', $err, 422);
@@ -165,7 +167,7 @@ class TemplateController extends Controller
         }
 
         $newVersionNumber = $latestVersion ? $latestVersion->version_number + 1 : 1;
-        $snapshot = $latestVersion ? $latestVersion->snapshot_json : ['sections' => []];
+        $snapshot = $latestVersion ? $this->normalizeTemplateContent($latestVersion->snapshot_json ?? []) : ['sections' => []];
 
         $newVersion = TemplateVersion::query()->create([
             'template_id' => $template->id,
@@ -210,14 +212,22 @@ class TemplateController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'snapshot_json' => ['required', 'array'],
+            'content' => ['sometimes', 'array'],
+            'snapshot_json' => ['sometimes', 'array'],
         ]);
 
         if ($validator->fails()) {
             return ApiError::response('validation.failed', 'Validation failed.', 422, $validator->errors()->toArray());
         }
 
-        $snapshot = $request->get('snapshot_json');
+        if ($this->resolveTemplateContentFromRequest($request) === null) {
+            return ApiError::response('validation.failed', 'Validation failed.', 422, [
+                'content' => ['The content field is required.'],
+            ]);
+        }
+
+        $snapshot = $this->resolveTemplateContentFromRequest($request);
+        $snapshot = $this->normalizeTemplateContent($snapshot ?? []);
 
         if ($err = $this->validateSnapshotStructure($snapshot)) {
             return ApiError::response('validation.failed', $err, 422);
@@ -361,6 +371,15 @@ class TemplateController extends Controller
                 if (! isset($component['type']) || ! is_string($component['type'])) {
                     return "Component at index {$cIndex} in section {$sIndex} must have a string \"type\".";
                 }
+                if (! array_key_exists('posX', $component) || ! is_numeric($component['posX'])) {
+                    return "Component at index {$cIndex} in section {$sIndex} must have numeric \"posX\".";
+                }
+                if (! array_key_exists('posY', $component) || ! is_numeric($component['posY'])) {
+                    return "Component at index {$cIndex} in section {$sIndex} must have numeric \"posY\".";
+                }
+                if (array_key_exists('sizeX', $component) && ! is_numeric($component['sizeX'])) {
+                    return "Component at index {$cIndex} in section {$sIndex} must have numeric \"sizeX\" when present.";
+                }
 
                 $allowedTypes = ['text', 'image', 'button', 'separator'];
                 if (! in_array($component['type'], $allowedTypes, true)) {
@@ -408,5 +427,52 @@ class TemplateController extends Controller
         }
 
         return array_values(array_unique($variables));
+    }
+
+    private function resolveTemplateContentFromRequest(Request $request): ?array
+    {
+        $payload = $request->get('content');
+
+        if (is_array($payload)) {
+            return $payload;
+        }
+
+        $legacyPayload = $request->get('snapshot_json');
+        if (is_array($legacyPayload)) {
+            return $legacyPayload;
+        }
+
+        return null;
+    }
+
+    private function normalizeTemplateContent(array $snapshot): array
+    {
+        if (! isset($snapshot['sections']) || ! is_array($snapshot['sections'])) {
+            return $snapshot;
+        }
+
+        $snapshot['sections'] = array_map(function ($section): array {
+            if (! is_array($section) || ! isset($section['components']) || ! is_array($section['components'])) {
+                return is_array($section) ? $section : [];
+            }
+
+            $section['components'] = array_map(function ($component): array {
+                if (! is_array($component)) {
+                    return [];
+                }
+
+                if (! array_key_exists('sizeX', $component) || ! is_numeric($component['sizeX'])) {
+                    $component['sizeX'] = 1;
+                } else {
+                    $component['sizeX'] = max((float) $component['sizeX'], 0.1);
+                }
+
+                return $component;
+            }, $section['components']);
+
+            return $section;
+        }, $snapshot['sections']);
+
+        return $snapshot;
     }
 }

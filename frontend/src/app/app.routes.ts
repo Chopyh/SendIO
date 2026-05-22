@@ -28,6 +28,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/contacts/contacts-import-page.component').then((m) => m.ContactsImportPageComponent),
       },
+      {
+        path: 'templates',
+        loadComponent: () =>
+          import('./features/templates/templates-list/templates-list-page.component').then((m) => m.TemplatesListPageComponent),
+      },
+      {
+        path: 'templates/:id/edit',
+        loadComponent: () =>
+          import('./features/templates/template-editor/template-editor-page.component').then((m) => m.TemplateEditorPageComponent),
+      },
     ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'auth/login' },
