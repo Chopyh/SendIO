@@ -70,6 +70,28 @@
           <span>{{ i18nStore.t('layout.menu.contactsImport') }}</span>
         }
       </a>
+
+      <a
+        routerLink="/app/contacts"
+        routerLinkActive="bg-emerald-600 text-white font-medium"
+        class="flex items-center px-3 py-2.5 text-sm rounded-lg hover:bg-slate-800 hover:text-white transition-colors duration-150"
+        [ngClass]="isSidebarCollapsed() ? 'justify-center' : 'space-x-3'">
+        <i class="pi pi-users text-base"></i>
+        @if (!isSidebarCollapsed()) {
+          <span>{{ i18nStore.t('layout.menu.contacts') }}</span>
+        }
+      </a>
+
+      <a
+        routerLink="/app/campaigns"
+        routerLinkActive="bg-emerald-600 text-white font-medium"
+        class="flex items-center px-3 py-2.5 text-sm rounded-lg hover:bg-slate-800 hover:text-white transition-colors duration-150"
+        [ngClass]="isSidebarCollapsed() ? 'justify-center' : 'space-x-3'">
+        <i class="pi pi-megaphone text-base"></i>
+        @if (!isSidebarCollapsed()) {
+          <span>{{ i18nStore.t('layout.menu.campaigns') }}</span>
+        }
+      </a>
     </nav>
 
     <!-- Sidebar Bottom (User Summary) -->

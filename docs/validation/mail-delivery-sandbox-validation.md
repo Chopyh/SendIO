@@ -2,6 +2,12 @@
 
 This document defines how email delivery is validated in the MVP using Mailtrap.
 
+## MVP-BACK-004 Runtime Status
+
+- Automated campaign-delivery behavior is validated by tests using fake mail transport.
+- Live Mailtrap sandbox inbox smoke for `back/feat-campaign-delivery-mailtrap` is still pending execution in a runtime with Mailtrap inbox/API access.
+- Do not mark `MVP-BACK-004` as acceptance-complete until a new runtime entry captures actual inbox evidence for that branch.
+
 ## Validation Scope
 
 - Verify that campaign deliveries are sent to Mailtrap sandbox inboxes.
