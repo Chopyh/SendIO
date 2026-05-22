@@ -1,6 +1,7 @@
 # Template Builder MVP UI
 
 - **Branch State:** `front/feat-template-builder-mvp`
+- **Status:** `completed` (validated and merged-ready)
 
 ## Scope
 
