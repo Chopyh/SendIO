@@ -21,8 +21,6 @@ import { I18nStore } from '../../core/i18n/i18n.store';
         <a routerLink="/app/campaigns/new"><p-button [label]="i18nStore.t('campaigns.actions.new')" icon="pi pi-plus" /></a>
       </header>
 
-      <div class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">{{ i18nStore.t('campaigns.limitations.listEndpoint') }}</div>
-
       <p-card>
         @if (loading()) {
           <p>{{ i18nStore.t('campaigns.list.loading') }}</p>

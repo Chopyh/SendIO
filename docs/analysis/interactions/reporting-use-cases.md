@@ -4,16 +4,16 @@ This diagram specifies reporting interactions, including periodic dashboard refr
 
 ```mermaid
 flowchart LR
-  Owner([Owner])
-  Editor([Editor])
-  Viewer([Viewer])
+  Owner[Owner]
+  Editor[Editor]
+  Viewer[Viewer]
 
   subgraph SendIOReporting[SendIO Reporting Module]
-    UC1((Open Campaign Reporting Dashboard))
-    UC2((Auto-refresh Metrics every 60s))
-    UC3((Inspect Delivery Breakdown))
-    UC4((Export Metrics to CSV))
-    UC5((Deny CSV Export for Viewer))
+    UC1([Open Campaign Reporting Dashboard])
+    UC2([Auto-refresh Metrics every 60s])
+    UC3([Inspect Delivery Breakdown])
+    UC4([Export Metrics to CSV])
+    UC5([Deny CSV Export for Viewer])
   end
 
   Owner --> UC1

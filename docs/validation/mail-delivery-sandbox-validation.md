@@ -28,6 +28,8 @@ This document defines how email delivery is validated in the MVP using Mailtrap.
 | Check | Command (Docker-only) | Status | Evidence |
 |---|---|---|---|
 | Mail config resolves to Mailtrap | `./sendio.sh art config:show mail` | documented | Command and expected output captured in `docs/devops/docker-mailtrap-env.md`. |
+| Queue config resolves to Redis | `./sendio.sh art config:show queue` | documented | Queue contract and expected output captured in `docs/devops/docker-mailtrap-env.md`. |
+| Queue worker is active | `./sendio.sh queue` | documented | Worker command and log validation path captured in `docs/devops/docker-mailtrap-env.md`. |
 | SMTP host resolves from container | `./sendio.sh sh` then `php -r 'echo gethostbyname("sandbox.smtp.mailtrap.io") . PHP_EOL;'` | documented | Command and expected output captured in `docs/devops/docker-mailtrap-env.md`. |
 | Smoke mail reaches sandbox inbox | `./sendio.sh art tinker --execute='\Illuminate\Support\Facades\Mail::raw(...)'` | documented | Reproducible command documented; capture screenshot/ID from Mailtrap during execution window. |
 

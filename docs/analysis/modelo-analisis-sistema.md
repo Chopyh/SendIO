@@ -50,18 +50,18 @@ flowchart LR
     mailtrap[Proveedor Mailtrap]
 
     subgraph sendio[SendIO]
-      ucAuth((Autenticar sesión))
-      ucWorkspace((Cambiar workspace activo))
-      ucImport((Importar contactos))
-      ucImportReport((Generar reporte de importación))
-      ucSender((Configurar perfil remitente))
-      ucTemplate((Crear o editar templates y componentes))
-      ucPublish((Publicar versión de template))
-      ucSchedule((Programar campaña))
-      ucControl((Pausar, reanudar o cancelar campaña))
-      ucDeliver((Ejecutar entrega de campaña))
-      ucMetrics((Monitorear métricas))
-      ucExport((Exportar métricas CSV))
+      ucAuth([Autenticar sesión])
+      ucWorkspace([Cambiar workspace activo])
+      ucImport([Importar contactos])
+      ucImportReport([Generar reporte de importación])
+      ucSender([Configurar perfil remitente])
+      ucTemplate([Crear o editar templates y componentes])
+      ucPublish([Publicar versión de template])
+      ucSchedule([Programar campaña])
+      ucControl([Pausar, reanudar o cancelar campaña])
+      ucDeliver([Ejecutar entrega de campaña])
+      ucMetrics([Monitorear métricas])
+      ucExport([Exportar métricas CSV])
     end
 
     owner --> ucAuth

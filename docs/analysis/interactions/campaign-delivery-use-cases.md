@@ -4,20 +4,20 @@ This diagram defines campaign execution and control behaviors across pre-send ch
 
 ```mermaid
 flowchart LR
-  Owner([Owner])
-  Editor([Editor])
-  Viewer([Viewer])
+  Owner[Owner]
+  Editor[Editor]
+  Viewer[Viewer]
 
   subgraph SendIOCampaign[SendIO Campaign Delivery Module]
-    UC1((Prepare Campaign from Template Version))
-    UC2((Validate unsubscribe_url Before Send))
-    UC3((Enqueue Pending Deliveries))
-    UC4((Dispatch via Mailtrap Provider))
-    UC5((Track States pending sent failed))
-    UC6((Retry Failed Deliveries max 2))
-    UC7((Pause Campaign Queue))
-    UC8((Resume Campaign Queue))
-    UC9((Cancel Future Enqueue and Finish Current Batch))
+    UC1([Prepare Campaign from Template Version])
+    UC2([Validate unsubscribe_url Before Send])
+    UC3([Enqueue Pending Deliveries])
+    UC4([Dispatch via Mailtrap Provider])
+    UC5([Track States pending sent failed])
+    UC6([Retry Failed Deliveries max 2])
+    UC7([Pause Campaign Queue])
+    UC8([Resume Campaign Queue])
+    UC9([Cancel Future Enqueue and Finish Current Batch])
   end
 
   Owner --> UC1

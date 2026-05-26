@@ -1,19 +1,20 @@
-# Design Documentation
+# Documentación de Diseño
 
-This section contains architecture and behavioral design artifacts that transform analysis requirements into implementation-oriented structures.
+Esta sección contiene artefactos de diseño arquitectónico y de comportamiento que transforman los requisitos de análisis en estructuras orientadas a la implementación.
 
-## Rationale
+## Justificación Académica
 
-These documents formalize how SendIO is decomposed into components, data structures, navigation contexts, and process flows. They are intended to guide engineering decisions while preserving traceability to requirements.
+Estos documentos formalizan cómo se descompone SendIO en componentes, estructuras de datos, contextos de navegación y flujos de procesos. Están destinados a guiar las decisiones de ingeniería garantizando al mismo tiempo la trazabilidad con los requisitos.
 
-## Contents
+## Contenidos
 
-- [Component Diagram](component-diagram.md)
-- [Navigation Diagram](navigation-diagram.md)
-- [Entity Relationship Diagram](entity-relationship-diagram.md)
-- [Activity Diagram: Campaign Delivery](activity-diagram-campaign-delivery.md)
-- [State Diagrams](states/README.md)
+- [Diseño del Sistema (TFG)](diseno-sistema-tfg.md)
+- [Diagrama de Componentes](component-diagram.md)
+- [Diagrama de Navegación](navigation-diagram.md)
+- [Diagrama Entidad-Relación](entity-relationship-diagram.md)
+- [Diagrama de Actividad: Envío de Campaña](activity-diagram-campaign-delivery.md)
+- [Índice de Diagramas de Estado](states/README.md)
 
-## Scope
+## Alcance
 
-The current design baseline covers workspace isolation, role-restricted operations, immutable template versioning, queue-based campaign delivery, token lifecycle security, and multilingual reporting behavior.
+La línea base del diseño actual cubre el aislamiento de workspaces, las operaciones restringidas por roles, la versión inmutable de plantillas, el envío de campañas basado en colas Redis procesadas por un worker Docker de Laravel, la seguridad del ciclo de vida de los tokens y el comportamiento del reporting multiidioma.

@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("up", "down", "art", "artisan", "comp", "composer", "test", "tinker", "migrate", "seed", "logs", "sh", "shell")]
+    [ValidateSet("up", "down", "art", "artisan", "comp", "composer", "test", "tinker", "migrate", "seed", "logs", "queue", "queue-restart", "sh", "shell")]
     [string]$Command,
 
     [Parameter(ValueFromRemainingArguments = $true)]
@@ -25,6 +25,8 @@ function Show-Help {
     Write-Host "  migrate        Run migrations"
     Write-Host "  seed           Run seeders"
     Write-Host "  logs [prod]    Show logs"
+    Write-Host "  queue [prod]    Show queue worker logs"
+    Write-Host "  queue-restart   Restart Laravel queue workers"
     Write-Host "  sh [prod]      Enter the container shell"
 }
 
@@ -70,6 +72,12 @@ switch ($Command) {
     }
     "logs" {
         docker compose -f $ConfigFile logs -f $ServiceName
+    }
+    "queue" {
+        docker compose -f $ConfigFile logs -f queue-worker
+    }
+    "queue-restart" {
+        docker compose -f $ConfigFile exec -u $User $ServiceName php artisan queue:restart
     }
     "sh" {
         docker compose -f $ConfigFile exec -u $User -it $ServiceName bash

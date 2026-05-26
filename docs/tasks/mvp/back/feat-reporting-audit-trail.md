@@ -30,7 +30,15 @@ Implement backend reporting and audit endpoints for campaign execution and key u
 
 ## Checklist
 
-- [ ] Define reporting and audit event schema.
-- [ ] Implement reporting and audit retrieval endpoints.
-- [ ] Cover query filters and pagination behavior.
-- [ ] Add tests for data integrity and authorization boundaries.
+- [x] Define reporting and audit event schema.
+- [x] Implement reporting and audit retrieval endpoints.
+- [x] Cover query filters and pagination behavior.
+- [x] Add tests for data integrity and authorization boundaries.
+
+## Implementation Notes
+
+- Added `audit_events` relational table with nullable `actor_user_id` for system/queue events.
+- Implemented `GET /api/reports/campaigns` and `GET /api/reports/campaigns/{campaign}/metrics`.
+- Implemented `GET /api/audit/events` with filters (`event_key`, `actor_user_id`, `campaign_id`, `from`, `to`) and pagination.
+- Emitted audit events for campaign dispatch request/queue transitions, contacts import completion/schema rejection, and template version publish.
+- Enforced context whitelist in audit payloads: IDs, counts, and status fields only.

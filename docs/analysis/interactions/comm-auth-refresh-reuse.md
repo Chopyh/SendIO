@@ -4,11 +4,11 @@ This collaboration diagram details refresh-token rotation interaction and the de
 
 ```mermaid
 flowchart LR
-  A[User]
-  B[Auth API]
-  C[Token Service]
-  D[Session Store]
-  E[Session Service]
+  A["<u>:User</u>"]
+  B["<u>:AuthAPI</u>"]
+  C["<u>:TokenService</u>"]
+  D["<u>:SessionStore</u>"]
+  E["<u>:SessionService</u>"]
 
   A -->|1. Login request| B
   B -->|2. Validate identity| E

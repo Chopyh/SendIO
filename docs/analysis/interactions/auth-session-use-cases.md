@@ -4,18 +4,18 @@ This diagram defines role-independent authentication and session control behavio
 
 ```mermaid
 flowchart LR
-  Owner([Owner])
-  Editor([Editor])
-  Viewer([Viewer])
+  Owner[Owner]
+  Editor[Editor]
+  Viewer[Viewer]
 
   subgraph SendIOAuth[SendIO Auth and Session Module]
-    UC1((Authenticate Credentials))
-    UC2((Issue Access Token 1h))
-    UC3((Issue Refresh Token 1 month))
-    UC4((Refresh Session with Rotation))
-    UC5((Detect Refresh Reuse))
-    UC6((Revoke Session and Device))
-    UC7((Logout Current Session))
+    UC1([Authenticate Credentials])
+    UC2([Issue Access Token 1h])
+    UC3([Issue Refresh Token 1 month])
+    UC4([Refresh Session with Rotation])
+    UC5([Detect Refresh Reuse])
+    UC6([Revoke Session and Device])
+    UC7([Logout Current Session])
   end
 
   Owner --> UC1

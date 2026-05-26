@@ -16,6 +16,7 @@ This index lists implementation tasks and governance contracts.
 - [MVP Infra Tasks](mvp/infra/)
 - [Template Canonical Payload Migration](mvp/back/feat-template-canonical-payload-migration.md)
 - [Campaign Delivery Through Mailtrap](mvp/back/feat-campaign-delivery-mailtrap.md)
+- [Docker Redis Queue Worker Baseline](mvp/infra/chore-docker-redis-queue-worker.md)
 
 ## Task Conventions
 

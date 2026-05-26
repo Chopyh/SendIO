@@ -7,7 +7,8 @@ This guide defines the Docker-first Mailtrap contract used by SendIO in non-prod
 1. Copy `.env.example` to `.env` at repository root.
 2. Set `MAIL_USERNAME` and `MAIL_PASSWORD` with Mailtrap sandbox SMTP credentials.
 3. Start the stack with `./sendio.sh up` (Linux/WSL) or `.\sendio.ps1 up` (Windows).
-4. Verify resolved mail settings and SMTP connectivity from the `app` container.
+4. Verify resolved mail and queue settings from the `app` container.
+5. Verify `queue-worker` is running and connected to Redis.
 
 ## Environment variable contract
 
@@ -21,6 +22,18 @@ This guide defines the Docker-first Mailtrap contract used by SendIO in non-prod
 | `MAIL_PASSWORD` | `mailtrap_password` placeholder | Real secret via environment/secret manager. |
 | `MAIL_FROM_ADDRESS` | `no-reply@sendio.local` | Production sender domain/policy required. |
 | `MAIL_FROM_NAME` | `${APP_NAME}` | Keep explicit product sender name. |
+| `QUEUE_CONNECTION` | `redis` | Must remain `redis` when Docker queue worker is enabled. |
+
+## Queue worker runtime contract
+
+| Area | Contract |
+|---|---|
+| Worker service name | `queue-worker` |
+| Worker command | `php artisan queue:work redis --sleep=1 --tries=3 --timeout=120` |
+| Restart behavior | Use `./sendio.sh queue-restart` or `.\sendio.ps1 queue-restart` after backend code changes. |
+| Logs | Use `./sendio.sh queue` or `.\sendio.ps1 queue` to tail worker output. |
+
+`queue:work` workers are long-lived and do not automatically reload application code. Always restart workers after deploying or editing queued job code.
 
 ## Non-production safety rules
 
@@ -54,7 +67,25 @@ php -r 'echo gethostbyname("sandbox.smtp.mailtrap.io") . PHP_EOL;'
 Expected:
 - Host resolves to a public IP (not `sandbox.smtp.mailtrap.io` literal value).
 
-### 3) Optional smoke send through Laravel
+### 3) Verify queue connection resolves to Redis
+
+```bash
+./sendio.sh art config:show queue
+```
+
+Expected:
+- `default` equals `redis`.
+
+### 4) Verify queue worker process and logs
+
+```bash
+./sendio.sh queue
+```
+
+Expected:
+- Logs show worker boot and job processing without connection errors.
+
+### 5) Optional smoke send through Laravel
 
 ```bash
 ./sendio.sh art tinker --execute='\Illuminate\Support\Facades\Mail::raw("SendIO Mailtrap smoke test", function ($message) { $message->to("sandbox@example.test")->subject("SendIO Mailtrap smoke test"); });'

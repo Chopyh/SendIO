@@ -9,6 +9,7 @@ use App\Models\CampaignRecipient;
 use App\Models\Contact;
 use App\Models\Template;
 use App\Models\TemplateVersion;
+use App\Services\AuditEventLogger;
 use App\Support\ApiError;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Validator;
 
 class CampaignController extends Controller
 {
+    public function __construct(private readonly AuditEventLogger $auditEventLogger) {}
+
     public function store(Request $request): JsonResponse
     {
         if (! $this->canManageCampaign($request)) {
@@ -112,7 +115,14 @@ class CampaignController extends Controller
             return ApiError::response('campaign.invalid_state', 'Campaign cannot be dispatched in current state.', 409);
         }
 
-        $dispatched = DB::transaction(function () use ($campaign, $workspaceId): bool {
+        $actorUserId = $request->user()?->id;
+
+        $this->auditEventLogger->record($workspaceId, $actorUserId, 'campaign.dispatch.requested', [
+            'campaign_id' => $campaign->id,
+            'status_before' => $campaign->status,
+        ]);
+
+        $dispatched = DB::transaction(function () use ($campaign, $workspaceId, $actorUserId): bool {
             $updated = Campaign::query()
                 ->where('workspace_id', $workspaceId)
                 ->whereKey($campaign->id)
@@ -135,6 +145,12 @@ class CampaignController extends Controller
             foreach ($recipients as $recipient) {
                 SendCampaignRecipientJob::dispatch($campaign->id, $recipient->id);
             }
+
+            $this->auditEventLogger->record($workspaceId, $actorUserId, 'campaign.dispatch.queued', [
+                'campaign_id' => $campaign->id,
+                'status_after' => 'queued',
+                'recipients_queued_count' => $recipients->count(),
+            ]);
 
             return true;
         });

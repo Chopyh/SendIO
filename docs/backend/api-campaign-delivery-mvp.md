@@ -58,6 +58,14 @@ This contract defines the first production slice of `MVP-BACK-004` for workspace
 - Dispatch enqueues one `SendCampaignRecipientJob` per recipient with status `pending` for the accepted transition.
 - Campaign status is updated to `queued` and `dispatched_at` is set.
 
+## Queue worker dependency (Docker baseline)
+
+- Dispatch only enqueues jobs; actual delivery requires an active Laravel worker.
+- Docker baseline for dev and production uses service `queue-worker` with command:
+  - `php artisan queue:work redis --sleep=1 --tries=3 --timeout=120`
+- Queue connection must resolve to `redis` for this API contract to deliver emails.
+- After changing delivery job code, restart workers with `php artisan queue:restart` (or wrapper command) because workers are long-lived.
+
 ## Delivery orchestration behavior
 
 | Area | Decision |

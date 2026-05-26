@@ -4,17 +4,17 @@ This diagram models contact ingestion behavior for supported formats and the man
 
 ```mermaid
 flowchart LR
-  Owner([Owner])
-  Editor([Editor])
-  Viewer([Viewer])
+  Owner[Owner]
+  Editor[Editor]
+  Viewer[Viewer]
 
   subgraph SendIOImport[SendIO Contact Import Module]
-    UC1((Upload Import File or List))
-    UC2((Parse CSV JSON Semicolon List))
-    UC3((Normalize Contact Fields))
-    UC4((Case-insensitive Deduplication))
-    UC5((Skip Invalid Records))
-    UC6((Generate Import Report))
+    UC1([Upload Import File or List])
+    UC2([Parse CSV JSON Semicolon List])
+    UC3([Normalize Contact Fields])
+    UC4([Case-insensitive Deduplication])
+    UC5([Skip Invalid Records])
+    UC6([Generate Import Report])
   end
 
   Owner --> UC1
