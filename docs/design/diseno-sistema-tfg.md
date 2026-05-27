@@ -10,21 +10,22 @@ El sistema SendIO se descompone bajo un patrón de **Cliente-Servidor desacoplad
 
 ```mermaid
 graph TD
-    subgraph Cliente (Frontend SPA)
+  subgraph client["Cliente (Frontend SPA)"]
         Angular[Angular Application] --> View[Componentes Presentacionales]
         Angular --> Container[Componentes Contenedores]
         Container --> Services[Servicios de API TypeScript]
     end
-    subgraph Servidor (Backend API)
+  subgraph server["Servidor (Backend API)"]
         Services -- JWT HTTP Requests --> Routing[Laravel Routing & Middleware]
         Routing --> Controllers[Controllers / API Endpoints]
         Controllers --> UseCases[Lógica de Negocio / Services]
         UseCases --> Eloquent[Modelos Eloquent / ORM]
     end
-    subgraph Persistencia y Tareas
+  subgraph persistence["Persistencia y Tareas"]
         Eloquent --> DB[(MySQL / PostgreSQL)]
-        UseCases --> Queue[Laravel Queue / Redis]
-        Queue --> Worker[Delivery Worker]
+        UseCases --> Queue[(Redis Queue)]
+        Queue --> Worker[Docker Laravel queue-worker]
+        Worker --> Delivery[Delivery Service / Mailtrap SMTP]
     end
 ```
 
@@ -36,8 +37,9 @@ En la aplicación frontend (Angular), la interfaz de usuario se implementa separ
 ### 1.2 Estructura Arquitectónica del Backend: Enfoque Modular
 El backend (Laravel) adopta una arquitectura basada en capas limpias que separan la infraestructura de la regla de negocio:
 1. **Capa de Controladores e Infraestructura**: Maneja las peticiones HTTP externas, valida las cabeceras JWT y la autenticación mediante middleware de rotación de tokens.
-2. **Capa de Lógica de Negocio**: Clases de servicio independientes encargadas del procesamiento de payloads, importación de contactos y envío de campañas.
+2. **Capa de Lógica de Negocio**: Clases de servicio independientes encargadas del procesamiento de payloads, importación de contactos y encolado de campañas.
 3. **Capa de Persistencia (ORM)**: Modelos de Laravel Eloquent con aislamiento de Workspace. Todo recurso está vinculado a un identificador de workspace (`workspace_id`), asegurando que ningún usuario acceda a datos ajenos.
+4. **Capa de Tareas en Segundo Plano**: Un proceso Docker `queue-worker` ejecuta `php artisan queue:work redis --sleep=1 --tries=3 --timeout=120` para consumir jobs desde Redis y realizar el envío efectivo de correos fuera del ciclo HTTP del navegador.
 
 ---
 
@@ -175,12 +177,13 @@ erDiagram
 ## 3. Flujos de Comportamiento Clave
 
 ### 3.1 Ciclo de Envío de Campañas (Diagrama de Actividad)
-El motor de ejecución de campañas procesa el envío de correos masivos a través de colas en segundo plano, protegiendo al servidor contra sobrecargas y gestionando reintentos automáticos.
+El motor de ejecución de campañas procesa el envío de correos masivos a través de colas Redis en segundo plano. La API acepta y encola el trabajo; el proceso Docker `queue-worker` consume los jobs y ejecuta los envíos, protegiendo al servidor contra sobrecargas y gestionando reintentos automáticos.
 
 ```mermaid
 stateDiagram-v2
     [*] --> Scheduled : Campaña Programada
-    Scheduled --> Processing : Se activa Job de Envío
+    Scheduled --> Queued : API encola jobs en Redis
+    Queued --> Processing : queue-worker consume jobs
     state Processing {
         [*] --> IngestRecipients : Leer destinatarios elegibles
         IngestRecipients --> ValidateCompliance : Validar exclusión y unsubscribe_url

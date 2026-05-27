@@ -27,6 +27,7 @@ Este directorio es la fuente de verdad para la gobernanza del proyecto, las deci
 ## Artefactos Clave de Análisis
 
 - [Diagrama de Casos de Uso](analysis/use-case-diagram.md)
+- [Diagramas de Uso por Rol — Owner, Editor y Viewer](analysis/role-use-case-diagrams.md)
 - [Modelo de Análisis del Sistema](analysis/modelo-analisis-sistema.md)
 - [Diagrama de Clases de Dominio](analysis/domain-class-diagram.md)
 - [Especificaciones de Casos de Uso](analysis/use-case-specifications.md)

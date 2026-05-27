@@ -1,20 +1,20 @@
-# Contact Import Use Cases
+# Casos de uso de importación de contactos
 
-This diagram models contact ingestion behavior for supported formats and the mandatory normalization, deduplication, and invalid-record reporting rules.
+Este diagrama modela el comportamiento de ingesta de contactos para los formatos admitidos y las reglas obligatorias de normalización, deduplicación y reporte de registros inválidos.
 
 ```mermaid
 flowchart LR
-  Owner[Owner]
+  Owner[Propietario]
   Editor[Editor]
-  Viewer[Viewer]
+  Viewer[Visualizador]
 
-  subgraph SendIOImport[SendIO Contact Import Module]
-    UC1([Upload Import File or List])
-    UC2([Parse CSV JSON Semicolon List])
-    UC3([Normalize Contact Fields])
-    UC4([Case-insensitive Deduplication])
-    UC5([Skip Invalid Records])
-    UC6([Generate Import Report])
+  subgraph SendIOImport[Módulo de importación de contactos de SendIO]
+    UC1([Cargar archivo o lista de importación])
+    UC2([Analizar CSV, JSON o lista separada por punto y coma])
+    UC3([Normalizar campos del contacto])
+    UC4([Deduplicación sin distinción de mayúsculas y minúsculas])
+    UC5([Omitir registros inválidos])
+    UC6([Generar informe de importación])
   end
 
   Owner --> UC1
@@ -24,10 +24,10 @@ flowchart LR
   UC3 --> UC4
   UC4 --> UC5
   UC5 --> UC6
-  Viewer -. no permission .-> UC1
+  Viewer -. sin permisos .-> UC1
 ```
 
-- Supported input shapes are CSV, JSON, and semicolon-delimited list payloads.
-- Normalization is applied before deduplication to reduce canonical-form mismatches.
-- Deduplication is case-insensitive, preserving a single canonical contact identity.
-- Invalid rows are skipped and surfaced in an explicit import report.
+- Las formas de entrada admitidas son CSV, JSON y cargas de listas delimitadas por punto y coma.
+- La normalización se aplica antes de la deduplicación para reducir discrepancias de forma canónica.
+- La deduplicación no distingue mayúsculas y minúsculas y preserva una única identidad canónica del contacto.
+- Las filas inválidas se omiten y se exponen en un informe explícito de importación.
