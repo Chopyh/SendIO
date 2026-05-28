@@ -181,6 +181,11 @@ export const translations: Record<Locale, Record<string, string>> = {
     'campaigns.metrics.failed': 'Failed',
     'campaigns.limitations.contactsEndpoint': 'Contacts could not be loaded. Verify your workspace and try again.',
     'campaigns.limitations.listEndpoint': 'Campaign list endpoint is not available. This MVP list shows campaigns created from this browser session cache.',
+    'campaigns.status.draft': 'Draft',
+    'campaigns.status.queued': 'Queued',
+    'campaigns.status.sending': 'Sending',
+    'campaigns.status.sent': 'Sent',
+    'campaigns.status.failed': 'Failed',
 
     'contacts.list.title': 'Contacts',
     'contacts.list.subtitle': 'Review contacts available in the active workspace.',
@@ -468,6 +473,11 @@ export const translations: Record<Locale, Record<string, string>> = {
     'campaigns.metrics.failed': 'Fallidos',
     'campaigns.limitations.contactsEndpoint': 'No se pudieron cargar los contactos. Verifica el espacio activo e intentalo de nuevo.',
     'campaigns.limitations.listEndpoint': 'El endpoint de listado de campañas no esta disponible. Esta lista MVP muestra campañas creadas desde cache local del navegador.',
+    'campaigns.status.draft': 'Borrador',
+    'campaigns.status.queued': 'En cola',
+    'campaigns.status.sending': 'Enviando',
+    'campaigns.status.sent': 'Enviada',
+    'campaigns.status.failed': 'Fallida',
 
     'contacts.list.title': 'Contactos',
     'contacts.list.subtitle': 'Revisa los contactos disponibles en el espacio de trabajo activo.',

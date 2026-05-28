@@ -4,13 +4,14 @@ import { firstValueFrom } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
 import { CampaignApiService } from '../../core/campaigns/campaign-api.service';
 import { CampaignSummary } from '../../core/campaigns/campaign.models';
 import { I18nStore } from '../../core/i18n/i18n.store';
 
 @Component({
   selector: 'app-campaigns-list-page',
-  imports: [RouterLink, ButtonModule, CardModule, TableModule],
+  imports: [RouterLink, ButtonModule, CardModule, TableModule, TagModule],
   template: `
     <div class="space-y-6">
       <header class="flex items-center justify-between">
@@ -39,7 +40,9 @@ import { I18nStore } from '../../core/i18n/i18n.store';
             <ng-template #body let-campaign>
               <tr>
                 <td>{{ campaign.name }}</td>
-                <td>{{ campaign.status }}</td>
+                <td>
+                  <p-tag [severity]="getStatusSeverity(campaign.status)" [value]="getStatusLabel(campaign.status)" />
+                </td>
                 <td>{{ campaign.recipient_count }}</td>
                 <td class="text-right">
                   <a [routerLink]="['/app/campaigns', campaign.id]">
@@ -61,6 +64,30 @@ export class CampaignsListPageComponent {
 
   readonly loading = signal(true);
   readonly campaigns = signal<CampaignSummary[]>([]);
+
+  private readonly statusLabels: Record<string, string> = {
+    draft: 'campaigns.status.draft',
+    queued: 'campaigns.status.queued',
+    sending: 'campaigns.status.sending',
+    sent: 'campaigns.status.sent',
+    failed: 'campaigns.status.failed',
+  };
+
+  getStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
+    const map: Record<string, 'success' | 'info' | 'warn' | 'danger' | 'secondary'> = {
+      draft: 'secondary',
+      queued: 'info',
+      sending: 'warn',
+      sent: 'success',
+      failed: 'danger',
+    };
+    return map[status.toLowerCase()] ?? 'secondary';
+  }
+
+  getStatusLabel(status: string): string {
+    const key = this.statusLabels[status.toLowerCase()];
+    return key ? this.i18nStore.t(key) : status;
+  }
 
   constructor() {
     void this.load();
