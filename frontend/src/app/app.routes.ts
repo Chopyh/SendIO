@@ -56,7 +56,19 @@ export const routes: Routes = [
         path: 'campaigns/:id',
         loadComponent: () => import('./features/campaigns/campaign-detail-page.component').then((m) => m.CampaignDetailPageComponent),
       },
+      {
+        path: 'members',
+        loadComponent: () => import('./features/workspaces/workspace-members-page.component').then((m) => m.WorkspaceMembersPageComponent),
+      },
     ],
+  },
+  {
+    path: 'invitations/accept',
+    loadComponent: () => import('./features/workspaces/invitation-accept-page.component').then((m) => m.InvitationAcceptPageComponent),
+  },
+  {
+    path: 'invitation/accept/:token',
+    loadComponent: () => import('./features/workspaces/invitation-accept-page.component').then((m) => m.InvitationAcceptPageComponent),
   },
   { path: '', pathMatch: 'full', redirectTo: 'auth/login' },
   { path: '**', redirectTo: 'auth/login' },

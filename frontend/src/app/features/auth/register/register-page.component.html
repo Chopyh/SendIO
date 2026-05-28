@@ -91,6 +91,9 @@
                         {{ i18nStore.t('auth.email') }}
                       </label>
                       <input pInputText id="email" type="email" formControlName="email" class="w-full" placeholder="john.doe@example.com" [invalid]="ownerForm.controls.email.invalid && (ownerForm.controls.email.touched || submitted())" />
+                      @if (isInvitationFlow()) {
+                        <span class="text-xs text-slate-500 mt-1">{{ i18nStore.t('invitation.auth.emailLocked') }}</span>
+                      }
                       @if (ownerForm.controls.email.invalid && (ownerForm.controls.email.touched || submitted())) {
                         <span class="text-xs text-rose-500 mt-1 flex items-center gap-1 animate-fade-in">
                           <i class="pi pi-exclamation-circle text-xs"></i>

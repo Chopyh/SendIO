@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
@@ -30,6 +30,7 @@ import { ThemeStore } from '../../../core/theme/theme.store';
 })
 export class LoginPageComponent {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   readonly i18nStore = inject(I18nStore);
   readonly sessionStore = inject(SessionStore);
   readonly themeStore = inject(ThemeStore);
@@ -47,6 +48,8 @@ export class LoginPageComponent {
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
 
+  readonly isInvitationFlow = computed(() => !!this.route.snapshot.queryParamMap.get('invitationEmail'));
+
   readonly emailInvalid = computed(
     () => this.form.controls.email.invalid && (this.form.controls.email.dirty || this.form.controls.email.touched),
   );
@@ -56,6 +59,14 @@ export class LoginPageComponent {
       this.form.controls.password.invalid &&
       (this.form.controls.password.dirty || this.form.controls.password.touched),
   );
+
+  constructor() {
+    const invitationEmail = this.route.snapshot.queryParamMap.get('invitationEmail');
+    if (invitationEmail) {
+      this.form.controls.email.setValue(this.normalizeEmail(invitationEmail));
+      this.form.controls.email.disable();
+    }
+  }
 
   async onSubmit(): Promise<void> {
     this.form.markAllAsTouched();
@@ -69,7 +80,8 @@ export class LoginPageComponent {
     try {
       const { email, password } = this.form.getRawValue();
       await this.sessionStore.login(email, password);
-      await this.router.navigateByUrl('/app');
+      const returnUrl = this.getSafeReturnUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
+      await this.router.navigateByUrl(returnUrl || '/app');
     } catch {
       this.errorMessage.set(this.i18nStore.t('auth.invalidCredentials'));
     } finally {
@@ -79,5 +91,17 @@ export class LoginPageComponent {
 
   setLanguage(locale: Locale): void {
     this.i18nStore.setLocale(locale);
+  }
+
+  private getSafeReturnUrl(returnUrl: string | null): string | null {
+    if (!returnUrl) {
+      return null;
+    }
+
+    return /^\/(?![\\/])[\x20-\x7E]*$/.test(returnUrl) ? returnUrl : null;
+  }
+
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
   }
 }

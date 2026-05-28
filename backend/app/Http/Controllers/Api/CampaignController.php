@@ -184,8 +184,8 @@ class CampaignController extends Controller
 
     private function canManageCampaign(Request $request): bool
     {
-        $role = (string) $request->attributes->get('workspace_role');
+        $role = strtolower((string) $request->attributes->get('workspace_role'));
 
-        return in_array($role, ['Owner', 'Editor'], true);
+        return in_array($role, ['owner', 'editor'], true);
     }
 }

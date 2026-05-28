@@ -14,9 +14,11 @@ This index lists implementation tasks and governance contracts.
 - [MVP Front Tasks](mvp/front/)
 - [MVP Back Tasks](mvp/back/)
 - [MVP Infra Tasks](mvp/infra/)
+- [MVP Core Tasks](mvp/core/)
 - [Template Canonical Payload Migration](mvp/back/feat-template-canonical-payload-migration.md)
 - [Campaign Delivery Through Mailtrap](mvp/back/feat-campaign-delivery-mailtrap.md)
 - [Docker Redis Queue Worker Baseline](mvp/infra/chore-docker-redis-queue-worker.md)
+- [Workspace Invitations and Roles Management](mvp/core/feat-workspace-invitations-roles.md)
 
 ## Task Conventions
 

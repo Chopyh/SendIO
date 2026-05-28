@@ -1,15 +1,17 @@
 <?php
 
+use App\Http\Controllers\Api\AuditEventController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CampaignController;
+use App\Http\Controllers\Api\ComponentLibraryController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ContactsImportController;
-use App\Http\Controllers\Api\WorkspaceBootstrapController;
-use App\Http\Controllers\Api\VariableCatalogController;
-use App\Http\Controllers\Api\ComponentLibraryController;
-use App\Http\Controllers\Api\TemplateController;
-use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\ReportingController;
-use App\Http\Controllers\Api\AuditEventController;
+use App\Http\Controllers\Api\TemplateController;
+use App\Http\Controllers\Api\VariableCatalogController;
+use App\Http\Controllers\Api\WorkspaceBootstrapController;
+use App\Http\Controllers\Api\WorkspaceInvitationController;
+use App\Http\Controllers\Api\WorkspaceMemberController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function (): void {
@@ -21,10 +23,17 @@ Route::prefix('auth')->group(function (): void {
 
 Route::middleware('auth:api')->group(function (): void {
     Route::post('/workspaces/bootstrap', [WorkspaceBootstrapController::class, 'bootstrap']);
+    Route::post('/workspaces/invitations/accept', [WorkspaceInvitationController::class, 'accept']);
 });
 
 Route::middleware(['auth:api', 'workspace.context'])->group(function (): void {
     Route::get('/workspaces/current', [WorkspaceBootstrapController::class, 'current']);
+    Route::get('/workspaces/members', [WorkspaceMemberController::class, 'index']);
+    Route::patch('/workspaces/members/{member}', [WorkspaceMemberController::class, 'updateRole']);
+    Route::delete('/workspaces/members/{member}', [WorkspaceMemberController::class, 'destroy']);
+    Route::get('/workspaces/invitations', [WorkspaceInvitationController::class, 'index']);
+    Route::post('/workspaces/invitations', [WorkspaceInvitationController::class, 'store']);
+    Route::post('/workspaces/invitations/{invitation}/revoke', [WorkspaceInvitationController::class, 'revoke']);
     Route::get('/contacts', [ContactController::class, 'index']);
     Route::post('/contacts/import', [ContactsImportController::class, 'import']);
 
@@ -52,3 +61,5 @@ Route::middleware(['auth:api', 'workspace.context'])->group(function (): void {
     // Audit
     Route::get('/audit/events', [AuditEventController::class, 'index']);
 });
+
+Route::get('/workspaces/invitations/resolve/{token}', [WorkspaceInvitationController::class, 'resolve']);

@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Validator;
 
 class WorkspaceBootstrapController extends Controller
 {
+    private const LEGACY_OWNER_ROLE = 'Owner';
+
     public function bootstrap(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -50,7 +52,7 @@ class WorkspaceBootstrapController extends Controller
             WorkspaceMember::query()->create([
                 'workspace_id' => $workspace->id,
                 'user_id' => $user->id,
-                'role' => 'Owner',
+                'role' => 'owner',
                 'joined_at' => now(),
             ]);
 
@@ -71,7 +73,7 @@ class WorkspaceBootstrapController extends Controller
                     'name' => $workspace->name,
                     'timezone' => $workspace->timezone,
                     'locale_default' => $workspace->locale_default,
-                    'role' => 'Owner',
+                    'role' => self::LEGACY_OWNER_ROLE,
                 ],
             ],
         ], 201);

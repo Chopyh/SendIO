@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
@@ -62,6 +62,7 @@ function getTimezoneOffset(timeZone: string): string {
 })
 export class RegisterPageComponent implements OnInit {
   readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly authApi = inject(AuthApiService);
   readonly i18nStore = inject(I18nStore);
   readonly sessionStore = inject(SessionStore);
@@ -71,8 +72,15 @@ export class RegisterPageComponent implements OnInit {
   readonly submitted = signal(false);
   readonly loading = signal(false);
   readonly errorMessage = signal('');
+  readonly isInvitationFlow = computed(() => !!this.route.snapshot.queryParamMap.get('invitationEmail'));
 
   ngOnInit(): void {
+    const invitationEmail = this.route.snapshot.queryParamMap.get('invitationEmail');
+    if (invitationEmail) {
+      this.ownerForm.controls.email.setValue(this.normalizeEmail(invitationEmail));
+      this.ownerForm.controls.email.disable();
+    }
+
     if (this.sessionStore.isAuthenticated()) {
       this.step.set(2);
     }
@@ -201,7 +209,8 @@ export class RegisterPageComponent implements OnInit {
         }
       }
 
-      await this.router.navigateByUrl('/app');
+      const returnUrl = this.getSafeReturnUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
+      await this.router.navigateByUrl(returnUrl || '/app');
     } catch (err: any) {
       console.error('Registration/Bootstrap error:', err);
       let msg = this.i18nStore.t('auth.register.error');
@@ -224,5 +233,17 @@ export class RegisterPageComponent implements OnInit {
       this.sessionStore.logout();
     }
     this.router.navigateByUrl('/auth/login');
+  }
+
+  private getSafeReturnUrl(returnUrl: string | null): string | null {
+    if (!returnUrl) {
+      return null;
+    }
+
+    return /^\/(?![\\/])[\x20-\x7E]*$/.test(returnUrl) ? returnUrl : null;
+  }
+
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
   }
 }

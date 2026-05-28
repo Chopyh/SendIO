@@ -51,7 +51,7 @@ class RegistrationTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'jane@example.com']);
         $this->assertDatabaseHas('accounts', ['name' => 'Acme Corp']);
         $this->assertDatabaseHas('workspaces', ['name' => 'Acme Main']);
-        $this->assertDatabaseHas('workspace_members', ['role' => 'Owner']);
+        $this->assertDatabaseHas('workspace_members', ['role' => 'owner']);
     }
 
     public function test_register_derives_workspace_name_from_first_name_when_absent(): void
