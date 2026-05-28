@@ -16,6 +16,24 @@ services:
       - redis
       - mongodb
 
+  queue-worker:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      - APP_ENV=production
+      - QUEUE_CONNECTION=redis
+    command: php artisan queue:work redis --sleep=1 --tries=3 --timeout=120
+    volumes:
+      - ./backend:/var/www/html
+      - ./.env:/var/www/html/.env
+    networks:
+      - sendio_net
+    depends_on:
+      - app
+      - redis
+
   web:
     image: nginx:alpine
     ports:

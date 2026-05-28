@@ -46,6 +46,22 @@ Implement MVP campaign delivery flow that resolves templates and variables, targ
 - Full acceptance is still pending one manual runtime step: live Mailtrap sandbox inbox smoke execution and evidence capture.
 - Until that runtime evidence exists, this task must remain open and must not be marked fully validated.
 
+## Runtime Progress — 2026-05-27
+
+- Redis-backed Docker `queue-worker` processed a real campaign recipient job successfully.
+- Delivery persistence showed campaign `completed`, `sent_count=1`, `failed_count=0`, recipient `sent`, and one delivery attempt.
+- Mailtrap SMTP connectivity succeeded from the container, but full inbox evidence remains pending because Mailtrap inbox API credentials are not configured in the runtime.
+- The acceptance checklist remains open until Mailtrap UI/API capture is recorded in `docs/validation/mail-delivery-sandbox-validation.md`.
+
+## Runtime Findings — 2026-05-28
+
+- Mailtrap inbox capture confirmed that campaign messages reach the sandbox inbox.
+- The delivered body exposed two backend delivery defects that must be closed before full acceptance:
+  - Email HTML was rendered as a fragment when the template only contained the unsubscribe button/link.
+  - A 21-recipient campaign sent 3 messages and marked 18 recipients failed because Mailtrap returned `550 5.7.0 Too many emails per second`.
+- The HTML renderer now wraps campaign content in a complete email document before calling `Mail::html`.
+- The rate-limit finding remains a follow-up delivery-throttling concern for Mailtrap sandbox validation.
+
 ## Slice Progress — 2026-05-22
 
 - Added backend campaign delivery foundation with `campaigns`, `campaign_recipients`, and `delivery_attempts` tables (UUID primary/foreign keys, workspace scope).

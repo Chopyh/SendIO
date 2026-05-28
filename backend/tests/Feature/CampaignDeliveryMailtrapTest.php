@@ -267,9 +267,50 @@ class CampaignDeliveryMailtrapTest extends TestCase
         Mail::shouldReceive('html')
             ->once()
             ->withArgs(function (string $body, callable $callback): bool {
-                return str_contains($body, '<h1>Hello Contact 1</h1>')
+                return str_contains($body, '<!doctype html>')
+                    && str_contains($body, '<html lang="en">')
+                    && str_contains($body, '<body')
+                    && str_contains($body, '<h1>Hello Contact 1</h1>')
+                    && str_contains($body, '<table role="presentation"')
                     && str_contains($body, 'href="http://localhost/unsubscribe?campaign_recipient_id=')
                     && ! str_contains($body, '{{contact.first_name}}')
+                    && ! str_contains($body, '{{system.unsubscribe_url}}');
+            });
+
+        (new SendCampaignRecipientJob($campaign->id, $recipient->id))->handle();
+    }
+
+    public function test_job_wraps_unsubscribe_only_content_in_complete_html_document(): void
+    {
+        [$workspace] = $this->workspaceContextOnly();
+        [$campaign, $recipient] = $this->campaignWithSingleRecipient($workspace);
+
+        $campaign->templateVersion->update([
+            'snapshot_json' => [
+                'sections' => [
+                    [
+                        'sectionName' => 'Main',
+                        'components' => [
+                            [
+                                'type' => 'button',
+                                'url' => '{{system.unsubscribe_url}}',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        Mail::shouldReceive('html')
+            ->once()
+            ->withArgs(function (string $body, callable $callback): bool {
+                return str_starts_with($body, '<!doctype html>')
+                    && str_contains($body, '<html lang="en">')
+                    && str_contains($body, '<head>')
+                    && str_contains($body, '<body')
+                    && str_contains($body, '<a href="http://localhost/unsubscribe?campaign_recipient_id=')
+                    && str_contains($body, '</body>')
+                    && str_contains($body, '</html>')
                     && ! str_contains($body, '{{system.unsubscribe_url}}');
             });
 

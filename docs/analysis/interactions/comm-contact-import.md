@@ -4,14 +4,14 @@ This collaboration diagram shows message ordering for multi-format contact impor
 
 ```mermaid
 flowchart LR
-  A[Owner or Editor]
-  B[Import UI]
-  C[Import API]
-  D[Format Parser]
-  E[Normalization Service]
-  F[Deduplication Service]
-  G[Contact Repository]
-  H[Import Report Service]
+  A["<u>:OwnerOrEditor</u>"]
+  B["<u>:ImportUI</u>"]
+  C["<u>:ImportAPI</u>"]
+  D["<u>:FormatParser</u>"]
+  E["<u>:NormalizationService</u>"]
+  F["<u>:DeduplicationService</u>"]
+  G["<u>:ContactRepository</u>"]
+  H["<u>:ImportReportService</u>"]
 
   A -->|1. Upload source file or list| B
   B -->|2. Submit payload| C

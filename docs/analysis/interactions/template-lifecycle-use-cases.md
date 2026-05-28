@@ -4,18 +4,18 @@ This diagram captures template authoring and publish controls, including immutab
 
 ```mermaid
 flowchart LR
-  Owner([Owner])
-  Editor([Editor])
-  Viewer([Viewer])
+  Owner[Owner]
+  Editor[Editor]
+  Viewer[Viewer]
 
   subgraph SendIOTemplate[SendIO Template Lifecycle Module]
-    UC1((Create or Edit Draft Template))
-    UC2((Capture Component Snapshot))
-    UC3((Resolve Variables from Catalogs))
-    UC4((Substitute Missing Variable with Empty String))
-    UC5((Validate unsubscribe_url Presence))
-    UC6((Publish Immutable Template Version))
-    UC7((View Published Versions))
+    UC1([Create or Edit Draft Template])
+    UC2([Capture Component Snapshot])
+    UC3([Resolve Variables from Catalogs])
+    UC4([Substitute Missing Variable with Empty String])
+    UC5([Validate unsubscribe_url Presence])
+    UC6([Publish Immutable Template Version])
+    UC7([View Published Versions])
   end
 
   Owner --> UC1

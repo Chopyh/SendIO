@@ -9,20 +9,20 @@ flowchart LR
     viewer[Viewer]
 
     subgraph sendio[SendIO Platform]
-      ucAuth((Authenticate Session))
-      ucWorkspace((Switch Workspace))
-      ucImport((Import Contacts))
-      ucReportImport((Generate Import Report))
-      ucManageSender((Manage Sender Profile))
-      ucCreateCampaign((Create or Edit Campaign))
-      ucTemplatePublish((Publish Template Version))
-      ucComponentManage((Manage Components and Variables))
-      ucSchedule((Schedule Campaign by Workspace Timezone))
-      ucPause((Pause Campaign))
-      ucResume((Resume Campaign))
-      ucCancel((Cancel Campaign))
-      ucMonitor((Monitor Delivery Metrics))
-      ucExport((Export Metrics to CSV))
+      ucAuth([Authenticate Session])
+      ucWorkspace([Switch Workspace])
+      ucImport([Import Contacts])
+      ucReportImport([Generate Import Report])
+      ucManageSender([Manage Sender Profile])
+      ucCreateCampaign([Create or Edit Campaign])
+      ucTemplatePublish([Publish Template Version])
+      ucComponentManage([Manage Components and Variables])
+      ucSchedule([Schedule Campaign by Workspace Timezone])
+      ucPause([Pause Campaign])
+      ucResume([Resume Campaign])
+      ucCancel([Cancel Campaign])
+      ucMonitor([Monitor Delivery Metrics])
+      ucExport([Export Metrics to CSV])
     end
 
     owner --> ucAuth

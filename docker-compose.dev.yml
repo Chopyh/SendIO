@@ -17,6 +17,25 @@ services:
       - redis
       - mongodb
 
+  queue-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sendio_queue_worker
+    restart: unless-stopped
+    environment:
+      - APP_ENV=local
+      - QUEUE_CONNECTION=redis
+    command: php artisan queue:work redis --sleep=1 --tries=3 --timeout=120
+    volumes:
+      - './backend:/var/www/html'
+      - './.env:/var/www/html/.env'
+    networks:
+      - sendio_net
+    depends_on:
+      - app
+      - redis
+
   web:
     image: nginx:alpine
     container_name: sendio_web

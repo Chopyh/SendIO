@@ -4,13 +4,13 @@ This collaboration diagram expresses the ordered message exchange for template p
 
 ```mermaid
 flowchart LR
-  A[Owner or Editor]
-  B[Template UI]
-  C[Template API]
-  D[Snapshot Service]
-  E[Variable Resolver]
-  F[Publish Validator]
-  G[Template Repository]
+  A["<u>:OwnerOrEditor</u>"]
+  B["<u>:TemplateUI</u>"]
+  C["<u>:TemplateAPI</u>"]
+  D["<u>:SnapshotService</u>"]
+  E["<u>:VariableResolver</u>"]
+  F["<u>:PublishValidator</u>"]
+  G["<u>:TemplateRepository</u>"]
 
   A -->|1. Request publish| B
   B -->|2. Send publish command| C

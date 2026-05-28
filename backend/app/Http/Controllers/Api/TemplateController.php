@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Template;
 use App\Models\TemplateVersion;
 use App\Models\TemplateVariableUsage;
+use App\Services\AuditEventLogger;
 use App\Support\ApiError;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Validator;
 
 class TemplateController extends Controller
 {
+    public function __construct(private readonly AuditEventLogger $auditEventLogger) {}
+
     public function index(Request $request): JsonResponse
     {
         $workspaceId = $request->attributes->get('workspace_id');
@@ -331,6 +334,19 @@ class TemplateController extends Controller
         });
 
         $version->load('variableUsages');
+
+        $this->auditEventLogger->record(
+            (string) $workspaceId,
+            $request->user()?->id,
+            'template.version.published',
+            [
+                'template_id' => $template->id,
+                'template_version_id' => $version->id,
+                'template_version_number' => $version->version_number,
+                'status_after' => $version->state,
+                'variable_count' => count($extracted),
+            ]
+        );
 
         return response()->json([
             'data' => $version,

@@ -4,13 +4,13 @@ This collaboration diagram captures message-level coordination for campaign pre-
 
 ```mermaid
 flowchart LR
-  A[Owner or Editor]
-  B[Campaign API]
-  C[Pre-send Validator]
-  D[Queue Service]
-  E[Delivery Worker]
-  F[Mailtrap Provider]
-  G[Delivery Repository]
+  A["<u>:OwnerOrEditor</u>"]
+  B["<u>:CampaignAPI</u>"]
+  C["<u>:PreSendValidator</u>"]
+  D["<u>:QueueService</u>"]
+  E["<u>:DeliveryWorker</u>"]
+  F["<u>:MailtrapProvider</u>"]
+  G["<u>:DeliveryRepository</u>"]
 
   A -->|1. Start campaign| B
   B -->|2. Validate template and unsubscribe_url| C

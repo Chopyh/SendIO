@@ -143,7 +143,6 @@ class SendCampaignRecipientJob implements ShouldQueue
     private function renderBody(array $snapshot, CampaignRecipient $recipient): string
     {
         $blocks = [];
-        $unsubscribeUrl = $this->resolveUnsubscribeUrl($recipient);
 
         foreach ($snapshot['sections'] ?? [] as $section) {
             foreach ($section['components'] ?? [] as $component) {
@@ -160,19 +159,73 @@ class SendCampaignRecipientJob implements ShouldQueue
                 if ($type === 'button') {
                     $url = trim((string) ($component['url'] ?? ''));
                     if ($url !== '') {
-                        $blocks[] = '<p><a href="'.$url.'">'.htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</a></p>';
+                        $blocks[] = $this->renderButton($url);
                     }
                 }
             }
         }
 
-        $body = trim(implode("\n", $blocks));
-        $body = str_replace('{{contact.first_name}}', (string) ($recipient->contact?->first_name ?? ''), $body);
-        $body = str_replace('{{contact.last_name}}', (string) ($recipient->contact?->last_name ?? ''), $body);
+        $content = trim(implode("\n", $blocks));
+        $content = $content !== '' ? $content : '<p>Campaign message</p>';
+        $body = $this->wrapHtmlDocument($content);
+
+        return $this->replacePlaceholders($body, $recipient);
+    }
+
+    private function renderButton(string $url): string
+    {
+        $escapedUrl = htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        return '<table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin: 24px 0;">'
+            .'<tr>'
+            .'<td style="border-radius: 6px; background: #2563eb;">'
+            .'<a href="'.$escapedUrl.'" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 18px; color: #ffffff; font-family: Arial, sans-serif; font-size: 14px; font-weight: 700; line-height: 1.2; text-decoration: none;">'
+            .$escapedUrl
+            .'</a>'
+            .'</td>'
+            .'</tr>'
+            .'</table>';
+    }
+
+    private function wrapHtmlDocument(string $content): string
+    {
+        return '<!doctype html>'
+            ."\n".'<html lang="en">'
+            ."\n".'<head>'
+            ."\n".'<meta charset="utf-8">'
+            ."\n".'<meta name="viewport" content="width=device-width, initial-scale=1">'
+            ."\n".'<title>SendIO Campaign</title>'
+            ."\n".'</head>'
+            ."\n".'<body style="margin: 0; padding: 0; background: #f8fafc;">'
+            ."\n".'<table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background: #f8fafc; margin: 0; padding: 24px 0; width: 100%;">'
+            ."\n".'<tr>'
+            ."\n".'<td align="center" style="padding: 0 16px;">'
+            ."\n".'<table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background: #ffffff; border-radius: 12px; max-width: 640px; width: 100%;">'
+            ."\n".'<tr>'
+            ."\n".'<td style="color: #0f172a; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; padding: 32px;">'
+            ."\n".$content
+            ."\n".'</td>'
+            ."\n".'</tr>'
+            ."\n".'</table>'
+            ."\n".'</td>'
+            ."\n".'</tr>'
+            ."\n".'</table>'
+            ."\n".'</body>'
+            ."\n".'</html>';
+    }
+
+    private function replacePlaceholders(string $body, CampaignRecipient $recipient): string
+    {
+        $unsubscribeUrl = htmlspecialchars($this->resolveUnsubscribeUrl($recipient), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $firstName = htmlspecialchars((string) ($recipient->contact?->first_name ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $lastName = htmlspecialchars((string) ($recipient->contact?->last_name ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        $body = str_replace('{{contact.first_name}}', $firstName, $body);
+        $body = str_replace('{{contact.last_name}}', $lastName, $body);
         $body = str_replace('{{unsubscribe_url}}', $unsubscribeUrl, $body);
         $body = str_replace('{{system.unsubscribe_url}}', $unsubscribeUrl, $body);
 
-        return $body !== '' ? $body : '<p>Campaign message</p>';
+        return $body;
     }
 
     private function resolveUnsubscribeUrl(CampaignRecipient $recipient): string

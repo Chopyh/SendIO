@@ -34,6 +34,8 @@ function show_help() {
     echo "  migrate        Run migrations"
     echo "  seed           Run seeders"
     echo "  logs [prod]    Show logs"
+    echo "  queue [prod]   Show queue worker logs"
+    echo "  queue-restart  Restart Laravel queue workers"
     echo "  sh [prod]      Enter the container shell"
 }
 
@@ -64,6 +66,12 @@ case "$COMMAND" in
         ;;
     logs)
         docker compose -f "$CONFIG_FILE" logs -f "$SERVICE_NAME"
+        ;;
+    queue)
+        docker compose -f "$CONFIG_FILE" logs -f queue-worker
+        ;;
+    queue-restart)
+        docker compose -f "$CONFIG_FILE" exec -u "$USER" "$SERVICE_NAME" php artisan queue:restart
         ;;
     sh|shell)
         docker compose -f "$CONFIG_FILE" exec -u "$USER" -it "$SERVICE_NAME" bash

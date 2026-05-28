@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\VariableCatalogController;
 use App\Http\Controllers\Api\ComponentLibraryController;
 use App\Http\Controllers\Api\TemplateController;
 use App\Http\Controllers\Api\CampaignController;
+use App\Http\Controllers\Api\ReportingController;
+use App\Http\Controllers\Api\AuditEventController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function (): void {
@@ -42,4 +44,11 @@ Route::middleware(['auth:api', 'workspace.context'])->group(function (): void {
     Route::post('/campaigns', [CampaignController::class, 'store']);
     Route::post('/campaigns/{campaign}/dispatch', [CampaignController::class, 'dispatch']);
     Route::get('/campaigns/{campaign}/summary', [CampaignController::class, 'summary']);
+
+    // Reporting
+    Route::get('/reports/campaigns', [ReportingController::class, 'campaigns']);
+    Route::get('/reports/campaigns/{campaign}/metrics', [ReportingController::class, 'metrics']);
+
+    // Audit
+    Route::get('/audit/events', [AuditEventController::class, 'index']);
 });

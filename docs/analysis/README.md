@@ -1,27 +1,27 @@
-# Analysis Documentation
+# Documentación de Análisis
 
-This section consolidates formal analysis artifacts for SendIO, focused on functional boundaries, actors, and domain semantics. The purpose is to provide a verifiable baseline before solution design and implementation planning.
+Esta sección consolida los artefactos formales de análisis para SendIO, enfocados en los límites funcionales, los actores y la semántica del dominio. El propósito es proporcionar una línea base verificable antes del diseño de la solución y la planificación de la implementación.
 
-## Rationale
+## Justificación Académica
 
-Academic-quality analysis documentation reduces ambiguity by separating business intent from technical construction. These documents define what the platform must do, for whom, and under which operational constraints.
+La documentación de análisis con calidad académica reduce la ambigüedad al separar la intención del negocio de la construcción técnica. Estos documentos definen lo que la plataforma debe hacer, para quién y bajo qué restricciones operativas.
 
-## Contents
+## Contenidos
 
-- [Use Case Diagram](use-case-diagram.md)
-- [Modelo de análisis del sistema](modelo-analisis-sistema.md)
-- [Domain Class Diagram](domain-class-diagram.md)
-- [Use Case Specifications](use-case-specifications.md)
-- [Project Requirements](project-requirements.md)
-- [Interaction Diagrams](interactions/README.md)
+- [Diagrama de Casos de Uso](use-case-diagram.md)
+- [Modelo de Análisis del Sistema](modelo-analisis-sistema.md)
+- [Diagrama de Clases de Dominio](domain-class-diagram.md)
+- [Especificaciones de Casos de Uso](use-case-specifications.md)
+- [Requisitos del Proyecto](project-requirements.md)
+- [Índice de Diagramas de Interacción](interactions/README.md)
 
-## Coverage
+## Alcance
 
-The artifacts in this section cover:
+Los artefactos en esta sección cubren:
 
-- Multi-workspace collaboration model with role boundaries (Owner, Editor, Viewer).
-- Contact ingestion and normalization rules (CSV, JSON, semicolon list).
-- Campaign lifecycle behavior (schedule, enqueue, send, retry, cancel, pause, resume).
-- Template lifecycle behavior (immutable versioning, component snapshots, variable placeholders).
-- Authentication and session controls (JWT access and refresh rotation).
-- Operational reporting, localization, and export constraints.
+- Modelo de colaboración multi-workspace con límites de roles (Owner, Editor, Viewer).
+- Reglas de ingesta y normalización de contactos (CSV, JSON, lista separada por punto y coma).
+- Comportamiento del ciclo de vida de las campañas (programar, encolar, enviar, reintentar, cancelar, pausar, reanudar).
+- Comportamiento del ciclo de vida de las plantillas (versiones inmutables, instantáneas de componentes, marcadores de posición de variables).
+- Controles de autenticación y sesión (acceso JWT y rotación de refresh tokens).
+- Informes operativos, localización y restricciones de exportación.
