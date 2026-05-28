@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { AuthApiService } from '../../../core/auth/auth-api.service';
@@ -36,6 +37,7 @@ describe('RegisterPageComponent', () => {
       imports: [RegisterPageComponent],
       providers: [
         { provide: Router, useValue: mockRouter },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: new Map() } } },
         { provide: AuthApiService, useValue: mockAuthApi },
         { provide: SessionStore, useValue: mockSessionStore },
       ],
@@ -65,6 +67,26 @@ describe('RegisterPageComponent', () => {
       createComponent();
       const defaultTz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
       expect(component.workspaceForm.controls.timezone.value).toBe(defaultTz);
+    });
+
+    it('should lock invitation email when provided in query params', async () => {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [RegisterPageComponent],
+        providers: [
+          { provide: Router, useValue: mockRouter },
+            { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: new Map([['invitationEmail', 'InvitEE@Example.COM']]) } } },
+          { provide: AuthApiService, useValue: mockAuthApi },
+          { provide: SessionStore, useValue: mockSessionStore },
+        ],
+      }).compileComponents();
+
+      const invitationFixture = TestBed.createComponent(RegisterPageComponent);
+      const invitationComponent = invitationFixture.componentInstance;
+      invitationFixture.detectChanges();
+
+      expect(invitationComponent.ownerForm.controls.email.disabled).toBe(true);
+      expect(invitationComponent.ownerForm.controls.email.value).toBe('invitee@example.com');
     });
   });
 
@@ -208,6 +230,124 @@ describe('RegisterPageComponent', () => {
         timezone: 'Europe/Madrid',
         locale_default: 'es',
       });
+      expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/app');
+    });
+
+    it('should redirect to returnUrl after registration when provided', async () => {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [RegisterPageComponent],
+        providers: [
+          { provide: Router, useValue: mockRouter },
+          {
+            provide: ActivatedRoute,
+            useValue: { snapshot: { queryParamMap: new Map([['returnUrl', '/invitations/accept?token=abc-token']]) } },
+          },
+          { provide: AuthApiService, useValue: mockAuthApi },
+          { provide: SessionStore, useValue: mockSessionStore },
+        ],
+      }).compileComponents();
+
+      const invitationFixture = TestBed.createComponent(RegisterPageComponent);
+      const invitationComponent = invitationFixture.componentInstance;
+      invitationFixture.detectChanges();
+
+      invitationComponent.ownerForm.setValue({
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'jane@example.com',
+        password: 'Password123',
+        confirmPassword: 'Password123',
+        preferredLanguage: 'es',
+        termsAccepted: true,
+      });
+      invitationComponent.workspaceForm.setValue({
+        accountName: 'Acme Corp',
+        workspaceName: 'Marketing',
+        timezone: 'Europe/Madrid',
+      });
+
+      await invitationComponent.submit();
+
+      expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/invitations/accept?token=abc-token');
+    });
+
+    it('should fallback to app when returnUrl is external', async () => {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [RegisterPageComponent],
+        providers: [
+          { provide: Router, useValue: mockRouter },
+          {
+            provide: ActivatedRoute,
+            useValue: { snapshot: { queryParamMap: new Map([['returnUrl', 'https://evil.example']]) } },
+          },
+          { provide: AuthApiService, useValue: mockAuthApi },
+          { provide: SessionStore, useValue: mockSessionStore },
+        ],
+      }).compileComponents();
+
+      const guardedFixture = TestBed.createComponent(RegisterPageComponent);
+      const guardedComponent = guardedFixture.componentInstance;
+      guardedFixture.detectChanges();
+
+      guardedComponent.ownerForm.setValue({
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'jane@example.com',
+        password: 'Password123',
+        confirmPassword: 'Password123',
+        preferredLanguage: 'es',
+        termsAccepted: true,
+      });
+      guardedComponent.workspaceForm.setValue({
+        accountName: 'Acme Corp',
+        workspaceName: 'Marketing',
+        timezone: 'Europe/Madrid',
+      });
+
+      await guardedComponent.submit();
+
+      expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/app');
+    });
+
+    it('should fallback to app when returnUrl is protocol-relative', async () => {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [RegisterPageComponent],
+        providers: [
+          { provide: Router, useValue: mockRouter },
+          {
+            provide: ActivatedRoute,
+            useValue: { snapshot: { queryParamMap: new Map([['returnUrl', '//evil.example']]) } },
+          },
+          { provide: AuthApiService, useValue: mockAuthApi },
+          { provide: SessionStore, useValue: mockSessionStore },
+        ],
+      }).compileComponents();
+
+      const guardedFixture = TestBed.createComponent(RegisterPageComponent);
+      const guardedComponent = guardedFixture.componentInstance;
+      guardedFixture.detectChanges();
+
+      guardedComponent.ownerForm.setValue({
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'jane@example.com',
+        password: 'Password123',
+        confirmPassword: 'Password123',
+        preferredLanguage: 'es',
+        termsAccepted: true,
+      });
+
+      guardedComponent.workspaceForm.setValue({
+        accountName: 'Acme Corp',
+        workspaceName: 'Marketing',
+        timezone: 'Europe/Madrid',
+      });
+
+      await guardedComponent.submit();
+
       expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/app');
     });
 

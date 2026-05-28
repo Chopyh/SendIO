@@ -13,6 +13,8 @@ Estos documentos formalizan cómo se descompone SendIO en componentes, estructur
 - [Diagrama de Navegación](navigation-diagram.md)
 - [Diagrama Entidad-Relación](entity-relationship-diagram.md)
 - [Diagrama de Actividad: Envío de Campaña](activity-diagram-campaign-delivery.md)
+- [Wireframe de SendIO](wireframe.md)
+- [Sistema de Diseño de SendIO](design-system.md)
 - [Índice de Diagramas de Estado](states/README.md)
 
 ## Alcance

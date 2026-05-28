@@ -74,7 +74,7 @@ class AuthWorkspaceBootstrapTest extends TestCase
 
         $this->assertDatabaseHas('workspace_members', [
             'user_id' => $user->id,
-            'role' => 'Owner',
+            'role' => 'owner',
         ]);
     }
 
@@ -101,7 +101,7 @@ class AuthWorkspaceBootstrapTest extends TestCase
         WorkspaceMember::query()->create([
             'workspace_id' => $workspace->id,
             'user_id' => $user->id,
-            'role' => 'Owner',
+            'role' => 'owner',
             'joined_at' => now(),
         ]);
 

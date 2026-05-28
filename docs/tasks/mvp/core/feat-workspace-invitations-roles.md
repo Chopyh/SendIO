@@ -2,7 +2,7 @@
 
 - **Task ID:** `MVP-CORE-001`
 - **Branch State:** `core/feat-workspace-invitations-roles`
-- **Status:** `planned`
+- **Status:** `implemented`
 
 ## Scope
 
@@ -26,6 +26,7 @@ Implement SendIO workspace invitations and role management with the following MV
 
 - Add `workspace_invitations` persistence model with status lifecycle (`pending`, `accepted`, `revoked`, `expired`).
 - Add invitation APIs: create, list, revoke, precheck/resolve token, accept invitation.
+- Send real invitation emails with frontend acceptance links (`/invitations/accept?token=...`).
 - Add workspace members APIs: list, change role (`editor`/`viewer`), remove member.
 - Enforce authorization policies so only `owner` can mutate membership and invitations.
 - Emit audit events for invitation and role/member mutations.
@@ -33,7 +34,7 @@ Implement SendIO workspace invitations and role management with the following MV
 ### Frontend (Angular)
 
 - Add workspace members management screen for owner flows.
-- Add invitation acceptance route and flow with login redirect and return handling.
+- Add invitation acceptance route and flow with account-aware login/register redirect and locked invite email handling.
 - Add role update and remove member owner-only actions.
 - Add i18n strings in `en` and `es` for invitation + roles flows.
 
@@ -47,6 +48,8 @@ Implement SendIO workspace invitations and role management with the following MV
 
 - Owner can invite users by email with `editor` or `viewer` role.
 - Invite links require authentication and can only be accepted by matching email identity.
+- Unauthenticated invitees are routed by account existence: login if account exists, registration otherwise.
+- Invitation-driven login/registration locks email to the invited address and returns user to invitation accept.
 - Accepting a valid invitation creates workspace membership with invited role.
 - Expired/revoked/already-accepted invitations cannot be accepted.
 - Owner can change member role between `editor` and `viewer`.
@@ -64,12 +67,25 @@ Implement SendIO workspace invitations and role management with the following MV
 
 ## Checklist
 
-- [ ] Define invitation domain schema and migrations.
-- [ ] Implement backend invitation endpoints and policies.
-- [ ] Implement backend members role/update/remove endpoints and policies.
-- [ ] Emit and validate audit events for all mutations.
-- [ ] Implement frontend workspace members management UI.
-- [ ] Implement frontend invitation acceptance flow with auth redirect.
-- [ ] Add and validate i18n entries (`en`, `es`).
-- [ ] Update docs index and related architecture/API documentation.
-- [ ] Run validations and record evidence.
+- [x] Define invitation domain schema and migrations.
+- [x] Implement backend invitation endpoints and policies.
+- [x] Implement backend members role/update/remove endpoints and policies.
+- [x] Emit and validate audit events for all mutations.
+- [x] Implement frontend workspace members management UI.
+- [x] Implement frontend invitation acceptance flow with auth redirect.
+- [x] Add invitation email delivery and account-aware auth routing with locked email fields.
+- [x] Add and validate i18n entries (`en`, `es`).
+- [x] Update docs index and related architecture/API documentation.
+- [x] Run validations and record evidence.
+
+## Validation Evidence
+
+### Backend
+
+- Command: `.\sendio.ps1 artisan test --compact tests/Feature/WorkspaceInvitationsRolesApiTest.php tests/Unit/WorkspaceInvitationTest.php tests/Feature/RegistrationTest.php`
+- Result: passed (`15 passed`, `84 assertions`).
+
+### Frontend
+
+- Command: `pnpm --dir "frontend" ng test --watch=false`
+- Result: passed (`18 files`, `113 tests`).

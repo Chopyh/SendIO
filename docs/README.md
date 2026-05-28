@@ -17,6 +17,7 @@ Este directorio es la fuente de verdad para la gobernanza del proyecto, las deci
 
 - [Diseño del Sistema (TFG)](design/diseno-sistema-tfg.md)
 - [Justificación de Tecnologías Utilizadas (TFG)](implementation/tecnologias-tfg.md)
+- [Implementación del Proyecto (TFG)](implementation/implementacion-proyecto-tfg.md)
 - [Plan de Validación y Pruebas (TFG)](validation/validacion-pruebas-tfg.md)
 
 ## Diagramas Detallados de Interacción y Estado
@@ -39,10 +40,14 @@ Este directorio es la fuente de verdad para la gobernanza del proyecto, las deci
 - [Diagrama de Navegación](design/navigation-diagram.md)
 - [Diagrama Entidad-Relación](design/entity-relationship-diagram.md)
 - [Diagrama de Actividad: Envío de Campaña](design/activity-diagram-campaign-delivery.md)
+- [Wireframe de SendIO](design/wireframe.md)
+- [Sistema de Diseño de SendIO](design/design-system.md)
 
 ## Artefactos Clave de Implementación
 
+- [Implementación del Proyecto](implementation/implementacion-proyecto-tfg.md)
 - [Justificación Tecnológica](implementation/technology-justification.md)
+- [Tecnologías Usadas por Zona](implementation/technology-stack-by-area.md)
 - [Plan de Implementación del MVP](tasks/mvp-implementation-plan.md)
 - [Requisitos de Onboarding de Autenticación y Workspace](frontend/auth-workspace-onboarding-requirements.md)
 - [Experiencia de Importación de Contactos](frontend/contacts-import-experience.md)
@@ -54,6 +59,7 @@ Este directorio es la fuente de verdad para la gobernanza del proyecto, las deci
 - [API de Plantillas](backend/api-templates.md)
 - [API de Envío de Campaña (MVP)](backend/api-campaign-delivery-mvp.md)
 - [API de Reportes y Auditoría (MVP)](backend/api-reporting-audit-mvp.md)
+- [API de Invitaciones a Workspaces y Roles (MVP)](backend/api-workspace-invitations-roles.md)
 - [Tarea MVP: Invitaciones a Workspaces y Gestión de Roles](tasks/mvp/core/feat-workspace-invitations-roles.md)
 - [Convención de UUIDs en la Base de Datos](backend/database-uuid-convention.md)
 - [Diseño Horizontal Drag-and-Drop del Editor de Plantillas](superpowers/specs/2026-05-21-template-editor-dnd-horizontal-design.md)

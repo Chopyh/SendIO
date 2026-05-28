@@ -92,6 +92,17 @@
           <span>{{ i18nStore.t('layout.menu.campaigns') }}</span>
         }
       </a>
+
+      <a
+        routerLink="/app/members"
+        routerLinkActive="bg-emerald-600 text-white font-medium"
+        class="flex items-center px-3 py-2.5 text-sm rounded-lg hover:bg-slate-800 hover:text-white transition-colors duration-150"
+        [ngClass]="isSidebarCollapsed() ? 'justify-center' : 'space-x-3'">
+        <i class="pi pi-id-card text-base"></i>
+        @if (!isSidebarCollapsed()) {
+          <span>{{ i18nStore.t('layout.menu.members') }}</span>
+        }
+      </a>
     </nav>
 
     <!-- Sidebar Bottom (User Summary) -->
