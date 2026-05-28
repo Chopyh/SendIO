@@ -54,6 +54,7 @@ Este directorio es la fuente de verdad para la gobernanza del proyecto, las deci
 - [API de Plantillas](backend/api-templates.md)
 - [API de Envío de Campaña (MVP)](backend/api-campaign-delivery-mvp.md)
 - [API de Reportes y Auditoría (MVP)](backend/api-reporting-audit-mvp.md)
+- [Tarea MVP: Invitaciones a Workspaces y Gestión de Roles](tasks/mvp/core/feat-workspace-invitations-roles.md)
 - [Convención de UUIDs en la Base de Datos](backend/database-uuid-convention.md)
 - [Diseño Horizontal Drag-and-Drop del Editor de Plantillas](superpowers/specs/2026-05-21-template-editor-dnd-horizontal-design.md)
 - [Diseño de Reemplazo de Referencias en el Editor de Plantillas](superpowers/specs/2026-05-21-template-editor-reference-replacement-design.md)

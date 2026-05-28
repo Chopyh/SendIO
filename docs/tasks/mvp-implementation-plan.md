@@ -16,7 +16,8 @@ This plan segments MVP implementation work into reviewable tasks grouped by area
 | MVP-FRONT-001 | Front | feat | `front/feat-auth-workspace-onboarding` | `docs/tasks/mvp/front/feat-auth-workspace-onboarding.md` | MVP-BACK-001 | pending |
 | MVP-FRONT-002 | Front | feat | `front/feat-contacts-import-experience` | `docs/tasks/mvp/front/feat-contacts-import-experience.md` | MVP-BACK-002 | pending |
 | MVP-FRONT-003 | Front | feat | `front/feat-template-builder-mvp` | `docs/tasks/mvp/front/feat-template-builder-mvp.md` | MVP-BACK-003 | completed |
-| MVP-FRONT-004 | Front | feat | `front/feat-campaign-monitoring` | `docs/tasks/mvp/front/feat-campaign-monitoring.md` | MVP-BACK-004, MVP-BACK-005 | pending |
+| MVP-FRONT-004 | Front | feat | `front/feat-campaign-monitoring` | `docs/tasks/mvp/front/feat-campaign-monitoring.md` | MVP-BACK-004, MVP-BACK-005 | completed |
+| MVP-CORE-001 | Core | feat | `core/feat-workspace-invitations-roles` | `docs/tasks/mvp/core/feat-workspace-invitations-roles.md` | MVP-BACK-001, MVP-FRONT-001, MVP-BACK-005 | planned |
 
 ## Notes
 
@@ -38,6 +39,7 @@ This plan segments MVP implementation work into reviewable tasks grouped by area
 9. `back/feat-campaign-delivery-mailtrap`
 10. `back/feat-reporting-audit-trail`
 11. `front/feat-campaign-monitoring`
+12. `core/feat-workspace-invitations-roles`
 
 ## Frontend UI Standard (Mandatory)
 
