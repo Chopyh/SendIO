@@ -36,9 +36,9 @@ services:
 
   web:
     image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
+    expose:
+      - "80"
+      - "443"
     volumes:
       - ./backend:/var/www/html
       - ./config/nginx:/etc/nginx/conf.d
@@ -54,6 +54,7 @@ services:
     restart: always
     expose:
       - "80"
+      - "443"
     networks:
       - sendio_net
 
