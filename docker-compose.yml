@@ -51,6 +51,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    restart: always
+    expose:
+      - "80"
     networks:
       - sendio_net
 

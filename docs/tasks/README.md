@@ -18,6 +18,7 @@ This index lists implementation tasks and governance contracts.
 - [Template Canonical Payload Migration](mvp/back/feat-template-canonical-payload-migration.md)
 - [Campaign Delivery Through Mailtrap](mvp/back/feat-campaign-delivery-mailtrap.md)
 - [Docker Redis Queue Worker Baseline](mvp/infra/chore-docker-redis-queue-worker.md)
+- [Dokploy Frontend Production Container](mvp/infra/chore-dokploy-frontend-production-container.md)
 - [Workspace Invitations and Roles Management](mvp/core/feat-workspace-invitations-roles.md)
 
 ## Task Conventions

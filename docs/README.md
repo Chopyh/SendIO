@@ -10,6 +10,7 @@ Este directorio es la fuente de verdad para la gobernanza del proyecto, las deci
 - [Índice de Tareas](tasks/README.md)
 - [Estándares de Flujo de Trabajo](workflow/standards.md)
 - [Contrato de Entorno Docker Mailtrap](devops/docker-mailtrap-env.md)
+- [Separación de Producción Dokploy](devops/dokploy-production-split.md)
 - [Línea Base de Worker Redis de Cola en Docker](tasks/mvp/infra/chore-docker-redis-queue-worker.md)
 - [Línea Base de Observabilidad y Auditoría](devops/observability-audit-baseline.md)
 
@@ -61,6 +62,7 @@ Este directorio es la fuente de verdad para la gobernanza del proyecto, las deci
 - [API de Reportes y Auditoría (MVP)](backend/api-reporting-audit-mvp.md)
 - [API de Invitaciones a Workspaces y Roles (MVP)](backend/api-workspace-invitations-roles.md)
 - [Tarea MVP: Invitaciones a Workspaces y Gestión de Roles](tasks/mvp/core/feat-workspace-invitations-roles.md)
+- [Tarea Infra: Contenedor Frontend de Producción para Dokploy](tasks/mvp/infra/chore-dokploy-frontend-production-container.md)
 - [Convención de UUIDs en la Base de Datos](backend/database-uuid-convention.md)
 - [Diseño Horizontal Drag-and-Drop del Editor de Plantillas](superpowers/specs/2026-05-21-template-editor-dnd-horizontal-design.md)
 - [Diseño de Reemplazo de Referencias en el Editor de Plantillas](superpowers/specs/2026-05-21-template-editor-reference-replacement-design.md)
