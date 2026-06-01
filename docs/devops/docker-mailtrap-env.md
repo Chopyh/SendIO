@@ -23,6 +23,7 @@ This guide defines the Docker-first Mailtrap contract used by SendIO in non-prod
 | `MAIL_FROM_ADDRESS` | `no-reply@sendio.local` | Production sender domain/policy required. |
 | `MAIL_FROM_NAME` | `${APP_NAME}` | Keep explicit product sender name. |
 | `QUEUE_CONNECTION` | `redis` | Must remain `redis` when Docker queue worker is enabled. |
+| `CACHE_STORE` | `redis` | Must remain `redis` for Docker queue workers so Laravel's queue restart signal does not require the database `cache` table before migrations. |
 
 ## Queue worker runtime contract
 
@@ -76,7 +77,16 @@ Expected:
 Expected:
 - `default` equals `redis`.
 
-### 4) Verify queue worker process and logs
+### 4) Verify cache store resolves to Redis
+
+```bash
+./sendio.sh art config:show cache
+```
+
+Expected:
+- `default` equals `redis`.
+
+### 5) Verify queue worker process and logs
 
 ```bash
 ./sendio.sh queue
