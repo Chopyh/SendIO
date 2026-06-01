@@ -1,14 +1,46 @@
+x-backend-environment: &backend-environment
+  APP_NAME: ${APP_NAME:-SendIO}
+  APP_KEY: ${APP_KEY}
+  APP_DEBUG: ${APP_DEBUG:-false}
+  APP_URL: ${APP_URL}
+  AUTH_GUARD: ${AUTH_GUARD:-api}
+  DB_CONNECTION: ${DB_CONNECTION:-pgsql}
+  DB_HOST: ${DB_HOST:-postgres}
+  DB_PORT: ${DB_PORT:-5432}
+  DB_DATABASE: ${DB_DATABASE}
+  DB_USERNAME: ${DB_USERNAME}
+  DB_PASSWORD: ${DB_PASSWORD}
+  MONGO_DB_HOST: ${MONGO_DB_HOST:-mongodb}
+  MONGO_DB_PORT: ${MONGO_DB_PORT:-27017}
+  MONGO_DB_DATABASE: ${MONGO_DB_DATABASE}
+  MONGO_DB_USERNAME: ${MONGO_DB_USERNAME}
+  MONGO_DB_PASSWORD: ${MONGO_DB_PASSWORD}
+  REDIS_HOST: ${REDIS_HOST:-redis}
+  REDIS_PASSWORD: ${REDIS_PASSWORD:-null}
+  REDIS_PORT: ${REDIS_PORT:-6379}
+  QUEUE_CONNECTION: ${QUEUE_CONNECTION:-redis}
+  JWT_SECRET: ${JWT_SECRET}
+  JWT_ALGO: ${JWT_ALGO:-HS256}
+  MAIL_MAILER: ${MAIL_MAILER:-smtp}
+  MAIL_SCHEME: ${MAIL_SCHEME:-null}
+  MAIL_HOST: ${MAIL_HOST}
+  MAIL_PORT: ${MAIL_PORT:-2525}
+  MAIL_USERNAME: ${MAIL_USERNAME}
+  MAIL_PASSWORD: ${MAIL_PASSWORD}
+  MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+  MAIL_FROM_NAME: ${MAIL_FROM_NAME:-SendIO}
+
 services:
   app:
     build:
-      context: .
-      dockerfile: ./backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     restart: always
     environment:
-      - APP_ENV=production
-    volumes:
-      - ./backend:/var/www/html
-      - ./.env:/var/www/html/.env
+      <<: *backend-environment
+      APP_ENV: production
+    expose:
+      - "80"
     networks:
       - sendio_net
     depends_on:
@@ -18,34 +50,19 @@ services:
 
   queue-worker:
     build:
-      context: .
-      dockerfile: ./backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      - APP_ENV=production
-      - QUEUE_CONNECTION=redis
+      <<: *backend-environment
+      APP_ENV: production
+      QUEUE_CONNECTION: redis
     command: php artisan queue:work redis --sleep=1 --tries=3 --timeout=120
-    volumes:
-      - ./backend:/var/www/html
-      - ./.env:/var/www/html/.env
     networks:
       - sendio_net
     depends_on:
       - app
       - redis
-
-  web:
-    image: nginx:alpine
-    expose:
-      - "80"
-      - "443"
-    volumes:
-      - ./backend:/var/www/html
-      - ./config/nginx:/etc/nginx/conf.d
-    networks:
-      - sendio_net
-    depends_on:
-      - app
 
   frontend:
     build:
@@ -54,7 +71,6 @@ services:
     restart: always
     expose:
       - "80"
-      - "443"
     networks:
       - sendio_net
 

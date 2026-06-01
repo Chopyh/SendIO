@@ -63,6 +63,7 @@ Este directorio es la fuente de verdad para la gobernanza del proyecto, las deci
 - [API de Invitaciones a Workspaces y Roles (MVP)](backend/api-workspace-invitations-roles.md)
 - [Tarea MVP: Invitaciones a Workspaces y Gestión de Roles](tasks/mvp/core/feat-workspace-invitations-roles.md)
 - [Tarea Infra: Contenedor Frontend de Producción para Dokploy](tasks/mvp/infra/chore-dokploy-frontend-production-container.md)
+- [Tarea Infra: Contenedor Backend Único de Producción para Dokploy](tasks/mvp/infra/chore-dokploy-single-backend-production.md)
 - [Convención de UUIDs en la Base de Datos](backend/database-uuid-convention.md)
 - [Diseño Horizontal Drag-and-Drop del Editor de Plantillas](superpowers/specs/2026-05-21-template-editor-dnd-horizontal-design.md)
 - [Diseño de Reemplazo de Referencias en el Editor de Plantillas](superpowers/specs/2026-05-21-template-editor-reference-replacement-design.md)

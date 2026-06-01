@@ -9,7 +9,7 @@ Add the production frontend container contract for Dokploy deployments without c
 - Production `frontend/Dockerfile` with a Node build stage and nginx runtime stage.
 - Frontend-scoped nginx config for static Angular SPA hosting.
 - Production compose frontend service that builds and exposes the nginx runtime.
-- Production compose frontend and backend nginx services that expose internal ports `80` and `443` without binding host ports, so Dokploy can own public routing.
+- Production compose frontend and backend app services that expose internal port `80` without binding host ports, so Dokploy can own public routing.
 - DevOps documentation for the Dokploy backend/frontend split.
 
 ## Acceptance Criteria
@@ -18,7 +18,8 @@ Add the production frontend container contract for Dokploy deployments without c
 - The nginx runtime serves compiled Angular files with SPA fallback to `/index.html`.
 - The frontend nginx config does not proxy `/api` or any backend route.
 - Dokploy remains responsible for external routing between frontend and backend/API.
-- Production compose does not publish host ports `80` or `443`; services expose internal ports `80` and `443` for Dokploy.
+- Production compose does not publish host port `80`; services expose internal port `80` for Dokploy.
+- The production backend image contains Composer dependencies and does not depend on a host `backend/vendor` directory.
 - Development keeps using Angular `ng serve`; `docker-compose.dev.yml` is not changed for frontend nginx.
 
 ## Validation

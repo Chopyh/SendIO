@@ -19,6 +19,7 @@ This index lists implementation tasks and governance contracts.
 - [Campaign Delivery Through Mailtrap](mvp/back/feat-campaign-delivery-mailtrap.md)
 - [Docker Redis Queue Worker Baseline](mvp/infra/chore-docker-redis-queue-worker.md)
 - [Dokploy Frontend Production Container](mvp/infra/chore-dokploy-frontend-production-container.md)
+- [Dokploy Single Backend Production Container](mvp/infra/chore-dokploy-single-backend-production.md)
 - [Workspace Invitations and Roles Management](mvp/core/feat-workspace-invitations-roles.md)
 
 ## Task Conventions
