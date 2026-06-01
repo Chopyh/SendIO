@@ -121,10 +121,22 @@ class DemoDataSeeder extends Seeder
             ]
         );
 
+        [$premiumTemplate, $premiumVersion] = $this->template(
+            $mainWorkspace,
+            'Premium Feature Announcement',
+            1,
+            $this->premiumSnapshot(),
+            [
+                ['contact.first_name', 'Contact', true],
+                ['unsubscribe_url', 'System', true],
+            ]
+        );
+
         $this->campaigns($mainWorkspace, [
             'welcome' => [$welcomeTemplate, $welcomeVersion],
             'newsletter' => [$newsletterTemplate, $newsletterVersion],
             'promo' => [$promoTemplate, $promoVersion],
+            'premium' => [$premiumTemplate, $premiumVersion],
         ], array_values($mainContacts));
     }
 
@@ -243,7 +255,7 @@ class DemoDataSeeder extends Seeder
     }
 
     /**
-     * @param  array{welcome: array{0: Template, 1: TemplateVersion}, newsletter: array{0: Template, 1: TemplateVersion}, promo: array{0: Template, 1: TemplateVersion}}  $templates
+     * @param  array{welcome: array{0: Template, 1: TemplateVersion}, newsletter: array{0: Template, 1: TemplateVersion}, promo: array{0: Template, 1: TemplateVersion}, premium: array{0: Template, 1: TemplateVersion}}  $templates
      * @param  array<int, Contact>  $contacts
      */
     private function campaigns(Workspace $workspace, array $templates, array $contacts): void
@@ -251,6 +263,7 @@ class DemoDataSeeder extends Seeder
         [$welcomeTemplate, $welcomeVersion] = $templates['welcome'];
         [$newsletterTemplate, $newsletterVersion] = $templates['newsletter'];
         [$promoTemplate, $promoVersion] = $templates['promo'];
+        [$premiumTemplate, $premiumVersion] = $templates['premium'];
 
         $this->campaign($workspace, $newsletterTemplate, $newsletterVersion, 'June Newsletter Draft', 'draft', [
             [$contacts[0], 'pending', 0, null],
@@ -285,6 +298,13 @@ class DemoDataSeeder extends Seeder
             [$contacts[6], 'failed', 3, 'SMTP sandbox rejected the demo message'],
             [$contacts[11], 'failed', 3, 'SMTP sandbox rejected the demo message'],
         ], now()->subDays(14), now()->subDays(14)->addMinutes(30));
+
+        $this->campaign($workspace, $premiumTemplate, $premiumVersion, 'Premium Features Launch', 'completed', [
+            [$contacts[0], 'sent', 1, null],
+            [$contacts[3], 'sent', 1, null],
+            [$contacts[6], 'sent', 1, null],
+            [$contacts[9], 'sent', 1, null],
+        ], now()->subDays(3), now()->subDays(3)->addMinutes(12));
     }
 
     /**
@@ -482,6 +502,88 @@ class DemoDataSeeder extends Seeder
             'posY' => $posY,
             'sizeX' => $sizeX,
             'styles' => ['backgroundColor' => '#2563eb', 'textColor' => '#ffffff', 'borderRadius' => '8px'],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function premiumSnapshot(): array
+    {
+        return [
+            'sections' => [
+                [
+                    'sectionId' => 'premium-hero',
+                    'sectionName' => 'Premium Hero',
+                    'rowMinHeights' => [240, 80],
+                    'components' => [
+                        $this->textBlock(401, 'Hero banner', '
+                            <div style="background-color: #1e293b; padding: 40px 30px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+                                <h1 style="color: #38bdf8; font-family: \'Outfit\', sans-serif; font-size: 32px; font-weight: 700; margin: 0 0 16px 0; line-height: 1.2; letter-spacing: -0.025em;">
+                                    ¡Hola {{contact.first_name}}! 🎉
+                                </h1>
+                                <p style="color: #f1f5f9; font-family: \'Inter\', sans-serif; font-size: 18px; font-weight: 500; margin: 0 0 12px 0; line-height: 1.5;">
+                                    Lanzamos nuevas características premium en tu workspace.
+                                </p>
+                                <p style="color: #94a3b8; font-family: \'Inter\', sans-serif; font-size: 14px; margin: 0; line-height: 1.6;">
+                                    Disfruta de más velocidad, plantillas exclusivas y automatizaciones avanzadas.
+                                </p>
+                            </div>', 0, 0, 2),
+                        $this->buttonBlock(402, 'Main CTA button', 'https://sendio.local/app/features?ref=email_hero', 0, 1, 2),
+                    ],
+                ],
+                [
+                    'sectionId' => 'premium-features',
+                    'sectionName' => 'Featured Layouts',
+                    'rowMinHeights' => [180, 180, 80],
+                    'components' => [
+                        $this->textBlock(403, 'Feature one', '
+                            <div style="background-color: #f8fafc; padding: 24px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 16px;">
+                                <h3 style="color: #0f172a; font-family: \'Outfit\', sans-serif; font-size: 20px; font-weight: 600; margin: 0 0 8px 0;">
+                                    🚀 1. Plantillas Avanzadas
+                                </h3>
+                                <p style="color: #475569; font-family: \'Inter\', sans-serif; font-size: 14px; margin: 0; line-height: 1.5;">
+                                    Layouts optimizados para móviles, con soporte total para i18n y espaciados personalizables en un clic.
+                                </p>
+                            </div>', 0, 0, 1),
+                        $this->textBlock(404, 'Feature two', '
+                            <div style="background-color: #f8fafc; padding: 24px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 16px;">
+                                <h3 style="color: #0f172a; font-family: \'Outfit\', sans-serif; font-size: 20px; font-weight: 600; margin: 0 0 8px 0;">
+                                    📊 2. Reportes de Campaña
+                                </h3>
+                                <p style="color: #475569; font-family: \'Inter\', sans-serif; font-size: 14px; margin: 0; line-height: 1.5;">
+                                    Auditoría completa e histórico de envíos con estados detallados (entregado, fallido, reenviando).
+                                </p>
+                            </div>', 1, 0, 1),
+                        $this->textBlock(405, 'Feature three', '
+                            <div style="background-color: #f8fafc; padding: 24px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 16px; text-align: center;">
+                                <h3 style="color: #0f172a; font-family: \'Outfit\', sans-serif; font-size: 20px; font-weight: 600; margin: 0 0 8px 0;">
+                                    🔒 3. Aislamiento Completo
+                                </h3>
+                                <p style="color: #475569; font-family: \'Inter\', sans-serif; font-size: 14px; margin: 0; line-height: 1.5; max-width: 500px; margin-left: auto; margin-right: auto;">
+                                    Seguridad robusta a nivel de Workspace. Tus datos y contactos están completamente aislados de otros entornos.
+                                </p>
+                            </div>', 0, 1, 2),
+                        $this->buttonBlock(406, 'Sub CTA button', 'https://sendio.local/app/features?ref=email_features', 0, 2, 2),
+                    ],
+                ],
+                [
+                    'sectionId' => 'premium-footer',
+                    'sectionName' => 'Compliance Footer',
+                    'rowMinHeights' => [100],
+                    'components' => [
+                        $this->textBlock(407, 'Footer details', '
+                            <div style="padding: 24px 20px; text-align: center; border-top: 1px solid #e2e8f0; margin-top: 20px;">
+                                <p style="color: #64748b; font-family: \'Inter\', sans-serif; font-size: 12px; margin: 0 0 8px 0; line-height: 1.5;">
+                                    Este correo de prueba fue enviado para validar las capacidades del motor de SendIO.
+                                </p>
+                                <p style="color: #64748b; font-family: \'Inter\', sans-serif; font-size: 12px; margin: 0; line-height: 1.5;">
+                                    ¿No deseas recibir estos correos? <a href="{{unsubscribe_url}}" style="color: #2563eb; text-decoration: underline; font-weight: 500;">Darse de baja</a>.
+                                </p>
+                            </div>', 0, 0, 2),
+                    ],
+                ],
+            ],
         ];
     }
 }
