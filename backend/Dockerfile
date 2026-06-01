@@ -29,6 +29,7 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 composer install \
 
 COPY . .
 COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY docker/entrypoint.sh /usr/local/bin/sendio-entrypoint
 
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer dump-autoload \
     --optimize \
@@ -40,8 +41,10 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 composer dump-autoload \
         storage/framework/views \
         storage/logs \
         bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod +x /usr/local/bin/sendio-entrypoint
 
 EXPOSE 80
 
+ENTRYPOINT ["sendio-entrypoint"]
 CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]

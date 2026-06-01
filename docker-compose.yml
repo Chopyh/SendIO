@@ -32,6 +32,7 @@ x-backend-environment: &backend-environment
 
 services:
   app:
+    image: sendio-backend:production
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -49,6 +50,7 @@ services:
       - mongodb
 
   queue-worker:
+    image: sendio-backend:production
     build:
       context: ./backend
       dockerfile: Dockerfile
