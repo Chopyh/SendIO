@@ -20,6 +20,7 @@ This index lists implementation tasks and governance contracts.
 - [Docker Redis Queue Worker Baseline](mvp/infra/chore-docker-redis-queue-worker.md)
 - [Dokploy Frontend Production Container](mvp/infra/chore-dokploy-frontend-production-container.md)
 - [Dokploy Single Backend Production Container](mvp/infra/chore-dokploy-single-backend-production.md)
+- [Production Demo Data Seeder](mvp/infra/chore-production-demo-data.md)
 - [Workspace Invitations and Roles Management](mvp/core/feat-workspace-invitations-roles.md)
 
 ## Task Conventions

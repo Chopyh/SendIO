@@ -3,11 +3,19 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
+use App\Models\Campaign;
+use App\Models\CampaignRecipient;
+use App\Models\ComponentLibraryItem;
 use App\Models\Contact;
+use App\Models\DeliveryAttempt;
+use App\Models\Template;
+use App\Models\TemplateVariableUsage;
+use App\Models\TemplateVersion;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Models\WorkspaceMember;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class DemoDataSeeder extends Seeder
 {
@@ -53,7 +61,7 @@ class DemoDataSeeder extends Seeder
         $isolationOwner = $this->user('Isolation Owner', 'isolation-owner@sendio.test');
         $this->member($isolationWorkspace, $isolationOwner, 'Owner');
 
-        $this->contacts($mainWorkspace, [
+        $mainContacts = $this->contacts($mainWorkspace, [
             ['ana.ruiz@example.test', 'Ana', 'Ruiz', '+34 600 100 001', ['source' => 'csv-import', 'segment' => 'Newsletter', 'language' => 'es']],
             ['leo.gomez@example.test', 'Leo', 'Gomez', '+34 600 100 002', ['source' => 'csv-import', 'segment' => 'Leads', 'language' => 'es']],
             ['maria.lopez@example.test', 'Maria', 'Lopez', '+34 600 100 003', ['source' => 'manual', 'segment' => 'Customers', 'language' => 'es']],
@@ -76,6 +84,48 @@ class DemoDataSeeder extends Seeder
             ['shared@example.test', 'Shared', 'Isolation', '+34 699 200 001', ['source' => 'isolation', 'segment' => 'Duplicate Email Test', 'language' => 'en']],
             ['ana.ruiz@example.test', 'Ana', 'Other Workspace', '+34 699 200 002', ['source' => 'isolation', 'segment' => 'Workspace Scope Test', 'language' => 'es']],
         ]);
+
+        $this->componentLibrary($mainWorkspace);
+
+        [$welcomeTemplate, $welcomeVersion] = $this->template(
+            $mainWorkspace,
+            'Welcome Journey Template',
+            1,
+            $this->welcomeSnapshot(),
+            [
+                ['contact.first_name', 'Contact', true],
+                ['contact.last_name', 'Contact', false],
+                ['system.unsubscribe_url', 'System', true],
+            ]
+        );
+
+        [$newsletterTemplate, $newsletterVersion] = $this->template(
+            $mainWorkspace,
+            'Monthly Newsletter Template',
+            1,
+            $this->newsletterSnapshot(),
+            [
+                ['contact.first_name', 'Contact', true],
+                ['unsubscribe_url', 'System', true],
+            ]
+        );
+
+        [$promoTemplate, $promoVersion] = $this->template(
+            $mainWorkspace,
+            'Product Launch Promo Template',
+            1,
+            $this->promoSnapshot(),
+            [
+                ['contact.first_name', 'Contact', true],
+                ['unsubscribe_url', 'System', true],
+            ]
+        );
+
+        $this->campaigns($mainWorkspace, [
+            'welcome' => [$welcomeTemplate, $welcomeVersion],
+            'newsletter' => [$newsletterTemplate, $newsletterVersion],
+            'promo' => [$promoTemplate, $promoVersion],
+        ], array_values($mainContacts));
     }
 
     private function user(string $name, string $email): User
@@ -101,11 +151,14 @@ class DemoDataSeeder extends Seeder
 
     /**
      * @param  array<int, array{0: string, 1: string, 2: string, 3: string, 4: array<string, string>}>  $contacts
+     * @return array<string, Contact>
      */
-    private function contacts(Workspace $workspace, array $contacts): void
+    private function contacts(Workspace $workspace, array $contacts): array
     {
+        $seeded = [];
+
         foreach ($contacts as [$email, $firstName, $lastName, $phone, $metadata]) {
-            Contact::query()->updateOrCreate([
+            $seeded[$email] = Contact::query()->updateOrCreate([
                 'workspace_id' => $workspace->id,
                 'email_normalized' => strtolower($email),
             ], [
@@ -116,5 +169,319 @@ class DemoDataSeeder extends Seeder
                 'metadata' => $metadata,
             ]);
         }
+
+        return $seeded;
+    }
+
+    private function componentLibrary(Workspace $workspace): void
+    {
+        $this->component($workspace, 'Hero Headline', 'text', [
+            'content' => '<h1>Hello {{contact.first_name}}, welcome to SendIO</h1>',
+            'styles' => ['fontSize' => '32px', 'fontWeight' => '700', 'textColor' => '#0f172a'],
+        ]);
+
+        $this->component($workspace, 'Primary CTA Button', 'button', [
+            'url' => 'https://sendio.local/demo',
+            'styles' => ['backgroundColor' => '#2563eb', 'textColor' => '#ffffff', 'borderRadius' => '8px'],
+        ]);
+
+        $this->component($workspace, 'Compliance Footer', 'text', [
+            'content' => '<p>You can unsubscribe at any time: {{unsubscribe_url}}</p>',
+            'styles' => ['fontSize' => '12px', 'textColor' => '#64748b'],
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $schema
+     */
+    private function component(Workspace $workspace, string $name, string $type, array $schema): ComponentLibraryItem
+    {
+        return ComponentLibraryItem::query()->updateOrCreate([
+            'workspace_id' => $workspace->id,
+            'name' => $name,
+        ], [
+            'scope' => 'workspace',
+            'component_type' => $type,
+            'schema_json' => $schema,
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $snapshot
+     * @param  array<int, array{0: string, 1: string, 2: bool}>  $variables
+     * @return array{0: Template, 1: TemplateVersion}
+     */
+    private function template(Workspace $workspace, string $name, int $versionNumber, array $snapshot, array $variables): array
+    {
+        $template = Template::query()->updateOrCreate([
+            'workspace_id' => $workspace->id,
+            'name' => $name,
+        ], [
+            'name' => $name,
+        ]);
+
+        $version = TemplateVersion::query()->updateOrCreate([
+            'template_id' => $template->id,
+            'version_number' => $versionNumber,
+        ], [
+            'state' => 'published',
+            'snapshot_json' => $snapshot,
+            'compliance_unsubscribe_url' => true,
+        ]);
+
+        foreach ($variables as [$placeholder, $category, $required]) {
+            TemplateVariableUsage::query()->updateOrCreate([
+                'template_version_id' => $version->id,
+                'placeholder_name' => $placeholder,
+            ], [
+                'category' => $category,
+                'required' => $required,
+            ]);
+        }
+
+        return [$template, $version];
+    }
+
+    /**
+     * @param  array{welcome: array{0: Template, 1: TemplateVersion}, newsletter: array{0: Template, 1: TemplateVersion}, promo: array{0: Template, 1: TemplateVersion}}  $templates
+     * @param  array<int, Contact>  $contacts
+     */
+    private function campaigns(Workspace $workspace, array $templates, array $contacts): void
+    {
+        [$welcomeTemplate, $welcomeVersion] = $templates['welcome'];
+        [$newsletterTemplate, $newsletterVersion] = $templates['newsletter'];
+        [$promoTemplate, $promoVersion] = $templates['promo'];
+
+        $this->campaign($workspace, $newsletterTemplate, $newsletterVersion, 'June Newsletter Draft', 'draft', [
+            [$contacts[0], 'pending', 0, null],
+            [$contacts[1], 'pending', 0, null],
+            [$contacts[2], 'pending', 0, null],
+        ], null, null);
+
+        $this->campaign($workspace, $welcomeTemplate, $welcomeVersion, 'Trial Welcome Queue', 'queued', [
+            [$contacts[3], 'pending', 0, null],
+            [$contacts[7], 'pending', 0, null],
+            [$contacts[10], 'pending', 0, null],
+            [$contacts[15], 'pending', 0, null],
+        ], now()->subHours(2), null);
+
+        $this->campaign($workspace, $promoTemplate, $promoVersion, 'Customer Winback Running', 'running', [
+            [$contacts[4], 'sent', 1, null],
+            [$contacts[8], 'sent', 1, null],
+            [$contacts[12], 'failed', 3, 'Mailtrap demo throttle simulation'],
+            [$contacts[14], 'sending', 1, null],
+            [$contacts[2], 'pending', 0, null],
+        ], now()->subDay(), null);
+
+        $this->campaign($workspace, $newsletterTemplate, $newsletterVersion, 'May Newsletter Completed', 'completed', [
+            [$contacts[0], 'sent', 1, null],
+            [$contacts[5], 'sent', 1, null],
+            [$contacts[9], 'sent', 1, null],
+            [$contacts[13], 'sent', 1, null],
+        ], now()->subDays(7), now()->subDays(7)->addMinutes(15));
+
+        $this->campaign($workspace, $promoTemplate, $promoVersion, 'Spring Promo Failed', 'failed', [
+            [$contacts[1], 'failed', 3, 'SMTP sandbox rejected the demo message'],
+            [$contacts[6], 'failed', 3, 'SMTP sandbox rejected the demo message'],
+            [$contacts[11], 'failed', 3, 'SMTP sandbox rejected the demo message'],
+        ], now()->subDays(14), now()->subDays(14)->addMinutes(30));
+    }
+
+    /**
+     * @param  array<int, array{0: Contact, 1: string, 2: int, 3: string|null}>  $recipientStates
+     */
+    private function campaign(
+        Workspace $workspace,
+        Template $template,
+        TemplateVersion $version,
+        string $name,
+        string $status,
+        array $recipientStates,
+        ?Carbon $dispatchedAt,
+        ?Carbon $completedAt,
+    ): Campaign {
+        $sentCount = count(array_filter($recipientStates, static fn (array $state): bool => $state[1] === 'sent'));
+        $failedCount = count(array_filter($recipientStates, static fn (array $state): bool => $state[1] === 'failed'));
+
+        $campaign = Campaign::query()->updateOrCreate([
+            'workspace_id' => $workspace->id,
+            'name' => $name,
+        ], [
+            'template_id' => $template->id,
+            'template_version_id' => $version->id,
+            'status' => $status,
+            'recipient_count' => count($recipientStates),
+            'sent_count' => $sentCount,
+            'failed_count' => $failedCount,
+            'dispatched_at' => $dispatchedAt,
+            'completed_at' => $completedAt,
+        ]);
+
+        foreach ($recipientStates as [$contact, $recipientStatus, $attemptCount, $lastError]) {
+            $lastAttemptAt = $attemptCount > 0 ? now()->subMinutes(30 + $attemptCount) : null;
+
+            $recipient = CampaignRecipient::query()->updateOrCreate([
+                'campaign_id' => $campaign->id,
+                'contact_id' => $contact->id,
+            ], [
+                'workspace_id' => $workspace->id,
+                'email' => $contact->email,
+                'status' => $recipientStatus,
+                'attempt_count' => $attemptCount,
+                'last_error' => $lastError,
+                'last_attempt_at' => $lastAttemptAt,
+                'next_retry_at' => $recipientStatus === 'pending' && $attemptCount > 0 ? now()->addMinutes(10) : null,
+                'sent_at' => $recipientStatus === 'sent' ? now()->subMinutes(20 + $attemptCount) : null,
+            ]);
+
+            $this->deliveryAttempts($campaign, $recipient, $recipientStatus, $attemptCount, $lastError);
+        }
+
+        return $campaign;
+    }
+
+    private function deliveryAttempts(
+        Campaign $campaign,
+        CampaignRecipient $recipient,
+        string $recipientStatus,
+        int $attemptCount,
+        ?string $lastError,
+    ): void {
+        if ($attemptCount === 0) {
+            return;
+        }
+
+        for ($attempt = 1; $attempt <= $attemptCount; $attempt++) {
+            $isFinalAttempt = $attempt === $attemptCount;
+            $status = $isFinalAttempt && $recipientStatus === 'sent' ? 'sent' : 'failed';
+
+            DeliveryAttempt::query()->updateOrCreate([
+                'campaign_recipient_id' => $recipient->id,
+                'attempt_number' => $attempt,
+            ], [
+                'campaign_id' => $campaign->id,
+                'status' => $status,
+                'error_message' => $status === 'failed' ? ($lastError ?? 'Transient demo delivery failure') : null,
+                'attempted_at' => now()->subMinutes(60 - ($attempt * 5)),
+            ]);
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function welcomeSnapshot(): array
+    {
+        return [
+            'sections' => [
+                [
+                    'sectionId' => 'welcome-hero',
+                    'sectionName' => 'Welcome Hero',
+                    'rowMinHeights' => [180, 72],
+                    'components' => [
+                        $this->textBlock(101, 'Welcome headline', '<h1>Welcome to SendIO, {{contact.first_name}}</h1><p>Your workspace is ready to build campaigns with your team.</p>', 0, 0, 2),
+                        $this->buttonBlock(102, 'Open dashboard button', 'https://sendio.local/app?contact={{contact.first_name}}', 0, 1, 1),
+                    ],
+                ],
+                [
+                    'sectionId' => 'welcome-footer',
+                    'sectionName' => 'Compliance Footer',
+                    'rowMinHeights' => [48],
+                    'components' => [
+                        $this->textBlock(103, 'Unsubscribe footer', '<p style="font-size:12px;color:#64748b;">No longer interested? <a href="{{system.unsubscribe_url}}">Unsubscribe here</a>.</p>', 0, 0, 1),
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function newsletterSnapshot(): array
+    {
+        return [
+            'sections' => [
+                [
+                    'sectionId' => 'newsletter-intro',
+                    'sectionName' => 'Newsletter Intro',
+                    'rowMinHeights' => [160, 96],
+                    'components' => [
+                        $this->textBlock(201, 'Newsletter lead', '<h1>Monthly product notes</h1><p>Hi {{contact.first_name}}, here are the latest SendIO improvements for your campaigns.</p>', 0, 0, 2),
+                        $this->textBlock(202, 'Feature summary', '<ul><li>Reusable blocks</li><li>Workspace roles</li><li>Campaign reporting</li></ul>', 0, 1, 2),
+                    ],
+                ],
+                [
+                    'sectionId' => 'newsletter-footer',
+                    'sectionName' => 'Newsletter Footer',
+                    'rowMinHeights' => [48],
+                    'components' => [
+                        $this->textBlock(203, 'Unsubscribe footer', '<p style="font-size:12px;color:#64748b;">Manage your preferences or unsubscribe: {{unsubscribe_url}}</p>', 0, 0, 1),
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function promoSnapshot(): array
+    {
+        return [
+            'sections' => [
+                [
+                    'sectionId' => 'promo-offer',
+                    'sectionName' => 'Launch Offer',
+                    'rowMinHeights' => [160, 72],
+                    'components' => [
+                        $this->textBlock(301, 'Promo headline', '<h1>Launch faster with SendIO</h1><p>{{contact.first_name}}, build your next email in minutes with reusable components.</p>', 0, 0, 2),
+                        $this->buttonBlock(302, 'Promo CTA', 'https://sendio.local/demo/promo', 0, 1, 1),
+                    ],
+                ],
+                [
+                    'sectionId' => 'promo-footer',
+                    'sectionName' => 'Promo Footer',
+                    'rowMinHeights' => [48],
+                    'components' => [
+                        $this->textBlock(303, 'Unsubscribe footer', '<p style="font-size:12px;color:#64748b;">You are receiving this as a SendIO demo contact. Unsubscribe: {{unsubscribe_url}}</p>', 0, 0, 1),
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function textBlock(int $id, string $name, string $content, int $posX, int $posY, float $sizeX): array
+    {
+        return [
+            'blockId' => $id,
+            'blockName' => $name,
+            'type' => 'text',
+            'content' => $content,
+            'posX' => $posX,
+            'posY' => $posY,
+            'sizeX' => $sizeX,
+            'styles' => ['textColor' => '#0f172a', 'backgroundColor' => '#ffffff'],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buttonBlock(int $id, string $name, string $url, int $posX, int $posY, float $sizeX): array
+    {
+        return [
+            'blockId' => $id,
+            'blockName' => $name,
+            'type' => 'button',
+            'url' => $url,
+            'posX' => $posX,
+            'posY' => $posY,
+            'sizeX' => $sizeX,
+            'styles' => ['backgroundColor' => '#2563eb', 'textColor' => '#ffffff', 'borderRadius' => '8px'],
+        ];
     }
 }

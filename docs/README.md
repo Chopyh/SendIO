@@ -11,6 +11,7 @@ Este directorio es la fuente de verdad para la gobernanza del proyecto, las deci
 - [Estándares de Flujo de Trabajo](workflow/standards.md)
 - [Contrato de Entorno Docker Mailtrap](devops/docker-mailtrap-env.md)
 - [Separación de Producción Dokploy](devops/dokploy-production-split.md)
+- [Datos Demo de Producción](devops/production-demo-data.md)
 - [Línea Base de Worker Redis de Cola en Docker](tasks/mvp/infra/chore-docker-redis-queue-worker.md)
 - [Línea Base de Observabilidad y Auditoría](devops/observability-audit-baseline.md)
 
@@ -64,6 +65,7 @@ Este directorio es la fuente de verdad para la gobernanza del proyecto, las deci
 - [Tarea MVP: Invitaciones a Workspaces y Gestión de Roles](tasks/mvp/core/feat-workspace-invitations-roles.md)
 - [Tarea Infra: Contenedor Frontend de Producción para Dokploy](tasks/mvp/infra/chore-dokploy-frontend-production-container.md)
 - [Tarea Infra: Contenedor Backend Único de Producción para Dokploy](tasks/mvp/infra/chore-dokploy-single-backend-production.md)
+- [Tarea Infra: Datos Demo de Producción](tasks/mvp/infra/chore-production-demo-data.md)
 - [Convención de UUIDs en la Base de Datos](backend/database-uuid-convention.md)
 - [Diseño Horizontal Drag-and-Drop del Editor de Plantillas](superpowers/specs/2026-05-21-template-editor-dnd-horizontal-design.md)
 - [Diseño de Reemplazo de Referencias en el Editor de Plantillas](superpowers/specs/2026-05-21-template-editor-reference-replacement-design.md)
