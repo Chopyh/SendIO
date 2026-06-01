@@ -33,6 +33,7 @@ x-backend-environment: &backend-environment
 services:
   app:
     image: sendio-backend:production
+    pull_policy: build
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -51,6 +52,7 @@ services:
 
   queue-worker:
     image: sendio-backend:production
+    pull_policy: build
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -59,7 +61,12 @@ services:
       <<: *backend-environment
       APP_ENV: production
       QUEUE_CONNECTION: redis
-    command: php artisan queue:work redis --sleep=1 --tries=3 --timeout=120
+    command: >
+      sh -c "if [ ! -f vendor/autoload.php ]; then
+      echo 'vendor/autoload.php is missing; installing Composer dependencies before queue startup.';
+      COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist;
+      fi;
+      php artisan queue:work redis --sleep=1 --tries=3 --timeout=120"
     networks:
       - sendio_net
     depends_on:

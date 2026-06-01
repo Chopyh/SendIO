@@ -19,7 +19,7 @@ Dokploy production runs SendIO with a frontend container and a single HTTP backe
 | Backend app container | Runs nginx and PHP-FPM in one image, exposes internal port `80`, and serves Laravel API traffic for Dokploy `/api` routing. |
 | Backend dependencies | Composer dependencies are installed during Docker build. The entrypoint also checks `vendor/autoload.php` at runtime and runs `composer install --no-dev --optimize-autoloader` if a platform mount hides or removes `vendor`. |
 | Backend environment | Production compose reads required values from the Compose environment, so Dokploy can inject secrets through deployment variables without mounting `.env` into the image. |
-| Queue worker | Reuses the backend image and overrides the command with `php artisan queue:work redis --sleep=1 --tries=3 --timeout=120`. |
+| Queue worker | Reuses the backend image and runs a Composer autoload guard before `php artisan queue:work redis --sleep=1 --tries=3 --timeout=120`, so Artisan is never executed before dependencies are present. |
 | Development frontend | Stays on Angular dev server (`ng serve`) and is not replaced by production nginx. |
 | Host ports | Production compose does not publish `80:80`; Dokploy owns the public listener and routes to container-internal exposed ports. |
 
@@ -47,7 +47,7 @@ Expected results:
 
 - The compose config renders successfully.
 - The backend image builds without needing `backend/vendor` on the host.
-- The backend app and queue worker use the same `sendio-backend:production` image.
+- The backend app and queue worker use the same `sendio-backend:production` image and `pull_policy: build` asks Compose/Dokploy to build it from the repository instead of reusing a stale local tag.
 - Dokploy provides `APP_KEY`, database, MongoDB, Redis, JWT, and mail variables through deployment environment settings.
 - The frontend image builds without needing local Node or pnpm.
 - The generated frontend container serves Angular routes through nginx with `/index.html` fallback.
