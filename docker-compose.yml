@@ -87,6 +87,7 @@ services:
 
   postgres:
     image: 'postgres:18'
+    restart: unless-stopped
     environment:
       POSTGRES_DB: '${DB_DATABASE}'
       POSTGRES_USER: '${DB_USERNAME}'
@@ -98,6 +99,7 @@ services:
 
   redis:
     image: 'redis:8.6'
+    restart: unless-stopped
     volumes:
       - 'sendio-redis:/data'
     networks:
@@ -105,6 +107,7 @@ services:
 
   mongodb:
     image: 'mongo:8.2'
+    restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: '${MONGO_DB_USERNAME}'
       MONGO_INITDB_ROOT_PASSWORD: '${MONGO_DB_PASSWORD}'

@@ -31,6 +31,7 @@ This guide defines the Docker-first Mailtrap contract used by SendIO in non-prod
 |---|---|
 | Worker service name | `queue-worker` |
 | Worker command | `php artisan queue:work redis --sleep=1 --tries=3 --timeout=120` |
+| Data service restart policy | PostgreSQL, Redis, and MongoDB use `restart: unless-stopped` in production compose. |
 | Restart behavior | Use `./sendio.sh queue-restart` or `.\sendio.ps1 queue-restart` after backend code changes. |
 | Logs | Use `./sendio.sh queue` or `.\sendio.ps1 queue` to tail worker output. |
 
